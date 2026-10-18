@@ -14,7 +14,7 @@ In a blind-judged comparison on this exact failure mode (a SOC triage dashboard)
 
 Genuine outputs of the skill's verification loop (source SVGs in `examples/svg/`, build record in `examples/svg/README.md`):
 
-![Attack-surface technical diagram](docs/assets/diagram-preview.png)
+![Order-journey technical diagram](docs/assets/diagram-preview.png)
 
 ![Icon family at 16/48/96px on light and dark](docs/assets/icon-preview.png)
 
