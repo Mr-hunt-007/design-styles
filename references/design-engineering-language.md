@@ -40,7 +40,7 @@ A conflict that cannot be resolved without changing the intended result is repor
 A compiler does not suggest valid code; it transforms input through defined stages and reports errors. Treat every design job the same way:
 
 1. **Parse the brief**: medium, objective, audience, dimensions, constraints; reject or query an unparseable brief (one focused question).
-2. **Resolve tokens**: typography, spacing, colour, geometry and style rules bound to values BEFORE generation; an existing design system is the token source when one governs (see SKILL.md "Design systems").
+2. **Resolve tokens**: typography, spacing, colour, geometry and style rules bound to values BEFORE generation; an existing design system is the token source when one governs (see SKILL.md "Design systems"). Tokens are typed: a colour token never fills a spacing slot, a raster asset never stands in for a vector one, and an invalid combination is rejected at this stage, not discovered in the render.
 3. **Generate**: the artefact in the target medium's native capabilities.
 4. **Automated checks** (the deterministic pass): parse validity, dimensions, dangling references, contrast ratios, overflow, missing assets, rule violations. Machine-checkable things are machine-checked.
 5. **Visual evaluation** (the judgement pass): rendered output inspected for balance, hierarchy, consistency, style fidelity. Automated checks never substitute for this, and this never substitutes for them.

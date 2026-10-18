@@ -87,5 +87,33 @@ Beyond visual disciplines, other fields contribute working methods. The left col
 | Parametric design | geometry responding to explicit parameters without losing identity: `svg-and-vector-graphics.md` |
 | Wayfinding systems | one icon/label semantics across a product family: `../workflows/design-system.md` |
 | DFMA (design for manufacture) | fewer parts, reusable primitives, maintainable assets: `svg-and-vector-graphics.md` section 12 |
+| Systems engineering (V-model) | every design rule names its verification method, automated or review: `design-engineering-language.md` section 1 (Validation row) |
+| Type systems | design tokens are typed and invalid combinations rejected before generation: `design-engineering-language.md` section 3, stage 2 |
+| Information theory (signal vs noise) | the main message decodes first and decoration never competes with meaning: `perception-and-attention.md` section 1 (processing fluency) |
+| Control-room human factors | fixed status semantics, ranked alarms, predictable placement: the aerospace row above and the dashboard worked example |
+| Error-correcting codes | critical meaning carried by more than one visual channel, never colour alone, so it survives imperfect viewing: accessibility floor in `design-principles.md` |
+| Genetic encoding | each style is a small set of defining traits (its grammar) recombined with controlled variation without losing identity: `design-engineering-language.md` section 6 and `style-catalogue.md` |
 
-Genetic encoding (styles as recombinable traits), swarm/reaction-diffusion patterning, Voronoi and fractal geometry are available as generative techniques when a brief calls for them; they are construction tools, never a substitute for the problem-first loop.
+## Generative geometry toolbox
+
+Phyllotaxis spirals, Voronoi partitions, reaction-diffusion textures, Fourier and harmonic curve composition, fractal recursion, swarm rules and crystallographic symmetry groups are construction techniques: patterns, layouts and organic form reproducible from parameters rather than hand-drawn each time. Reach for one when a brief calls for generative, organic or precisely repeating graphics (built per `svg-and-vector-graphics.md`), never as a substitute for the problem-first loop. Biomimicry in the strict sense, adapting the organism's mechanism rather than its appearance, is this file's fundamental rule applied to natural sources.
+
+## Exploratory fields (directions, not rules)
+
+These fields look promising but carry no tested rule here yet. Treat each as a hypothesis: trial it inside the design loop, and promote it into a reference only after a run shows it earns its keep (the promotion rule in `../LESSONS.md`).
+
+| Field | Candidate contribution | Would plug into |
+|---|---|---|
+| Embryology | staged generation: structure settled before detail is grown | `../workflows/design-loop.md` |
+| Epigenetics | context-dependent variation that never changes a style's core identity | style grammar, `design-engineering-language.md` section 6 |
+| Attractor dynamics | compositions converging on consistent spacing and balance from varied content | `../workflows/design-loop.md` |
+| Bayesian inference | updating design decisions as new constraints and feedback arrive | the decide step of `../workflows/design-loop.md` |
+| Cell membrane theory | components expose controlled interfaces, never arbitrary internals | `../workflows/design-system.md` |
+| Mycelial networks | shared reusable primitives without a rigid hierarchy | `../workflows/design-system.md` |
+| Japanese joinery | components that fit through shared dimensions rather than external fasteners | tolerance rules, `design-engineering-language.md` section 5 |
+| Topology | structural relationships preserved when shapes deform or scale | parametric rules in `svg-and-vector-graphics.md` |
+| Origami mathematics | complex form from constrained geometric transformations | the generative toolbox above |
+| Acoustic engineering | frequency separation as an analogy for separating competing visual signals | `perception-and-attention.md` |
+| Ecology | diversity and compatibility managed across a large style library | `style-catalogue.md` |
+| Distributed systems | independent modules that evolve without breaking the whole library | `../workflows/design-system.md` |
+| Linguistic pragmatics | visual communication adapted to context, audience and intended meaning | step 1 of the transfer process above |
