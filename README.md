@@ -16,9 +16,9 @@ Genuine outputs of the skill's verification loop (source SVGs in `examples/svg/`
 
 ![Order-journey technical diagram](docs/assets/diagram-preview.png)
 
-![Icon family at 16/48/96px on light and dark](docs/assets/icon-preview.png)
+![Everyday icon family at 48 and 16px on light and dark](docs/assets/icon-preview.png)
 
-More real outputs, with their prompts and decision records: `docs/gallery.md`.
+More real outputs, with their prompts and decision records: `docs/gallery.md`. A one-page HTML overview of the whole project is at `docs/overview.html` (open it in a browser).
 
 ## Install
 

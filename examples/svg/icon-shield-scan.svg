@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="is-title" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <title id="is-title">Shield scan</title>
-  <!-- 24px grid, 2px stroke, round caps; inherits colour from context via currentColor -->
-  <path d="M12 3 L19 6 V11 C19 15.5 16.2 19.2 12 21 C7.8 19.2 5 15.5 5 11 V6 Z"/>
-  <!-- scan line with magnifier, optical centre slightly high -->
-  <circle cx="11" cy="10.5" r="3"/>
-  <path d="M13.2 12.7 L15.5 15"/>
-</svg>

@@ -13,6 +13,6 @@ Everything here was actually produced by an agent running this skill, with the e
 | SVG audit of a defective status board (16 confirmed defects, verified fixes) | Before-and-after critique | `../evaluation/runs/treatment/task-6/` + `../evaluation/fixtures/defective-status-board.svg` | protocol task 6; planted-defect key in `../evaluation/fixtures/defect-key.md` |
 | Northbeam status page redesign (intent preserved, AA verified) | Design evolution | `../evaluation/runs/treatment/task-7/improved.html` | protocol task 7; original fixture alongside |
 | Private-bank wealth dashboard style recommendation | Cross-disciplinary style decision | `../evaluation/runs/treatment/task-8/recommendation.md` | protocol task 8 |
-| Attack-surface diagram, icon set, Art Deco study, lighthouse illustration, critique pair | Built-in verified SVG examples | `../examples/svg/` | annotated in `../examples/svg/README.md` and `../examples/svg/critique-notes.md` |
+| Order-journey diagram, everyday icon family, Art Deco study, lighthouse illustration, critique pair | Built-in verified SVG examples | `../examples/svg/` | annotated in `../examples/svg/README.md` and `../examples/svg/critique-notes.md` |
 
 The matching control outputs (same prompts, skill not invoked) are kept under `../evaluation/runs/control/` so every comparison can be reproduced and re-judged.

@@ -6,7 +6,7 @@ Five example sets demonstrating the standards in `../../references/svg-and-vecto
 |---|---|
 | `illustration-lighthouse.svg` | Clean flat vector illustration: limited palette, focal hierarchy, layered composition, reusable gradient, title/desc accessibility. |
 | `diagram-order-journey.svg` | General-audience technical diagram (an online order's journey) with connectors, arrow markers, `<symbol>`/`<use>` node reuse, grid pattern, zone layering, line-weight conventions, callouts encoded by colour + shape + label, legend and technical-manual title block. Neutral example data (Examplo Ltd). |
-| `icon-shield-scan.svg` | 24px-grid interface icon: 2px stroke discipline, round caps, `currentColor` theme adaptation, optical centring. |
+| `icon-family-everyday.svg` | General-audience icon family (search, clock, calendar, bag) on one 24px grid: 2px stroke discipline, round caps, `currentColor` theme adaptation, cross-glyph optical equalisation, verified as a row at 48 and 16px on light and dark. |
 | `composition-artdeco-sunburst.svg` | Distinctive style study (Art Deco): one ray defined, placed by rotation; symmetric ziggurat skyline; clipped frame; restrained two-colour palette. |
 | `critique-before.svg` / `critique-after.svg` / `critique-notes.md` | Full audit-and-correct workflow: 8 confirmed defects, fixes, and the findings write-up. |
 

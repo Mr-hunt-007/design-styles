@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 96" role="img" aria-labelledby="ev-title ev-desc" style="color:#1c2733">
+  <title id="ev-title">Everyday icon family</title>
+  <desc id="ev-desc">Four general-audience interface icons on one 24px grid: search, clock, calendar and shopping bag. One 2px stroke, round caps, currentColor theming, optically equalised as a row (circular glyphs drawn slightly larger than rectangular ones so they read the same size).</desc>
+
+  <defs>
+    <symbol id="ev-search" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10.5" cy="10.5" r="5.75"/>
+        <path d="M14.9 14.9 L20 20"/>
+      </g>
+    </symbol>
+    <symbol id="ev-clock" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.25"/>
+        <path d="M12 7.6 V12 L15.1 13.9"/>
+      </g>
+    </symbol>
+    <symbol id="ev-calendar" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.75" y="5" width="16.5" height="15" rx="2"/>
+        <path d="M3.75 9.75 H20.25"/>
+        <path d="M8.25 3 V7"/>
+        <path d="M15.75 3 V7"/>
+      </g>
+    </symbol>
+    <symbol id="ev-bag" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.3 8.4 h11.4 l1 10.1 a1.9 1.9 0 0 1 -1.9 2.1 H7.2 a1.9 1.9 0 0 1 -1.9 -2.1 z"/>
+        <path d="M9.1 11 V7.4 a2.9 2.9 0 0 1 5.8 0 V11"/>
+      </g>
+    </symbol>
+  </defs>
+
+  <!-- demo row at 48px; judge icon families as a row, never one glyph at a time -->
+  <use href="#ev-search" x="12" y="24" width="48" height="48"/>
+  <use href="#ev-clock" x="84" y="24" width="48" height="48"/>
+  <use href="#ev-calendar" x="156" y="24" width="48" height="48"/>
+  <use href="#ev-bag" x="228" y="24" width="48" height="48"/>
+</svg>
