@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="ds-title ds-desc">
+  <title id="ds-title">design-styles: design intelligence for AI coding agents</title>
+  <desc id="ds-desc">Typographic specimen banner. The project name design-styles is set bold across the full measure above the value proposition: Design intelligence for AI coding agents. Reason first. Render to verify. A red annotation layer marks the baseline and the 1152-unit measure.</desc>
+  <style>
+    .sans { font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif; }
+    .mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
+    .ink  { fill: #141412; }
+    .sub  { fill: #56544E; }
+    .red  { fill: #B3271E; }
+    .meta { font-size: 17px; font-weight: 500; letter-spacing: 0.14em; }
+  </style>
+
+  <!-- opaque paper ground -->
+  <rect x="0" y="0" width="1280" height="640" fill="#F4F3EF"/>
+
+  <!-- quarter-column grid, faint, full live height -->
+  <g stroke="#141412" stroke-opacity="0.07" stroke-width="1">
+    <line x1="352.5" y1="64" x2="352.5" y2="576"/>
+    <line x1="640.5" y1="64" x2="640.5" y2="576"/>
+    <line x1="928.5" y1="64" x2="928.5" y2="576"/>
+  </g>
+
+  <!-- top rule -->
+  <rect x="64" y="64" width="1152" height="4" fill="#141412"/>
+
+  <!-- top meta row -->
+  <text class="sans meta sub" x="64" y="106">64 STYLES &#183; 12 MODES &#183; 1 VERIFICATION LOOP</text>
+  <text class="sans meta sub" x="1216" y="106" text-anchor="end">BLIND-JUDGED VERDICT: PARTIALLY EFFECTIVE</text>
+
+  <!-- annotation layer: baseline hairline -->
+  <line x1="64" y1="356.5" x2="1216" y2="356.5" stroke="#B3271E" stroke-width="1"/>
+  <text class="mono red" x="1216" y="378" font-size="13" text-anchor="end">baseline</text>
+
+  <!-- hero wordmark, full measure -->
+  <!-- x/textLength overshoot the measure by the glyph side bearings so the INK aligns to 64/1216 -->
+  <text class="sans ink" x="59" y="356" font-size="178" font-weight="700" textLength="1162" lengthAdjust="spacingAndGlyphs">design-styles</text>
+
+  <!-- annotation layer: measured dimension of the setting -->
+  <g stroke="#B3271E" stroke-width="1">
+    <line x1="64.5" y1="428" x2="64.5" y2="444"/>
+    <line x1="1215.5" y1="428" x2="1215.5" y2="444"/>
+    <line x1="64" y1="436.5" x2="606" y2="436.5"/>
+    <line x1="674" y1="436.5" x2="1216" y2="436.5"/>
+  </g>
+  <text class="mono red" x="640" y="441" font-size="15" text-anchor="middle">1152</text>
+
+  <!-- value proposition -->
+  <text class="sans ink" x="64" y="496" font-size="44" font-weight="400">Design intelligence for AI coding agents.</text>
+  <text class="sans ink" x="64" y="552" font-size="44" font-weight="700">Reason first. Render to verify.</text>
+
+  <!-- bottom meta -->
+  <text class="sans meta sub" x="1216" y="552" text-anchor="end">1280 &#215; 640 &#183; SKILL.MD &#183; MIT</text>
+</svg>

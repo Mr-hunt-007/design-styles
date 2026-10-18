@@ -1,0 +1,6 @@
+t1-rep2: A=treatment B=control
+t1-rep3: A=control B=treatment
+t3-rep2: A=control B=treatment
+t3-rep3: A=treatment B=control
+t8-rep2: A=control B=treatment
+t8-rep3: A=treatment B=control

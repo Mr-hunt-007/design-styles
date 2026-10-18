@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360"
+     font-family="Arial, Helvetica, sans-serif" role="img" aria-labelledby="sb-title sb-desc">
+  <title id="sb-title">Northbeam Platform service status</title>
+  <desc id="sb-desc">Status board. API is operational, Dashboard has an outage, Jobs is degraded.
+    30-day uptime trend is shown as a line. Two open incidents: INC-4412 elevated error rate
+    on EU ingest, and INC-4415 delayed webhook delivery.</desc>
+
+  <defs>
+    <linearGradient id="sb-hdr" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2d3e50"/><stop offset="1" stop-color="#34495e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background and header -->
+  <rect width="640" height="360" fill="#f4f6f8"/>
+  <rect width="640" height="56" fill="url(#sb-hdr)"/>
+  <text x="24" y="36" font-size="20" fill="#ffffff">Northbeam Platform Service Status</text>
+
+  <!-- service cards: status shown by dot colour AND status word -->
+  <g id="sb-services">
+    <g id="sb-svc-api">
+      <rect x="24" y="84" width="180" height="70" rx="6" fill="#ffffff" stroke="#d5dbe1" stroke-width="1"/>
+      <circle cx="52" cy="112" r="9" fill="#1e8449"/>
+      <text x="72" y="110" font-size="13" fill="#2c3e50">API</text>
+      <text x="72" y="130" font-size="11" fill="#5d6d7e">Operational</text>
+    </g>
+    <g id="sb-svc-dashboard">
+      <rect x="230" y="84" width="180" height="70" rx="6" fill="#ffffff" stroke="#d5dbe1" stroke-width="1"/>
+      <circle cx="258" cy="112" r="9" fill="#c0392b"/>
+      <text x="278" y="110" font-size="13" fill="#2c3e50">Dashboard</text>
+      <text x="278" y="130" font-size="11" fill="#5d6d7e">Outage</text>
+    </g>
+    <g id="sb-svc-jobs">
+      <rect x="436" y="84" width="180" height="70" rx="6" fill="#ffffff" stroke="#d5dbe1" stroke-width="1"/>
+      <circle cx="464" cy="112" r="9" fill="#b9770e"/>
+      <text x="484" y="110" font-size="13" fill="#2c3e50">Jobs</text>
+      <text x="484" y="130" font-size="11" fill="#5d6d7e">Degraded</text>
+    </g>
+  </g>
+
+  <!-- uptime panel -->
+  <g id="sb-uptime">
+    <rect x="24" y="190" width="284" height="110" rx="6" fill="#ffffff" stroke="#d5dbe1" stroke-width="1"/>
+    <text x="36" y="214" font-size="14" fill="#2c3e50">Uptime, 30 days</text>
+    <polyline points="36,280 80,262 124,268 168,244 212,252 256,238 296,246"
+              fill="none" stroke="#2874a6" stroke-width="2"/>
+    <text x="296" y="234" font-size="11" fill="#5d6d7e" text-anchor="end">99.2%</text>
+  </g>
+
+  <!-- incidents panel -->
+  <g id="sb-incidents">
+    <rect x="332" y="190" width="284" height="110" rx="6" fill="#ffffff" stroke="#d5dbe1" stroke-width="1"/>
+    <text x="344" y="214" font-size="14" fill="#2c3e50">Open incidents</text>
+    <text x="344" y="240" font-size="12" fill="#566573">INC-4412 Elevated error rate on EU ingest</text>
+    <text x="344" y="260" font-size="12" fill="#566573">INC-4415 Delayed webhook delivery</text>
+  </g>
+
+  <!-- legend: swatches labelled, same vocabulary as the cards -->
+  <g id="sb-legend" font-size="11">
+    <text x="24" y="340" fill="#5d6d7e">Legend:</text>
+    <circle cx="86" cy="336" r="6" fill="#1e8449"/>
+    <text x="98" y="340" fill="#5d6d7e">Operational</text>
+    <circle cx="180" cy="336" r="6" fill="#b9770e"/>
+    <text x="192" y="340" fill="#5d6d7e">Degraded</text>
+    <circle cx="262" cy="336" r="6" fill="#c0392b"/>
+    <text x="274" y="340" fill="#5d6d7e">Outage</text>
+  </g>
+</svg>

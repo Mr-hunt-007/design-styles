@@ -1,0 +1,12 @@
+# Design decisions — SOC triage dashboard (control)
+
+1. Layout mirrors the analyst's question order: fleet health (40-client rail with severity micro-bars), severity ledger (count tiles that double as queue filters), 24h stacked hourly trend, triage queue, and a detail panel giving asset + client context per alert. One continuous dark surface with hairline rules, not a card kit.
+2. Dark theme: cool graphite (#0e1014 page / #15181d panels), deliberately avoiding the neon-on-black SOC cliche. The only saturated color is severity; interface accent reuses the low-severity blue.
+3. Severity palette (#6e93e6 low / #ead34a medium / #f0922e high / #d23636 critical) was machine-validated with the dataviz skill's validator against the actual surface: CVD separation, normal-vision separation (adjacent pairs >= 15 dE), chroma, and 3:1 contrast all pass; the lightness-band check is intentionally waived because lightness tracks severity order (status scale, not categorical series).
+4. Severity never rides on color alone: each level carries a fixed shape glyph (octagon/triangle/diamond/circle) plus a text label in tiles, legend, rows, badges, and the roster.
+5. Chart follows the skill's mark specs: thin stacked bars with 2px surface gaps between segments, recessive grid, one selective direct label (the spike), hover tooltip with per-severity counts, and a "View as table" fallback.
+6. Placeholder data is seeded/deterministic and tells one story (a credential-stuffing cluster at Saltmarsh Bank ~5h ago) so hierarchy judgments can be made on realistic shape; client names are fictional.
+7. Vanilla JS interactions: severity-tile and client filters, search, three sort orders, row selection -> detail with working triage actions (Acknowledge/Escalate/Close mutate state), related-alert pivoting, SLA countdown/breach coloring.
+8. Monospace is reserved for machine data (timestamps, hosts, IDs, counts); UI text stays in the system sans, sentence case, no all-caps eyebrows, no em dashes.
+
+Verification performed: rendered via headless Chrome at 1680, 1100, and 390px and visually inspected screenshots; scripted click-through (filter tiles, row select, Acknowledge, Close, search, clear filters, client filter) ran with zero console errors. This caught and fixed three real bugs: a CSS display rule defeating [hidden] on the detail panel, phone-width overflow from the nowrap table, and SVG text distortion from preserveAspectRatio=none. Not verified: real screen-reader pass, Windows/Linux font rendering, and print.

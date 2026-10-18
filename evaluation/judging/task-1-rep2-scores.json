@@ -1,0 +1,43 @@
+{
+  "task": "1-rep2",
+  "scores": {
+    "A": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4.5,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4.5
+    },
+    "B": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4,
+      "usability_accessibility": 2.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4.5
+    }
+  },
+  "defects": {
+    "A": [
+      "Headline counts are padded with hardcoded constants ('Open alerts' = queue+61, 'HIGH OPEN' = queue+16, lines 717-719): the band claims 81 open / 23 high while the queue holds 22, so clicking a fleet cell labelled 'EXM 11' returns only ~3 rows - visible count/filter inconsistency, even though a code comment declares the queue 'a sample'",
+      "Alert volume chart occupies the prime slot above the triage queue, pushing the queue's first row roughly a third down the page at 1600x1000",
+      "Large empty region under the 22-row queue on tall viewports (small sample dataset does not fill the primary panel)"
+    ],
+    "B": [
+      "Medium severity pill renders as 'MEDI' (sev.slice(0,4)) - sloppy truncation repeated on every medium row",
+      "Accessibility is thin: one aria attribute in the whole file, KPI filters are clickable divs (not buttons), queue rows are click-only and not keyboard focusable, no visible focus styling or prefers-reduced-motion handling",
+      "KPI deltas ('3 last hour' etc.) are hardcoded strings, not computed from the data they sit beside",
+      "Client load panel is clipped at the 1600x1000 fold (below-fold content, minor)"
+    ]
+  },
+  "better_overall": "A",
+  "confidence": "medium",
+  "notes": "Both are genuinely strong, functional SOC consoles: smoke tests confirmed working severity filters, search, cross-filters and state-mutating actions in each, with zero external dependencies. B wins on queue primacy (70% width, 87 reconciling rows) and internal data consistency, and its SLA-per-row and client-load cross-filter are sharp. A wins on the brief's 40-tenant dimension (all 40 visible as a filtering heat grid with hatched NO-DATA cells, 'unknown is not clean'), and decisively on usability/accessibility: keyboard-navigable rows, real buttons, aria labelling, focus rings and reduced-motion, where B is mouse-only. A's padded headline counts are its one real correctness blemish; B's mouse-only operation is the larger failure for a tool an analyst lives in all shift."
+}

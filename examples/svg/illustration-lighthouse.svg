@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-labelledby="lh-title lh-desc">
+  <title id="lh-title">Lighthouse at dusk</title>
+  <desc id="lh-desc">A minimal flat illustration of a striped lighthouse on a rocky headland, with a beam of light over a calm sea and a low sun.</desc>
+  <defs>
+    <linearGradient id="lh-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f3a5f"/>
+      <stop offset="1" stop-color="#5a7ea6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- sky -->
+  <rect x="0" y="0" width="480" height="240" fill="url(#lh-sky)"/>
+  <!-- low sun -->
+  <circle cx="368" cy="196" r="34" fill="#f2c14e"/>
+  <!-- sea -->
+  <rect x="0" y="240" width="480" height="120" fill="#16314f"/>
+  <g stroke="#2d4d74" stroke-width="3" stroke-linecap="round">
+    <line x1="36" y1="276" x2="118" y2="276"/>
+    <line x1="300" y1="296" x2="396" y2="296"/>
+    <line x1="150" y1="322" x2="238" y2="322"/>
+  </g>
+
+  <!-- light beam, behind the tower -->
+  <polygon points="150,96 480,44 480,118" fill="#f2c14e" opacity="0.28"/>
+
+  <!-- headland -->
+  <path d="M0 360 L0 300 Q60 272 120 284 L210 284 Q250 292 264 318 L286 360 Z" fill="#0d1f33"/>
+
+  <!-- lighthouse -->
+  <g>
+    <path d="M128 130 L172 130 L164 268 L136 268 Z" fill="#e8e3da"/>
+    <path d="M131 152 L169 152 L167 182 L133 182 Z" fill="#c0392b"/>
+    <path d="M135 212 L165 212 L163 242 L137 242 Z" fill="#c0392b"/>
+    <!-- gallery and lamp room -->
+    <rect x="124" y="118" width="52" height="8" rx="3" fill="#2c3e50"/>
+    <rect x="136" y="92" width="28" height="26" fill="#2c3e50"/>
+    <rect x="141" y="97" width="18" height="16" fill="#f2c14e"/>
+    <path d="M132 92 L150 76 L168 92 Z" fill="#c0392b"/>
+    <!-- base -->
+    <rect x="126" y="268" width="48" height="18" rx="2" fill="#2c3e50"/>
+  </g>
+</svg>

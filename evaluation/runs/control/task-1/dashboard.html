@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Argus Triage</title>
+<style>
+  :root {
+    color-scheme: dark;
+    /* surfaces */
+    --page: #0e1014;
+    --panel: #15181d;
+    --raised: #1b202a;
+    --hover: #202633;
+    --hairline: rgba(164, 182, 218, 0.11);
+    --hairline-strong: rgba(164, 182, 218, 0.20);
+    /* ink */
+    --ink: #e7eaf0;
+    --ink-2: #9aa3b2;
+    --ink-3: #646d7d;
+    /* severity marks (validated on #15181d: CVD, normal-vision, contrast all pass) */
+    --sev-low: #6e93e6;
+    --sev-med: #ead34a;
+    --sev-high: #f0922e;
+    --sev-crit: #d23636;
+    /* severity small-text inks (lifted for 4.5:1 body-text contrast) */
+    --sev-low-ink: #8fadf0;
+    --sev-med-ink: #ead34a;
+    --sev-high-ink: #f29e44;
+    --sev-crit-ink: #ef7466;
+    /* interactive */
+    --accent: #6e93e6;
+    --good: #45b06c;
+    --grid: rgba(164, 182, 218, 0.08);
+    --font-ui: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 400 13.5px/1.45 var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    display: grid;
+    grid-template-rows: 54px 1fr;
+    grid-template-columns: 268px minmax(0, 1fr) 342px;
+    grid-template-areas: "hd hd hd" "rail main detail";
+    height: 100vh;
+  }
+
+  /* ---------- header ---------- */
+  .hd {
+    grid-area: hd;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--panel);
+  }
+  .wordmark {
+    display: flex; align-items: baseline; gap: 9px;
+    font-size: 15px; font-weight: 650; letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .wordmark .scope { color: var(--ink-3); font-weight: 450; font-size: 12.5px; }
+  .hd .divider { width: 1px; height: 22px; background: var(--hairline); }
+  .shiftline { display: flex; align-items: center; gap: 14px; color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+  .shiftline .clock { font-family: var(--font-mono); color: var(--ink); font-size: 13px; }
+  .ingest { display: flex; align-items: center; gap: 7px; }
+  .ingest .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+  .ingest .dot.warn { background: var(--sev-med); }
+  .hd-search { margin-left: auto; position: relative; width: min(320px, 28vw); }
+  .hd-search input {
+    width: 100%;
+    background: var(--page);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    color: var(--ink);
+    font: 400 13px var(--font-ui);
+    padding: 7px 10px 7px 30px;
+  }
+  .hd-search input::placeholder { color: var(--ink-3); }
+  .hd-search svg { position: absolute; left: 9px; top: 8px; color: var(--ink-3); }
+  .analyst { display: flex; align-items: center; gap: 9px; color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+  .analyst .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--raised); border: 1px solid var(--hairline-strong);
+    display: grid; place-items: center;
+    font-size: 10.5px; font-weight: 600; color: var(--ink);
+  }
+
+  /* ---------- client rail ---------- */
+  .rail {
+    grid-area: rail;
+    border-right: 1px solid var(--hairline);
+    background: var(--panel);
+    display: flex; flex-direction: column;
+    min-height: 0;
+  }
+  .rail-head {
+    padding: 14px 16px 10px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .rail-head h2 { margin: 0; font-size: 13px; font-weight: 600; }
+  .rail-head .n { color: var(--ink-3); font-size: 12px; font-family: var(--font-mono); }
+  .rail-sort {
+    display: flex; gap: 2px; padding: 0 12px 10px;
+  }
+  .rail-sort button {
+    background: none; border: 0; color: var(--ink-3);
+    font: 500 11.5px var(--font-ui);
+    padding: 4px 8px; border-radius: 5px; cursor: pointer;
+  }
+  .rail-sort button[aria-pressed="true"] { color: var(--ink); background: var(--raised); }
+  .roster { overflow-y: auto; flex: 1; padding: 2px 8px 14px; min-height: 0; }
+  .org {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "name count" "bar bar";
+    row-gap: 6px;
+    padding: 8px 8px 9px;
+    border: 0; border-radius: 7px;
+    background: none; color: inherit; text-align: left;
+    font: inherit; cursor: pointer;
+  }
+  .org:hover { background: var(--hover); }
+  .org[aria-pressed="true"] { background: var(--raised); box-shadow: inset 0 0 0 1px var(--hairline-strong); }
+  .org .name {
+    grid-area: name;
+    font-size: 12.5px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 6px; min-width: 0;
+  }
+  .org .name .critflag { flex: none; }
+  .org .count { grid-area: count; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+  .org .bar { grid-area: bar; display: flex; gap: 2px; height: 4px; }
+  .org .bar i { border-radius: 2px; min-width: 3px; }
+  .org .bar .quiet { background: var(--raised); flex: 1; }
+
+  /* ---------- main column ---------- */
+  .main {
+    grid-area: main;
+    overflow-y: auto;
+    min-width: 0; min-height: 0;
+    display: flex; flex-direction: column;
+  }
+
+  /* severity ledger */
+  .ledger {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .tile {
+    background: none; border: 0; border-right: 1px solid var(--hairline);
+    padding: 14px 16px 12px;
+    text-align: left; color: inherit; font: inherit; cursor: pointer;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .tile:last-child { border-right: 0; }
+  .tile:hover { background: var(--hover); }
+  .tile[aria-pressed="true"] { background: var(--raised); box-shadow: inset 0 -2px 0 var(--sevc, var(--accent)); }
+  .tile .lab { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-2); font-weight: 500; }
+  .tile .val { font-size: 23px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .tile .delta { font-size: 11.5px; color: var(--ink-3); }
+  .tile .delta b { color: var(--ink-2); font-weight: 600; }
+  .tile.sla .val { color: var(--sev-crit-ink); }
+
+  /* severity glyphs */
+  .sg { flex: none; display: inline-block; }
+
+  /* trend */
+  .trend { padding: 16px 18px 6px; border-bottom: 1px solid var(--hairline); }
+  .trend-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .trend-head h2 { margin: 0; font-size: 13.5px; font-weight: 600; }
+  .trend-head .sub { color: var(--ink-3); font-size: 12px; }
+  .legend { display: flex; gap: 14px; margin-left: auto; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-2); }
+  .chart-wrap { position: relative; margin-top: 10px; overflow-x: auto; }
+  .chart-wrap svg { display: block; height: 168px; }
+  .viz-tip {
+    position: absolute; pointer-events: none;
+    background: #232a37; border: 1px solid var(--hairline-strong);
+    border-radius: 7px; padding: 8px 10px;
+    font-size: 11.5px; min-width: 128px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+    display: none; z-index: 5;
+  }
+  .viz-tip .t { font-family: var(--font-mono); color: var(--ink-3); margin-bottom: 5px; }
+  .viz-tip .r { display: flex; align-items: center; gap: 6px; justify-content: space-between; margin-top: 2px; }
+  .viz-tip .r .k { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+  .viz-tip .r .v { font-family: var(--font-mono); color: var(--ink); }
+  .trend details { margin: 4px 0 8px; }
+  .trend summary { font-size: 11.5px; color: var(--ink-3); cursor: pointer; width: max-content; }
+  .trend summary:hover { color: var(--ink-2); }
+  .hourly-table { border-collapse: collapse; margin-top: 8px; font-size: 11.5px; }
+  .hourly-table th, .hourly-table td {
+    border: 1px solid var(--hairline); padding: 3px 8px;
+    font-family: var(--font-mono); font-weight: 400; color: var(--ink-2);
+  }
+  .hourly-table th { color: var(--ink); }
+
+  /* queue */
+  .queue { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .queue-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 18px 11px; flex-wrap: wrap;
+  }
+  .queue-head h2 { margin: 0; font-size: 13.5px; font-weight: 600; }
+  .queue-head .n { color: var(--ink-3); font-size: 12px; font-family: var(--font-mono); }
+  .filter-note {
+    display: none; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--ink-2);
+    background: var(--raised); border-radius: 6px; padding: 3px 6px 3px 10px;
+  }
+  .filter-note.on { display: inline-flex; }
+  .filter-note button {
+    background: none; border: 0; color: var(--ink-3); cursor: pointer;
+    font-size: 14px; line-height: 1; padding: 3px 5px; border-radius: 4px;
+  }
+  .filter-note button:hover { color: var(--ink); background: var(--hover); }
+  .queue-sort { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+  .queue-sort select {
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--hairline); border-radius: 6px;
+    font: 400 12.5px var(--font-ui); padding: 4px 8px;
+  }
+
+  table.q { width: 100%; border-collapse: collapse; }
+  .q thead th {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--page);
+    text-align: left; font-size: 11.5px; font-weight: 500; color: var(--ink-3);
+    padding: 7px 10px; border-bottom: 1px solid var(--hairline);
+    white-space: nowrap;
+  }
+  .q thead th:first-child, .q td:first-child { padding-left: 18px; }
+  .q thead th:last-child, .q td:last-child { padding-right: 18px; }
+  .q tbody tr {
+    border-bottom: 1px solid var(--grid);
+    cursor: pointer;
+  }
+  .q tbody tr:hover { background: var(--hover); }
+  .q tbody tr[aria-selected="true"] {
+    background: var(--raised);
+    box-shadow: inset 2px 0 0 var(--rowsev, var(--accent));
+  }
+  .q td { padding: 8px 10px; vertical-align: top; }
+  .sev-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; white-space: nowrap;
+  }
+  .q .when { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); white-space: nowrap; }
+  .q .client { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+  .q .rule { font-weight: 500; font-size: 12.5px; }
+  .q .tech { color: var(--ink-3); font-size: 11px; font-family: var(--font-mono); margin-top: 1px; }
+  .q .asset { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); white-space: nowrap; }
+  .q .status { font-size: 11.5px; color: var(--ink-2); white-space: nowrap; }
+  .q .status.is-new { color: var(--ink); font-weight: 600; }
+  .q .sla { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+  .q .sla.breach { color: var(--sev-crit-ink); font-weight: 600; }
+  .q .sla.soon { color: var(--sev-high-ink); }
+  .empty {
+    padding: 44px 18px; text-align: center; color: var(--ink-3); font-size: 13px;
+  }
+  .empty button {
+    margin-top: 10px; background: var(--raised); color: var(--ink);
+    border: 1px solid var(--hairline-strong); border-radius: 6px;
+    font: 500 12.5px var(--font-ui); padding: 6px 12px; cursor: pointer;
+  }
+
+  /* ---------- detail panel ---------- */
+  .detail {
+    grid-area: detail;
+    border-left: 1px solid var(--hairline);
+    background: var(--panel);
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .detail-empty {
+    height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    color: var(--ink-3); font-size: 12.5px; padding: 24px; text-align: center;
+  }
+  .d-head { padding: 16px 18px 14px; border-bottom: 1px solid var(--hairline); }
+  .d-head .id-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .d-head .aid { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+  .d-close {
+    display: none; background: none; border: 0; color: var(--ink-3);
+    font-size: 17px; cursor: pointer; padding: 2px 6px; border-radius: 5px;
+  }
+  .d-head h2 { margin: 8px 0 4px; font-size: 15px; font-weight: 650; line-height: 1.3; letter-spacing: -0.01em; }
+  .d-head .meta { color: var(--ink-2); font-size: 12px; }
+  .d-head .meta .mono { font-family: var(--font-mono); font-size: 11.5px; }
+  .actions { display: flex; gap: 8px; padding: 12px 18px; border-bottom: 1px solid var(--hairline); }
+  .actions button {
+    flex: 1; background: var(--raised); color: var(--ink);
+    border: 1px solid var(--hairline-strong); border-radius: 6px;
+    font: 500 12.5px var(--font-ui); padding: 7px 0; cursor: pointer;
+  }
+  .actions button:hover { background: var(--hover); }
+  .actions button.primary { background: #2c3c5e; border-color: #3d5484; }
+  .actions button.primary:hover { background: #33466e; }
+  .d-sec { padding: 14px 18px; border-bottom: 1px solid var(--hairline); }
+  .d-sec h3 { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .kv { display: grid; grid-template-columns: 110px 1fr; row-gap: 7px; font-size: 12.5px; }
+  .kv dt { color: var(--ink-3); }
+  .kv dd { margin: 0; }
+  .kv dd.mono { font-family: var(--font-mono); font-size: 12px; }
+  .crit-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 600; color: var(--sev-crit-ink);
+  }
+  .exp-chip { font-size: 11.5px; color: var(--sev-high-ink); font-weight: 600; }
+  .ok-chip { font-size: 11.5px; color: var(--good); font-weight: 600; }
+  .related { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .related button {
+    width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center;
+    background: none; border: 0; border-radius: 6px;
+    color: inherit; font: inherit; text-align: left;
+    padding: 6px 8px; margin: 0 -8px; cursor: pointer;
+  }
+  .related button:hover { background: var(--hover); }
+  .related .r-rule { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .related .r-when { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+  .d-note { padding: 12px 18px 20px; color: var(--ink-3); font-size: 11.5px; }
+
+  /* focus */
+  :where(button, input, select, summary, tr[tabindex]):focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 4px;
+  }
+
+  /* toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+    background: #232a37; border: 1px solid var(--hairline-strong);
+    border-radius: 8px; padding: 9px 16px; font-size: 12.5px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+    opacity: 0; pointer-events: none; transition: opacity 160ms ease;
+    z-index: 30;
+  }
+  .toast.on { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1240px) {
+    .app { grid-template-columns: 240px minmax(0,1fr); grid-template-areas: "hd hd" "rail main"; }
+    .detail {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 94vw);
+      box-shadow: -18px 0 48px rgba(0,0,0,0.55);
+      transform: translateX(102%); transition: transform 180ms ease;
+      z-index: 20;
+    }
+    .detail.open { transform: translateX(0); }
+    .d-close { display: block; }
+    .analyst .aname { display: none; }
+  }
+  @media (max-width: 860px) {
+    .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "hd" "rail" "main"; }
+    .rail { border-right: 0; border-bottom: 1px solid var(--hairline); }
+    .roster { display: flex; gap: 4px; overflow-x: auto; overflow-y: hidden; padding: 2px 10px 12px; }
+    .org { min-width: 168px; }
+    .rail-sort { display: none; }
+    .ledger { grid-template-columns: repeat(2, 1fr) !important; }
+    .tile { border-bottom: 1px solid var(--hairline); }
+    .shiftline .shiftname, .hd .divider, .ingest, .analyst { display: none; }
+    .hd { gap: 10px; padding: 0 12px; }
+    .hd-search { width: 150px; }
+    .q .asset-col, .q .tech,
+    .q th:nth-child(6), .q td:nth-child(6) { display: none; }
+    .q .rule { font-size: 12px; }
+    .q .client { max-width: 86px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hd">
+    <div class="wordmark">Argus <span class="scope">· SOC operations</span></div>
+    <div class="divider" aria-hidden="true"></div>
+    <div class="shiftline">
+      <span class="shiftname">Night shift · desk 2 of 3</span>
+      <span class="clock" id="clock">--:--:-- UTC</span>
+      <span class="ingest" title="Telemetry ingest health across 40 tenants">
+        <span class="dot"></span> ingest nominal · 38/40
+      </span>
+    </div>
+    <div class="hd-search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+      <input id="search" type="search" placeholder="Search alerts, assets, clients…" aria-label="Search alerts, assets, and clients">
+    </div>
+    <div class="analyst"><span class="avatar">DP</span><span class="aname">D. Prakash · tier 1</span></div>
+  </header>
+
+  <nav class="rail" aria-label="Client organisations">
+    <div class="rail-head">
+      <h2>Clients</h2>
+      <span class="n" id="rail-count"></span>
+    </div>
+    <div class="rail-sort" role="group" aria-label="Sort clients">
+      <button aria-pressed="true" data-rsort="sev">Hottest first</button>
+      <button aria-pressed="false" data-rsort="az">A–Z</button>
+    </div>
+    <div class="roster" id="roster"></div>
+  </nav>
+
+  <main class="main">
+    <section class="ledger" id="ledger" aria-label="Open alerts by severity. Click a tile to filter the queue."></section>
+
+    <section class="trend" aria-label="Alert volume, last 24 hours">
+      <div class="trend-head">
+        <h2>Alert volume · last 24 h</h2>
+        <span class="sub" id="trend-sub"></span>
+        <div class="legend" id="legend" aria-hidden="true"></div>
+      </div>
+      <div class="chart-wrap" id="chart-wrap">
+        <svg id="trend-svg" role="img" aria-label="Stacked hourly bar chart of alerts by severity over the last 24 hours. A data table follows."></svg>
+        <div class="viz-tip" id="viz-tip"></div>
+      </div>
+      <details>
+        <summary>View as table</summary>
+        <table class="hourly-table" id="hourly-table"></table>
+      </details>
+    </section>
+
+    <section class="queue" aria-label="Triage queue">
+      <div class="queue-head">
+        <h2>Triage queue</h2>
+        <span class="n" id="queue-count"></span>
+        <span class="filter-note" id="filter-note">
+          <span id="filter-text"></span>
+          <button id="filter-clear" aria-label="Clear filters">×</button>
+        </span>
+        <label class="queue-sort">Sort
+          <select id="qsort">
+            <option value="sev">Severity, then newest</option>
+            <option value="new">Newest first</option>
+            <option value="sla">SLA risk</option>
+          </select>
+        </label>
+      </div>
+      <table class="q">
+        <thead>
+          <tr>
+            <th scope="col">Severity</th>
+            <th scope="col">Age</th>
+            <th scope="col">Client</th>
+            <th scope="col">Alert</th>
+            <th scope="col" class="asset-col">Asset</th>
+            <th scope="col">Status</th>
+            <th scope="col">SLA</th>
+          </tr>
+        </thead>
+        <tbody id="qbody"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>
+        Nothing matches the current filters.
+        <br><button id="empty-clear">Clear filters</button>
+      </div>
+    </section>
+  </main>
+
+  <aside class="detail" id="detail" aria-label="Alert detail">
+    <div class="detail-empty" id="detail-empty">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6l-8-3Z"/></svg>
+      Select an alert to see its asset<br>and client context here.
+    </div>
+    <div id="detail-body" hidden></div>
+  </aside>
+
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+/* ---------------- placeholder data (deterministic) ---------------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(20261018);
+const pick = (arr) => arr[Math.floor(rnd()*arr.length)];
+const ri = (lo, hi) => lo + Math.floor(rnd()*(hi-lo+1));
+
+const NOW = Date.now();
+
+const SEV = {
+  critical: { label: "Critical", color: "var(--sev-crit)", ink: "var(--sev-crit-ink)", hex: "#d23636", glyph: "octagon", slaMin: 30 },
+  high:     { label: "High",     color: "var(--sev-high)", ink: "var(--sev-high-ink)", hex: "#f0922e", glyph: "triangle", slaMin: 120 },
+  medium:   { label: "Medium",   color: "var(--sev-med)",  ink: "var(--sev-med-ink)",  hex: "#ead34a", glyph: "diamond", slaMin: 480 },
+  low:      { label: "Low",      color: "var(--sev-low)",  ink: "var(--sev-low-ink)",  hex: "#6e93e6", glyph: "circle",  slaMin: 1440 }
+};
+const SEV_ORDER = ["critical", "high", "medium", "low"];
+
+/* severity glyph = secondary encoding so severity never rides on color alone */
+function glyph(sev, size = 10) {
+  const c = SEV[sev].color, s = size;
+  const shapes = {
+    octagon: `<polygon points="3.1,0 6.9,0 10,3.1 10,6.9 6.9,10 3.1,10 0,6.9 0,3.1" fill="${c}"/>`,
+    triangle: `<polygon points="5,0.5 10,9.5 0,9.5" fill="${c}"/>`,
+    diamond: `<polygon points="5,0 10,5 5,10 0,5" fill="${c}"/>`,
+    circle: `<circle cx="5" cy="5" r="4.6" fill="${c}"/>`
+  };
+  return `<svg class="sg" width="${s}" height="${s}" viewBox="0 0 10 10" aria-hidden="true">${shapes[SEV[sev].glyph]}</svg>`;
+}
+
+const CLIENTS = [
+  "Saltmarsh Bank","Meridian Logistics","Asterbloom Health","Cobalt Mutual","Ferrous & Vane",
+  "Quillon Energy","Peridot Retail","Novagrid Utilities","Harbinger Media","Tallow & Co",
+  "Bluecrest Insurance","Ossian Pharma","Veldt Mining","Carthage Freight","Lumen Civic",
+  "Pinemont Credit","Ravelin Defense","Soma Textiles","Kestrel Airways","Dray & Porter",
+  "Ninefold Gaming","Alderwick Law","Brightwater Foods","Corvid Analytics","Dunmore Hotels",
+  "Eastgate Clinics","Fenwick Motors","Glasswing Travel","Hollis Capital","Ironbark Timber",
+  "Junction Rail","Kiln Ceramics","Larkspur Education","Mallow Cosmetics","Northquay Ports",
+  "Oriel Studios","Pallas Robotics","Quarry Stoneworks","Rushlight Power","Sablefin Seafood"
+].map((name, i) => {
+  const kw = [
+    [/Bank|Credit|Mutual|Capital|Insurance/, "Financial services"], [/Health|Clinic|Pharma/, "Healthcare"],
+    [/Defense/, "Defense"], [/Energy|Power|Utilities|Grid/, "Energy and utilities"],
+    [/Logistics|Freight|Rail|Ports|Airways|Porter/, "Transport and logistics"], [/Retail|Foods|Cosmetics|Seafood|Hotels|Travel/, "Consumer and retail"],
+    [/Media|Studios|Gaming|Analytics|Robotics/, "Technology and media"], [/Law|Education|Civic/, "Public and professional"]
+  ];
+  const hit = kw.find(([re]) => re.test(name));
+  return {
+    id: i, name,
+    industry: hit ? hit[1] : "Manufacturing",
+    code: name.replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase()
+  };
+});
+
+const RULES = [
+  ["Credential stuffing burst on customer portal", "T1110.004", ["critical","high"], "srv"],
+  ["Impossible-travel sign-in", "T1078", ["high","medium"], "idp"],
+  ["Encoded PowerShell execution", "T1059.001", ["high","medium"], "ep"],
+  ["Beaconing to rare external domain", "T1071.001", ["high","critical"], "ep"],
+  ["LSASS memory access by unsigned binary", "T1003.001", ["critical","high"], "ep"],
+  ["Kerberoasting attempt", "T1558.003", ["high"], "srv"],
+  ["EDR tamper attempt", "T1562.001", ["critical","high"], "ep"],
+  ["Ransomware canary file touched", "T1486", ["critical"], "srv"],
+  ["New admin added to domain controller", "T1098", ["critical","high"], "srv"],
+  ["Suspicious inbox forwarding rule", "T1114.003", ["medium"], "idp"],
+  ["Phishing URL clicked", "T1566.002", ["medium","low"], "ep"],
+  ["Brute force against VPN gateway", "T1110.001", ["medium","high"], "net"],
+  ["DNS tunneling pattern", "T1071.004", ["high","medium"], "net"],
+  ["Lateral movement over SMB", "T1021.002", ["high"], "srv"],
+  ["Data egress to personal cloud storage", "T1567.002", ["medium"], "ep"],
+  ["Malicious macro detonated in sandbox", "T1204.002", ["medium","low"], "ep"],
+  ["OAuth consent grant to unverified app", "T1528", ["medium","high"], "idp"],
+  ["Log source went silent", "—", ["low","medium"], "net"],
+  ["Outdated TLS on internet-facing service", "—", ["low"], "net"],
+  ["New service installed outside change window", "T1543.003", ["low","medium"], "srv"]
+];
+
+const OS_BY_KIND = { srv: ["Windows Server 2019","Windows Server 2022","RHEL 9"], ep: ["Windows 11 23H2","macOS 15.1","Windows 10 22H2"], net: ["FortiOS 7.4","PAN-OS 11","Ubuntu 22.04"], idp: ["Entra ID tenant","Okta tenant"] };
+const HOST_PREFIX = { srv: ["DC","SQL","FS","APP","WEB"], ep: ["LT","WS"], net: ["FW","VPN","SW"], idp: ["IDP","SSO"] };
+const OWNERS = ["R. Okafor","M. Lindqvist","J. Barros","A. Tanaka","S. Whitfield","K. Osei","L. Moreau","T. Agarwal","C. Byrne","N. Petrov"];
+const UNITS = ["Core infrastructure","Finance ops","Customer platform","Field operations","Corporate IT","Engineering","Claims processing"];
+const STATUSES = ["New","New","New","Acknowledged","Investigating","Escalated"];
+
+function makeAsset(client, kind) {
+  const pfx = pick(HOST_PREFIX[kind]);
+  const host = kind === "idp" ? `${client.code.toLowerCase()}-tenant` : `${client.code}-${pfx}-${String(ri(1,28)).padStart(2,"0")}`;
+  return {
+    host, kind,
+    ip: `10.${ri(8,250)}.${ri(0,250)}.${ri(2,250)}`,
+    os: pick(OS_BY_KIND[kind]),
+    owner: pick(OWNERS),
+    unit: pick(UNITS),
+    crit: kind === "srv" || kind === "idp" ? pick(["Crown jewel","High","High","Standard"]) : pick(["High","Standard","Standard"]),
+    exposed: kind === "net" || (kind === "srv" && rnd() < 0.3),
+    agent: rnd() < 0.92 ? "Healthy" : "Degraded",
+    lastSeen: ri(1, 18)
+  };
+}
+
+/* alert population: Saltmarsh Bank is tonight's story (credential-stuffing cluster) */
+const ALERTS = [];
+let seq = 4120;
+function addAlert(sev, clientIdx, ruleIdx, ageMin) {
+  const client = CLIENTS[clientIdx];
+  const rule = RULES[ruleIdx];
+  const a = {
+    id: "ALT-" + (seq++),
+    sev, client,
+    rule: rule[0], technique: rule[1],
+    asset: makeAsset(client, rule[3]),
+    ageMin,
+    status: sev === "critical" ? pick(["New","New","Acknowledged","Escalated"]) : pick(STATUSES),
+    slaLeft: SEV[sev].slaMin - ageMin + ri(-10, 25)
+  };
+  ALERTS.push(a);
+}
+/* the spike: Saltmarsh Bank, ~6h ago */
+for (let i = 0; i < 4; i++) addAlert("critical", 0, pick([0, 4, 6]), ri(285, 325));
+for (let i = 0; i < 7; i++) addAlert("high", 0, pick([0, 3, 11, 13]), ri(290, 360));
+addAlert("critical", 16, 7, 18);            // Ravelin Defense, fresh ransomware canary
+addAlert("critical", 2, 8, 95);             // Asterbloom Health, new DC admin
+addAlert("critical", 15, 4, 150);           // Pinemont Credit, LSASS
+for (let i = 0; i < 16; i++) addAlert("high", ri(1, 39), ri(1, 13), ri(5, 150));
+for (let i = 0; i < 41; i++) addAlert("medium", ri(0, 39), ri(9, 16), ri(10, 430));
+for (let i = 0; i < 57; i++) addAlert("low", ri(1, 39), ri(14, 19), ri(20, 900));
+
+/* 24h hourly series per severity (stack order low -> critical) */
+const HOURS = 24;
+const series = { low: [], medium: [], high: [], critical: [] };
+for (let h = 0; h < HOURS; h++) {
+  series.low.push(ri(8, 16));
+  series.medium.push(ri(5, 11));
+  series.high.push(ri(1, 4));
+  series.critical.push(rnd() < 0.28 ? 1 : 0);
+}
+const SPIKE = 18; // hours axis index of the 06:00 burst
+series.high[SPIKE] += 9; series.high[SPIKE+1] += 4;
+series.critical[SPIKE] += 4; series.critical[SPIKE+1] += 1;
+series.medium[SPIKE] += 3;
+
+/* ---------------- state ---------------- */
+const state = { sevFilter: new Set(), client: null, search: "", sort: "sev", selected: null, railSort: "sev" };
+
+/* ---------------- helpers ---------------- */
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+function fmtAge(min) {
+  if (min < 60) return min + "m";
+  if (min < 1440) return Math.floor(min/60) + "h " + String(min%60).padStart(2,"0") + "m";
+  return Math.floor(min/1440) + "d " + Math.floor((min%1440)/60) + "h";
+}
+function hourLabel(i) {
+  const d = new Date(NOW - (HOURS - 1 - i) * 3600e3);
+  return String(d.getUTCHours()).padStart(2, "0") + ":00";
+}
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toast._h);
+  toast._h = setTimeout(() => t.classList.remove("on"), 2200);
+}
+
+/* ---------------- clock ---------------- */
+function tick() {
+  const d = new Date();
+  $("#clock").textContent =
+    String(d.getUTCHours()).padStart(2,"0") + ":" +
+    String(d.getUTCMinutes()).padStart(2,"0") + ":" +
+    String(d.getUTCSeconds()).padStart(2,"0") + " UTC";
+}
+tick(); setInterval(tick, 1000);
+
+/* ---------------- severity ledger ---------------- */
+function renderLedger() {
+  const counts = {};
+  SEV_ORDER.forEach(s => counts[s] = ALERTS.filter(a => a.sev === s).length);
+  const breaches = ALERTS.filter(a => a.slaLeft < 0).length;
+  const deltas = { critical: "+5", high: "+14", medium: "−3", low: "+9" };
+  let html = SEV_ORDER.map(s => `
+    <button class="tile" data-sev="${s}" style="--sevc:${SEV[s].color}"
+      aria-pressed="${state.sevFilter.has(s)}">
+      <span class="lab">${glyph(s)} ${SEV[s].label}</span>
+      <span class="val">${counts[s]}</span>
+      <span class="delta"><b>${deltas[s]}</b> vs previous 24 h</span>
+    </button>`).join("");
+  html += `
+    <div class="tile sla" role="note">
+      <span class="lab">SLA breaches</span>
+      <span class="val">${breaches}</span>
+      <span class="delta">oldest ${fmtAge(Math.max(...ALERTS.filter(a => a.slaLeft < 0).map(a => -a.slaLeft)))} over</span>
+    </div>`;
+  $("#ledger").innerHTML = html;
+  $("#ledger").querySelectorAll(".tile[data-sev]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const s = btn.dataset.sev;
+      state.sevFilter.has(s) ? state.sevFilter.delete(s) : state.sevFilter.add(s);
+      renderLedger(); renderQueue();
+    });
+  });
+}
+
+/* ---------------- trend chart (SVG, stacked hourly bars) ---------------- */
+function renderChart() {
+  const svg = $("#trend-svg");
+  const wrap = $("#chart-wrap");
+  const W = Math.max(wrap.clientWidth || 920, 560), H = 168, padL = 30, padR = 6, padT = 14, padB = 20;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.width = W + "px";
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const totals = series.low.map((_, i) => SEV_ORDER.reduce((t, s) => t + series[s][i], 0));
+  const max = Math.ceil(Math.max(...totals) / 10) * 10;
+  const bw = iw / HOURS;
+  const barW = Math.min(bw - 5, 26);
+  let g = "";
+
+  /* gridlines + y ticks (recessive) */
+  for (let v = 0; v <= max; v += max / 2) {
+    const y = padT + ih - (v / max) * ih;
+    g += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${padL - 7}" y="${y + 3.5}" text-anchor="end" font-size="9.5" fill="var(--ink-3)" font-family="var(--font-mono)">${v}</text>`;
+  }
+
+  /* stacked bars, 2px surface gaps between segments, 4px rounded top anchored by squared lower corners */
+  const stackUp = ["low", "medium", "high", "critical"];
+  for (let i = 0; i < HOURS; i++) {
+    const x = padL + i * bw + (bw - barW) / 2;
+    let y = padT + ih;
+    let segs = "";
+    stackUp.forEach((s, si) => {
+      const v = series[s][i];
+      if (!v) return;
+      const hpx = Math.max((v / max) * ih - 2, 1.5); /* 2px gap carved from each segment */
+      y -= (v / max) * ih;
+      const top = si === stackUp.length - 1 || stackUp.slice(si + 1).every(s2 => !series[s2][i]);
+      const r = top ? 3 : 0;
+      segs += `<path d="M${x},${y + hpx} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + barW - r},${y} Q${x + barW},${y} ${x + barW},${y + r} L${x + barW},${y + hpx} Z" fill="${SEV[s].hex}"/>`;
+    });
+    g += `<g class="col" data-i="${i}">
+      <rect x="${padL + i * bw}" y="${padT}" width="${bw}" height="${ih}" fill="transparent"/>
+      ${segs}
+    </g>`;
+    if (i % 4 === 0 || i === HOURS - 1) {
+      g += `<text x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle" font-size="9.5" fill="var(--ink-3)" font-family="var(--font-mono)">${hourLabel(i)}</text>`;
+    }
+  }
+
+  /* selective direct label: the one hour that matters */
+  const px = padL + SPIKE * bw + bw / 2;
+  const py = padT + ih - (totals[SPIKE] / max) * ih;
+  g += `<text x="${px}" y="${py - 5}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--ink)">${totals[SPIKE]}</text>`;
+
+  svg.innerHTML = g;
+  $("#trend-sub").textContent = `${totals.reduce((a, b) => a + b, 0)} alerts · spike at ${hourLabel(SPIKE)} traced to Saltmarsh Bank`;
+  $("#legend").innerHTML = SEV_ORDER.map(s => `<span>${glyph(s, 9)}${SEV[s].label}</span>`).join("");
+
+  /* hover tooltip (property assignment so re-renders never stack listeners) */
+  const tip = $("#viz-tip");
+  svg.onmousemove = (e) => {
+    const r = svg.getBoundingClientRect();
+    const i = Math.max(0, Math.min(HOURS - 1, Math.floor((e.clientX - r.left - padL) / bw)));
+    tip.innerHTML = `<div class="t">${hourLabel(i)}–${hourLabel(Math.min(i + 1, HOURS - 1))}</div>` +
+      SEV_ORDER.map(s => `<div class="r"><span class="k">${glyph(s, 8)}${SEV[s].label}</span><span class="v">${series[s][i]}</span></div>`).join("") +
+      `<div class="r" style="border-top:1px solid var(--hairline);margin-top:5px;padding-top:4px"><span class="k">Total</span><span class="v">${totals[i]}</span></div>`;
+    tip.style.display = "block";
+    const wr = wrap.getBoundingClientRect();
+    let tx = e.clientX - wr.left + 14;
+    if (tx + 150 > wr.width) tx = e.clientX - wr.left - 158;
+    tip.style.left = tx + "px";
+    tip.style.top = Math.max(0, e.clientY - wr.top - 60) + "px";
+  };
+  svg.onmouseleave = () => { tip.style.display = "none"; };
+
+  /* table fallback */
+  let th = "<tr><th scope='col'>Hour</th>" + SEV_ORDER.map(s => `<th scope='col'>${SEV[s].label}</th>`).join("") + "</tr>";
+  let rows = "";
+  for (let i = 0; i < HOURS; i++) rows += `<tr><th scope="row">${hourLabel(i)}</th>` + SEV_ORDER.map(s => `<td>${series[s][i]}</td>`).join("") + "</tr>";
+  $("#hourly-table").innerHTML = th + rows;
+}
+
+/* ---------------- client roster ---------------- */
+function clientStats() {
+  const m = new Map();
+  CLIENTS.forEach(c => m.set(c.id, { critical: 0, high: 0, medium: 0, low: 0, total: 0 }));
+  ALERTS.forEach(a => { const s = m.get(a.client.id); s[a.sev]++; s.total++; });
+  return m;
+}
+function renderRoster() {
+  const stats = clientStats();
+  const maxTotal = Math.max(...[...stats.values()].map(s => s.total), 1);
+  let list = [...CLIENTS];
+  if (state.railSort === "sev") {
+    list.sort((a, b) => {
+      const sa = stats.get(a.id), sb = stats.get(b.id);
+      return (sb.critical - sa.critical) || (sb.high - sa.high) || (sb.total - sa.total) || a.name.localeCompare(b.name);
+    });
+  } else list.sort((a, b) => a.name.localeCompare(b.name));
+
+  $("#roster").innerHTML = list.map(c => {
+    const s = stats.get(c.id);
+    const segs = SEV_ORDER.filter(k => s[k]).map(k =>
+      `<i style="background:${SEV[k].color};flex:${s[k]}" title="${s[k]} ${k}"></i>`).join("");
+    const width = Math.max(18, Math.round(s.total / maxTotal * 100));
+    return `<button class="org" data-client="${c.id}" aria-pressed="${state.client === c.id}">
+      <span class="name">${s.critical ? `<span class="critflag">${glyph("critical", 8)}</span>` : ""}${esc(c.name)}</span>
+      <span class="count">${s.total}</span>
+      <span class="bar"><span style="display:flex;gap:2px;width:${width}%">${segs || ""}</span><i class="quiet"></i></span>
+    </button>`;
+  }).join("");
+  $("#rail-count").textContent = CLIENTS.length + " orgs";
+  $("#roster").querySelectorAll(".org").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = +btn.dataset.client;
+      state.client = state.client === id ? null : id;
+      renderRoster(); renderQueue();
+    });
+  });
+}
+
+/* ---------------- queue ---------------- */
+function filteredAlerts() {
+  const q = state.search.trim().toLowerCase();
+  return ALERTS.filter(a =>
+    (!state.sevFilter.size || state.sevFilter.has(a.sev)) &&
+    (state.client === null || a.client.id === state.client) &&
+    (!q || (a.rule + " " + a.client.name + " " + a.asset.host + " " + a.id + " " + a.technique).toLowerCase().includes(q))
+  );
+}
+function sortAlerts(list) {
+  const sevRank = { critical: 0, high: 1, medium: 2, low: 3 };
+  const by = {
+    sev: (a, b) => sevRank[a.sev] - sevRank[b.sev] || a.ageMin - b.ageMin,
+    new: (a, b) => a.ageMin - b.ageMin,
+    sla: (a, b) => a.slaLeft - b.slaLeft
+  };
+  return [...list].sort(by[state.sort]);
+}
+function slaCell(a) {
+  if (a.slaLeft < 0) return `<span class="sla breach">${fmtAge(-a.slaLeft)} over</span>`;
+  if (a.slaLeft < 45) return `<span class="sla soon">${fmtAge(a.slaLeft)} left</span>`;
+  return `<span class="sla">${fmtAge(a.slaLeft)} left</span>`;
+}
+function renderQueue() {
+  const list = sortAlerts(filteredAlerts());
+  $("#qbody").innerHTML = list.map(a => `
+    <tr data-id="${a.id}" tabindex="0" aria-selected="${state.selected === a.id}" style="--rowsev:${SEV[a.sev].color}">
+      <td><span class="sev-badge" style="color:${SEV[a.sev].ink}">${glyph(a.sev)}${SEV[a.sev].label}</span></td>
+      <td><span class="when">${fmtAge(a.ageMin)}</span></td>
+      <td><div class="client">${esc(a.client.name)}</div></td>
+      <td><div class="rule">${esc(a.rule)}</div><div class="tech">${a.technique}</div></td>
+      <td class="asset-col"><span class="asset">${esc(a.asset.host)}</span></td>
+      <td><span class="status ${a.status === "New" ? "is-new" : ""}">${a.status}</span></td>
+      <td>${slaCell(a)}</td>
+    </tr>`).join("");
+  $("#queue-count").textContent = list.length + " of " + ALERTS.length + " open";
+  $("#empty").hidden = list.length > 0;
+
+  const bits = [];
+  if (state.sevFilter.size) bits.push([...state.sevFilter].map(s => SEV[s].label).join(", "));
+  if (state.client !== null) bits.push(CLIENTS[state.client].name);
+  if (state.search.trim()) bits.push(`“${state.search.trim()}”`);
+  $("#filter-note").classList.toggle("on", bits.length > 0);
+  $("#filter-text").textContent = bits.length ? "Filtered: " + bits.join(" · ") : "";
+
+  $("#qbody").querySelectorAll("tr").forEach(tr => {
+    const open = () => selectAlert(tr.dataset.id);
+    tr.addEventListener("click", open);
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+  });
+}
+
+/* ---------------- detail panel ---------------- */
+function selectAlert(id) {
+  state.selected = id;
+  const a = ALERTS.find(x => x.id === id);
+  renderQueue();
+  const related = ALERTS.filter(x => x.id !== id && (x.asset.host === a.asset.host || (x.client.id === a.client.id && x.sev !== "low"))).slice(0, 4);
+  const stats = clientStats().get(a.client.id);
+  $("#detail-empty").hidden = true;
+  const body = $("#detail-body");
+  body.hidden = false;
+  body.innerHTML = `
+    <div class="d-head">
+      <div class="id-row">
+        <span class="aid">${a.id} · ${a.technique !== "—" ? "MITRE " + a.technique : "hygiene"}</span>
+        <button class="d-close" id="d-close" aria-label="Close detail panel">×</button>
+      </div>
+      <h2>${esc(a.rule)}</h2>
+      <div class="meta">
+        <span class="sev-badge" style="color:${SEV[a.sev].ink}">${glyph(a.sev)}${SEV[a.sev].label}</span>
+        &nbsp;·&nbsp; opened <span class="mono">${fmtAge(a.ageMin)}</span> ago
+        &nbsp;·&nbsp; ${a.status} ${a.slaLeft < 0 ? `&nbsp;·&nbsp; <span style="color:var(--sev-crit-ink);font-weight:600">SLA breached</span>` : ""}
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" data-act="Acknowledged">Acknowledge</button>
+      <button data-act="Escalated">Escalate</button>
+      <button data-act="Closed">Close</button>
+    </div>
+    <div class="d-sec">
+      <h3>Asset context</h3>
+      <dl class="kv">
+        <dt>Host</dt><dd class="mono">${esc(a.asset.host)}</dd>
+        <dt>IP</dt><dd class="mono">${a.asset.ip}</dd>
+        <dt>OS</dt><dd>${a.asset.os}</dd>
+        <dt>Owner</dt><dd>${a.asset.owner} · ${a.asset.unit}</dd>
+        <dt>Criticality</dt><dd>${a.asset.crit === "Crown jewel" ? `<span class="crit-chip">${glyph("critical", 8)}Crown jewel</span>` : a.asset.crit}</dd>
+        <dt>Exposure</dt><dd>${a.asset.exposed ? `<span class="exp-chip">Internet-facing</span>` : "Internal only"}</dd>
+        <dt>Agent</dt><dd>${a.asset.agent === "Healthy" ? `<span class="ok-chip">Healthy</span>` : `<span class="exp-chip">Degraded</span>`} · seen ${a.asset.lastSeen}m ago</dd>
+      </dl>
+    </div>
+    <div class="d-sec">
+      <h3>Client</h3>
+      <dl class="kv">
+        <dt>Organisation</dt><dd>${esc(a.client.name)}</dd>
+        <dt>Industry</dt><dd>${a.client.industry}</dd>
+        <dt>Open alerts</dt><dd class="mono">${stats.total} (${stats.critical} critical · ${stats.high} high)</dd>
+      </dl>
+    </div>
+    <div class="d-sec">
+      <h3>Related open alerts</h3>
+      ${related.length ? `<ul class="related">` + related.map(r => `
+        <li><button data-goto="${r.id}">
+          ${glyph(r.sev, 9)}
+          <span class="r-rule">${esc(r.rule)}</span>
+          <span class="r-when">${fmtAge(r.ageMin)}</span>
+        </button></li>`).join("") + `</ul>`
+      : `<div style="color:var(--ink-3);font-size:12px">None on this asset or client.</div>`}
+    </div>
+    <div class="d-note">Placeholder data: every value on this page is generated locally for design review.</div>
+  `;
+  body.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
+    const act = b.dataset.act;
+    if (act === "Closed") {
+      const i = ALERTS.indexOf(a);
+      ALERTS.splice(i, 1);
+      state.selected = null;
+      body.hidden = true;
+      $("#detail-empty").hidden = false;
+      $("#detail").classList.remove("open");
+      renderLedger(); renderRoster(); renderQueue();
+      toast(`${a.id} closed`);
+    } else {
+      a.status = act;
+      renderQueue(); selectAlert(a.id);
+      toast(`${a.id} ${act.toLowerCase()}`);
+    }
+  }));
+  body.querySelectorAll("[data-goto]").forEach(b => b.addEventListener("click", () => selectAlert(b.dataset.goto)));
+  const dc = body.querySelector("#d-close");
+  if (dc) dc.addEventListener("click", () => {
+    $("#detail").classList.remove("open");
+    state.selected = null; renderQueue();
+  });
+  $("#detail").classList.add("open");
+}
+
+/* ---------------- wiring ---------------- */
+$("#search").addEventListener("input", (e) => { state.search = e.target.value; renderQueue(); });
+$("#qsort").addEventListener("change", (e) => { state.sort = e.target.value; renderQueue(); });
+function clearFilters() {
+  state.sevFilter.clear(); state.client = null; state.search = "";
+  $("#search").value = "";
+  renderLedger(); renderRoster(); renderQueue();
+}
+$("#filter-clear").addEventListener("click", clearFilters);
+$("#empty-clear").addEventListener("click", clearFilters);
+document.querySelectorAll("[data-rsort]").forEach(b => b.addEventListener("click", () => {
+  state.railSort = b.dataset.rsort;
+  document.querySelectorAll("[data-rsort]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderRoster();
+}));
+
+let rsz;
+window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(renderChart, 120); });
+
+renderLedger();
+renderChart();
+renderRoster();
+renderQueue();
+</script>
+</body>
+</html>

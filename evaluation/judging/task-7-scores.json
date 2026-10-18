@@ -1,0 +1,45 @@
+{
+  "task": 7,
+  "scores": {
+    "A": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 3.5,
+      "usability_accessibility": 3.5,
+      "technical_correctness": 4,
+      "cross_disciplinary_reasoning": 4,
+      "originality_coherence": 4,
+      "maintainability_implementation": 3.5,
+      "efficiency_no_unnecessary_complexity": 4.5
+    },
+    "B": {
+      "brief_alignment": 4,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4.5,
+      "efficiency_no_unnecessary_complexity": 4.5
+    }
+  },
+  "defects": {
+    "A": [
+      "Meta/footer/banner-when text #8694a3 measures 3.10:1 on white and 2.91:1 on the grey page bg - fails WCAG AA at 12.5px, despite DECISIONS claiming meta contrast was raised",
+      "Status-pill text marginal/failing AA on tinted backgrounds: ok 3.78:1, degraded 4.23:1 at 13px semibold",
+      "Inline styles on the component <ul> and the hidden label instead of stylesheet rules; .footer rule block duplicated in CSS",
+      "Email input lacks required; incident state badge sits at the bottom of each card, weaker scannability than a header placement",
+      "Banner's '2 active incidents' detail is display:none under 480px rather than repositioned"
+    ],
+    "B": [
+      "DECISIONS.md is 22 lines, exceeding the brief's 20-line maximum",
+      "form action=\"#\" method=\"post\" navigates/appends # on submit with no handler (native validation does fire via required+type=email)",
+      "--faint token defined but never used",
+      "Visually slightly more conventional than A's overlapping hero-card composition"
+    ]
+  },
+  "better_overall": "B",
+  "confidence": "medium",
+  "notes": "Both teams delivered strong, content-faithful redesigns with the same key judgment call (fixing the contradictory 'All Systems Operational (mostly)' banner). B wins on verified accessibility: every measured text/background pair passes AA (5.5-7.3:1), while A's meta, footer, and two status-pill colours fail (2.9-4.2:1) even though A's DECISIONS claims contrast was fixed. B also places incident-state badges in the card header, gives the banner an informative derived summary plus an icon as a non-colour channel, and its reasoning (worst-active-condition annunciator, computed ratios, honest 'not verified' list) is deeper. A's only clear wins are a slightly more distinctive hero composition and a DECISIONS.md that respects the 20-line cap, which B exceeds by two lines."
+}

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-labelledby="ad-title ad-desc">
+  <title id="ad-title">Art Deco sunburst composition</title>
+  <desc id="ad-desc">A poster-format Art Deco study: symmetrical gold sunburst rising over stepped geometry on deep green, with a thin double-rule frame.</desc>
+  <defs>
+    <linearGradient id="ad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e9c46a"/>
+      <stop offset="1" stop-color="#b8860b"/>
+    </linearGradient>
+    <!-- one ray, reused by rotation around the sun centre (300,560) -->
+    <path id="ad-ray" d="M300 560 L284 180 L316 180 Z" fill="url(#ad-gold)"/>
+    <clipPath id="ad-frame-clip">
+      <rect x="40" y="40" width="520" height="720"/>
+    </clipPath>
+  </defs>
+
+  <rect width="600" height="800" fill="#12332b"/>
+
+  <g clip-path="url(#ad-frame-clip)">
+    <!-- sunburst: 9 rays at 20-degree steps, symmetric about vertical -->
+    <g opacity="0.92">
+      <use href="#ad-ray" transform="rotate(-80 300 560)"/>
+      <use href="#ad-ray" transform="rotate(-60 300 560)"/>
+      <use href="#ad-ray" transform="rotate(-40 300 560)"/>
+      <use href="#ad-ray" transform="rotate(-20 300 560)"/>
+      <use href="#ad-ray"/>
+      <use href="#ad-ray" transform="rotate(20 300 560)"/>
+      <use href="#ad-ray" transform="rotate(40 300 560)"/>
+      <use href="#ad-ray" transform="rotate(60 300 560)"/>
+      <use href="#ad-ray" transform="rotate(80 300 560)"/>
+    </g>
+
+    <!-- concentric arcs over the rays -->
+    <g fill="none" stroke="#e9c46a">
+      <circle cx="300" cy="560" r="150" stroke-width="3"/>
+      <circle cx="300" cy="560" r="122" stroke-width="1.5"/>
+      <circle cx="300" cy="560" r="96" stroke-width="1.5"/>
+    </g>
+    <circle cx="300" cy="560" r="74" fill="url(#ad-gold)"/>
+
+    <!-- stepped skyline, ziggurat motif -->
+    <g fill="#0b231d">
+      <path d="M40 760 H560 V700 H492 V664 H436 V628 H364 V592 H236 V628 H164 V664 H108 V700 H40 Z"/>
+    </g>
+    <g fill="none" stroke="#e9c46a" stroke-width="2">
+      <path d="M40 760 H560" stroke-width="3"/>
+      <path d="M108 700 H40 M164 664 H108 M236 628 H164 M364 592 H236 M436 628 H364 M492 664 H436 M560 700 H492"/>
+    </g>
+  </g>
+
+  <!-- double-rule frame -->
+  <g fill="none" stroke="#e9c46a">
+    <rect x="40" y="40" width="520" height="720" stroke-width="3"/>
+    <rect x="52" y="52" width="496" height="696" stroke-width="1"/>
+  </g>
+</svg>

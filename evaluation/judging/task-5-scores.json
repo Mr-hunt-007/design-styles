@@ -1,0 +1,42 @@
+{
+  "task": 5,
+  "scores": {
+    "A": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4,
+      "typography_colour_legibility": 4,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4,
+      "originality_coherence": 3,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4.5
+    },
+    "B": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 3,
+      "technical_correctness": 4,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4.5,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4
+    }
+  },
+  "defects": {
+    "A": [
+      "Swiss-SaaS frame reads close to a conventional modern SaaS template; the two-style combination is coherent but visually safe",
+      "Logo row contrast is low (light grey wordmarks on white), borderline for the 'trusted by' labels",
+      "Stat copy '0 unknown internet-facing assets is the standing target' is grammatically awkward"
+    ],
+    "B": [
+      "SVG chart annotation 'FIX ABOVE THIS LINE FIRST' is clipped at the panel edge (reads 'FIRS')",
+      "Radar bearing labels 270/090 and MAIL.EDGE are struck through by axis/connector lines",
+      "No visible focus styles, no <main> landmark; the four content-bearing SVG instruments have no role/title/aria-label, so their information is invisible to assistive tech"
+    ]
+  },
+  "better_overall": "A",
+  "confidence": "medium",
+  "notes": "Very close call between two strong, genuinely two-style pages. B has the more distinctive and more unified identity (Swiss poster + blueprint instrument chrome carried through every section) and the sharper rationale, but it ships visible rendering nicks (clipped chart label, struck-through radar labels) and a real accessibility gap (unlabeled content SVGs, no focus styles, no main landmark). A is more conventional visually yet executes its frame-and-instrument concept defect-free with clearly better semantics and accessibility; on the weighted rubric (usability 15 + technical 15) A edges ahead, 4.23 vs 4.15."
+}

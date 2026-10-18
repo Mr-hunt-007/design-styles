@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aegis Console</title>
+<style>
+  /* ============ Tokens ============ */
+  :root {
+    --bg0: #0B0F14;        /* page */
+    --bg1: #10151C;        /* panel */
+    --bg2: #171E27;        /* raised / hover */
+    --bg3: #1E2733;        /* selected */
+    --line: #273140;       /* decorative hairline */
+    --line-strong: #596C82;/* meaningful borders: inputs, focusable chrome (>=3:1) */
+    --text: #E8EEF5;       /* primary text, 15.7:1 on bg1 */
+    --text-2: #A7B4C2;     /* secondary, 8.7:1 */
+    --text-3: #8292A3;     /* tertiary, 5.8:1 */
+    --crit: #FF7A72;       /* 7.2:1 on bg1 */
+    --high: #FFB454;       /* 10.4:1 */
+    --med:  #E3C34D;       /* 10.6:1 */
+    --low:  #93A8BD;       /* 7.5:1 */
+    --info: #6CB2FF;       /* links, focus, 8.3:1 */
+    --ok:   #57C98B;       /* 8.8:1 */
+    --crit-bg: rgba(255,122,114,.13);
+    --high-bg: rgba(255,180,84,.12);
+    --med-bg:  rgba(227,195,77,.11);
+    --low-bg:  rgba(147,168,189,.12);
+    --ok-bg:   rgba(87,201,139,.12);
+    --unknown-bg: repeating-linear-gradient(135deg, #171E27 0 5px, #202a37 5px 10px);
+    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --r: 6px;
+    --focus: 0 0 0 2px var(--bg0), 0 0 0 4px var(--info);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg0);
+    color: var(--text);
+    font: 13px/1.45 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus { outline: none; }
+  :focus-visible { box-shadow: var(--focus); border-radius: 4px; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; min-width: 1180px; }
+
+  /* ============ Top bar ============ */
+  .topbar {
+    height: 48px; flex: none;
+    display: flex; align-items: center; gap: 20px;
+    padding: 0 16px;
+    background: var(--bg1);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: .04em; }
+  .brand svg { display: block; }
+  .brand .env {
+    font: 600 10px/1 var(--mono); letter-spacing: .1em;
+    color: var(--info); border: 1px solid var(--line-strong);
+    padding: 3px 6px; border-radius: 3px;
+  }
+  .top-sep { width: 1px; height: 20px; background: var(--line); }
+  .top-stat { display: flex; align-items: baseline; gap: 6px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+  .top-stat b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .searchbox { position: relative; margin-left: auto; }
+  .searchbox input {
+    width: 280px; height: 30px;
+    background: var(--bg0); color: var(--text);
+    border: 1px solid var(--line-strong); border-radius: var(--r);
+    padding: 0 10px 0 30px; font: 12px var(--sans);
+  }
+  .searchbox input::placeholder { color: var(--text-3); }
+  .searchbox input:focus-visible { box-shadow: var(--focus); }
+  .searchbox svg { position: absolute; left: 9px; top: 7px; pointer-events: none; }
+  .clock { font: 500 12px var(--mono); color: var(--text-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .clock b { color: var(--text); font-weight: 600; }
+  .analyst { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+  .analyst .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--bg3); border: 1px solid var(--line-strong);
+    display: grid; place-items: center;
+    font: 600 10px var(--mono); color: var(--text);
+  }
+
+  /* ============ Status band ============ */
+  .statusband {
+    flex: none;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    padding: 12px 16px 4px;
+  }
+  .stat {
+    background: var(--bg1); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 10px 14px 9px;
+    display: flex; flex-direction: column; gap: 2px;
+    text-align: left;
+  }
+  .stat .k { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+  .stat .v { font: 600 26px/1.1 var(--sans); font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 8px; }
+  .stat .d { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .stat .d b { font-weight: 600; }
+  .stat.s-crit { border-left: 3px solid var(--crit); } .stat.s-crit .v { color: var(--crit); }
+  .stat.s-high { border-left: 3px solid var(--high); } .stat.s-high .v { color: var(--high); }
+  .stat.s-warn .v { color: var(--text); }
+  .stat.s-unknown { background-image: var(--unknown-bg); }
+  .up { color: var(--crit); } .down { color: var(--ok); }
+
+  /* ============ Layout grid ============ */
+  .main {
+    flex: 1; min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 372px;
+    gap: 8px;
+    padding: 8px 16px 16px;
+  }
+  .col-l { display: flex; flex-direction: column; gap: 8px; min-height: 0; min-width: 0; }
+  .col-r { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+
+  .panel {
+    background: var(--bg1); border: 1px solid var(--line); border-radius: var(--r);
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .panel-h {
+    flex: none;
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-h h2 { font-size: 12px; font-weight: 650; letter-spacing: .05em; text-transform: uppercase; color: var(--text-2); }
+  .panel-h .hint { font-size: 11px; color: var(--text-3); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+  /* ============ Trend panel ============ */
+  .trend-body { display: flex; gap: 16px; padding: 10px 14px 8px; align-items: stretch; }
+  .trend-chart { flex: 1; min-width: 0; }
+  .trend-chart svg { display: block; width: 100%; height: 118px; }
+  .trend-side { flex: none; width: 170px; display: flex; flex-direction: column; justify-content: center; gap: 6px; border-left: 1px solid var(--line); padding-left: 16px; }
+  .tl-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .tl-row b { margin-left: auto; color: var(--text); font-weight: 600; }
+  .swatch { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+
+  /* ============ Severity badges ============ */
+  .sev {
+    display: inline-flex; align-items: center;
+    font: 650 10px/1 var(--mono); letter-spacing: .08em;
+    padding: 4px 6px; border-radius: 3px; white-space: nowrap;
+  }
+  .sev-crit { color: var(--crit); background: var(--crit-bg); }
+  .sev-high { color: var(--high); background: var(--high-bg); }
+  .sev-med  { color: var(--med);  background: var(--med-bg); }
+  .sev-low  { color: var(--low);  background: var(--low-bg); }
+
+  /* ============ Queue ============ */
+  .queue { flex: 1; }
+  .filters { display: flex; gap: 6px; align-items: center; }
+  .chip {
+    font: 600 11px var(--sans); color: var(--text-2);
+    border: 1px solid var(--line-strong); border-radius: 99px;
+    padding: 4px 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip:hover { background: var(--bg2); }
+  .chip[aria-pressed="true"] { background: var(--bg3); color: var(--text); border-color: var(--text-3); }
+  .queue-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    position: sticky; top: 0; z-index: 1;
+    background: var(--bg1);
+    font: 600 10px var(--sans); letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-3); text-align: left;
+    padding: 8px 10px; border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody tr {
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid transparent;
+  }
+  tbody tr.r-crit { border-left-color: var(--crit); }
+  tbody tr.r-high { border-left-color: var(--high); }
+  tbody tr.r-med  { border-left-color: var(--med); }
+  tbody tr:hover { background: var(--bg2); }
+  tbody tr[aria-selected="true"] { background: var(--bg3); }
+  tbody tr:focus-visible { box-shadow: inset var(--focus); border-radius: 0; }
+  td { padding: 8px 10px; vertical-align: top; }
+  td.c-time { font: 500 11px var(--mono); color: var(--text-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.c-client { white-space: nowrap; }
+  .client-code { font: 600 11px var(--mono); color: var(--text); }
+  .client-name { font-size: 11px; color: var(--text-3); display: block; }
+  td.c-alert .t { font-weight: 550; }
+  td.c-alert .m { font-size: 11px; color: var(--text-3); display: block; margin-top: 1px; }
+  td.c-asset { font: 500 11px var(--mono); color: var(--text-2); white-space: nowrap; }
+  td.c-asset .ip { color: var(--text-3); display: block; }
+  .state {
+    font: 600 10px/1 var(--sans); letter-spacing: .04em;
+    padding: 4px 7px; border-radius: 3px; white-space: nowrap;
+  }
+  .st-new { color: var(--text); background: var(--bg3); }
+  .st-ack { color: var(--info); background: rgba(108,178,255,.12); }
+  .st-esc { color: var(--crit); background: var(--crit-bg); }
+  .st-sup { color: var(--text-3); background: var(--bg2); }
+  .queue-empty { padding: 40px 20px; text-align: center; color: var(--text-3); font-size: 12px; }
+  .queue-empty b { display: block; color: var(--text-2); margin-bottom: 4px; font-size: 13px; }
+
+  /* ============ Client grid ============ */
+  .clients-body { padding: 10px 14px 12px; }
+  .client-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  .ccell {
+    position: relative;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: var(--bg2);
+    padding: 5px 4px 4px;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 1px; align-items: center;
+  }
+  .ccell:hover { border-color: var(--line-strong); }
+  .ccell[aria-pressed="true"] { border-color: var(--info); background: var(--bg3); }
+  .ccell .code { font: 650 10px var(--mono); letter-spacing: .03em; }
+  .ccell .n { font: 500 10px var(--mono); font-variant-numeric: tabular-nums; }
+  .ccell.cs-crit { background: var(--crit-bg); border-color: rgba(255,122,114,.45); }
+  .ccell.cs-crit .code, .ccell.cs-crit .n { color: var(--crit); }
+  .ccell.cs-high { background: var(--high-bg); border-color: rgba(255,180,84,.4); }
+  .ccell.cs-high .code, .ccell.cs-high .n { color: var(--high); }
+  .ccell.cs-med .code, .ccell.cs-med .n { color: var(--med); }
+  .ccell.cs-quiet .code { color: var(--text-2); }
+  .ccell.cs-quiet .n { color: var(--text-3); }
+  .ccell.cs-stale { background-image: var(--unknown-bg); }
+  .ccell.cs-stale .code { color: var(--text-2); }
+  .ccell.cs-stale .n { color: var(--text-3); font-size: 9px; letter-spacing: .05em; }
+  .clients-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 10px; font-size: 10px; color: var(--text-3); }
+  .clients-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .lg { width: 8px; height: 8px; border-radius: 2px; border: 1px solid var(--line-strong); }
+
+  /* ============ Detail panel ============ */
+  .detail { flex: 1; overflow-y: auto; }
+  .detail-empty { padding: 48px 24px; text-align: center; color: var(--text-3); font-size: 12px; }
+  .detail-empty b { display: block; color: var(--text-2); font-size: 13px; margin-bottom: 4px; }
+  .detail-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 14px; }
+  .d-head { display: flex; flex-direction: column; gap: 6px; }
+  .d-head .row1 { display: flex; align-items: center; gap: 8px; }
+  .d-id { font: 500 10px var(--mono); color: var(--text-3); letter-spacing: .04em; }
+  .d-title { font-size: 14px; font-weight: 650; line-height: 1.35; }
+  .d-sub { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .d-actions { display: flex; gap: 6px; }
+  .btn {
+    flex: 1;
+    font: 600 11px var(--sans);
+    padding: 7px 0; border-radius: var(--r);
+    border: 1px solid var(--line-strong);
+    color: var(--text); background: var(--bg2);
+    text-align: center;
+  }
+  .btn:hover { background: var(--bg3); }
+  .btn-pri { background: var(--info); border-color: var(--info); color: #06121F; }
+  .btn-pri:hover { background: #8CC2FF; }
+  .btn[disabled] { opacity: .45; cursor: default; }
+  .btn[disabled]:hover { background: var(--bg2); }
+  .btn-pri[disabled]:hover { background: var(--info); }
+  .d-feedback { font-size: 11px; color: var(--ok); min-height: 15px; font-variant-numeric: tabular-nums; }
+  .kv { display: grid; grid-template-columns: 112px 1fr; gap: 5px 10px; font-size: 12px; }
+  .kv dt { color: var(--text-3); }
+  .kv dd { color: var(--text); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .kv dd.mono { font: 500 11px/1.5 var(--mono); }
+  .d-section h3 {
+    font-size: 10px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 7px;
+    padding-bottom: 5px; border-bottom: 1px solid var(--line);
+  }
+  .asset-card {
+    background: var(--bg2); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 10px 12px;
+  }
+  .asset-card .kv { font-size: 11px; grid-template-columns: 104px 1fr; }
+  .crit-tag { font-weight: 650; }
+  .crit-tag.t1 { color: var(--crit); } .crit-tag.t2 { color: var(--high); } .crit-tag.t3 { color: var(--text-2); }
+  .d-note { font-size: 11px; color: var(--text-3); line-height: 1.5; }
+
+  /* ============ Footer refresh line ============ */
+  .syncline {
+    flex: none;
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 16px 10px;
+    font: 500 10px var(--mono); color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); flex: none; }
+  .dot.warn { background: var(--high); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .chip, .btn, tbody tr, .ccell { transition: background-color .12s, border-color .12s; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= Top bar ================= -->
+  <header class="topbar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+        <path d="M9 1.2 15.5 4v4.6c0 3.9-2.7 6.9-6.5 8.2C5.2 15.5 2.5 12.5 2.5 8.6V4L9 1.2z"
+              fill="none" stroke="#6CB2FF" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M5.8 9.1l2.1 2.1 4.3-4.6" fill="none" stroke="#E8EEF5" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>AEGIS CONSOLE</span>
+      <span class="env">SOC·PROD</span>
+    </div>
+    <div class="top-sep" aria-hidden="true"></div>
+    <div class="top-stat"><span>Tenants</span><b>40</b></div>
+    <div class="top-stat"><span>Open alerts</span><b id="top-open">–</b></div>
+    <div class="top-stat"><span>Feeds</span><b><span style="color:var(--ok)">38 live</span> · <span style="color:var(--high)">2 stale</span></b></div>
+    <div class="searchbox">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <circle cx="6" cy="6" r="4.2" fill="none" stroke="#8292A3" stroke-width="1.4"/>
+        <path d="M9.4 9.4 12.6 12.6" stroke="#8292A3" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <input id="search" type="search" placeholder="Filter queue: client, asset, rule…" aria-label="Filter alert queue by client, asset or rule text">
+    </div>
+    <div class="clock" id="clock" aria-label="Current time UTC"></div>
+    <div class="analyst">
+      <span class="avatar" aria-hidden="true">RK</span>
+      <span>R. Kale · Shift B <span style="color:var(--text-3)">(ends 16:00)</span></span>
+    </div>
+  </header>
+
+  <!-- ================= Status band: are we under attack now? ================= -->
+  <section class="statusband" aria-label="Operational status">
+    <div class="stat s-crit">
+      <span class="k">Critical open</span>
+      <span class="v" id="st-crit">–</span>
+      <span class="d"><b class="up">▲ 3</b> vs. yesterday 06:00</span>
+    </div>
+    <div class="stat s-high">
+      <span class="k">High open</span>
+      <span class="v" id="st-high">–</span>
+      <span class="d"><b class="down">▼ 5</b> vs. yesterday 06:00</span>
+    </div>
+    <div class="stat s-warn">
+      <span class="k">Unacked &gt; 15 min</span>
+      <span class="v" id="st-unack">–</span>
+      <span class="d">oldest <b>41 min</b> · EXM-9203</span>
+    </div>
+    <div class="stat s-warn">
+      <span class="k">SLA at risk (&lt; 60 min)</span>
+      <span class="v">3</span>
+      <span class="d">next breach <b>22 min</b> · NVT</span>
+    </div>
+    <div class="stat s-unknown">
+      <span class="k">Collectors degraded</span>
+      <span class="v">2<span style="font-size:13px;color:var(--text-3);font-weight:500">/ 40 tenants</span></span>
+      <span class="d">HLX 3 h 10 m · QRS 54 m · coverage unknown, not clean</span>
+    </div>
+  </section>
+
+  <!-- ================= Main grid ================= -->
+  <div class="main">
+    <div class="col-l">
+
+      <!-- Trend: what changed in the last 24 h -->
+      <section class="panel" aria-label="Alert volume, last 24 hours">
+        <div class="panel-h">
+          <h2>Alert volume · last 24 h</h2>
+          <span class="hint">hourly, stacked by severity · UTC</span>
+        </div>
+        <div class="trend-body">
+          <div class="trend-chart" id="trend"></div>
+          <div class="trend-side" aria-label="24 hour totals by severity">
+            <div class="tl-row"><span class="swatch" style="background:var(--crit)"></span>Critical<b id="tt-crit">–</b></div>
+            <div class="tl-row"><span class="swatch" style="background:var(--high)"></span>High<b id="tt-high">–</b></div>
+            <div class="tl-row"><span class="swatch" style="background:var(--med)"></span>Medium<b id="tt-med">–</b></div>
+            <div class="tl-row"><span class="swatch" style="background:#5E7490"></span>Low<b id="tt-low">–</b></div>
+            <div class="tl-row" style="border-top:1px solid var(--line);padding-top:6px;margin-top:2px">24 h total<b id="tt-all">–</b></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Queue: what needs a human decision -->
+      <section class="panel queue" aria-label="Alert triage queue">
+        <div class="panel-h">
+          <h2>Triage queue</h2>
+          <div class="filters" role="group" aria-label="Filter by severity">
+            <button class="chip" data-sev="all" aria-pressed="true">All</button>
+            <button class="chip" data-sev="crit" aria-pressed="false">Crit</button>
+            <button class="chip" data-sev="high" aria-pressed="false">High</button>
+            <button class="chip" data-sev="med" aria-pressed="false">Med</button>
+            <button class="chip" data-sev="low" aria-pressed="false">Low</button>
+          </div>
+          <span class="hint" id="queue-count">–</span>
+        </div>
+        <div class="queue-scroll">
+          <table aria-label="Open alerts, newest severity first">
+            <thead>
+              <tr>
+                <th scope="col">Sev</th>
+                <th scope="col">Age</th>
+                <th scope="col">Client</th>
+                <th scope="col">Alert</th>
+                <th scope="col">Asset</th>
+                <th scope="col">State</th>
+              </tr>
+            </thead>
+            <tbody id="queue-body"></tbody>
+          </table>
+          <div class="queue-empty" id="queue-empty" hidden>
+            <b>No alerts match the current filter</b>
+            Clear the severity filter or search to see the full queue.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-r">
+
+      <!-- Client fleet: which tenants are hot -->
+      <section class="panel" aria-label="Client fleet status">
+        <div class="panel-h">
+          <h2>Client fleet · 40</h2>
+          <span class="hint">worst open severity</span>
+        </div>
+        <div class="clients-body">
+          <div class="client-grid" id="client-grid" role="group" aria-label="Filter queue by client"></div>
+          <div class="clients-legend">
+            <span><span class="lg" style="background:var(--crit-bg);border-color:rgba(255,122,114,.6)"></span>Critical</span>
+            <span><span class="lg" style="background:var(--high-bg);border-color:rgba(255,180,84,.6)"></span>High</span>
+            <span><span class="lg" style="background:var(--bg2)"></span>Med / Low · count shown, 0 = quiet</span>
+            <span><span class="lg" style="background-image:var(--unknown-bg)"></span>No data (stale collector)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detail: context for the selected alert -->
+      <section class="panel detail" aria-label="Selected alert detail" aria-live="polite">
+        <div class="panel-h">
+          <h2>Alert detail</h2>
+          <span class="hint" id="d-hint"></span>
+        </div>
+        <div class="detail-empty" id="detail-empty">
+          <b>No alert selected</b>
+          Select a row in the triage queue: click, or use ↑ ↓ and Enter.
+        </div>
+        <div class="detail-body" id="detail-body" hidden></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="syncline">
+    <span class="dot" aria-hidden="true"></span>
+    <span>LIVE · last sync <span id="sync-ago">12 s</span> ago · auto-refresh 60 s · demo data, static snapshot</span>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= Placeholder data (fictional tenants and assets) ================= */
+const NOW = Date.now();
+const SEV = {
+  crit: { label: "CRIT", name: "Critical", color: "var(--crit)" },
+  high: { label: "HIGH", name: "High",     color: "var(--high)" },
+  med:  { label: "MED",  name: "Medium",   color: "var(--med)"  },
+  low:  { label: "LOW",  name: "Low",      color: "var(--low)"  },
+};
+
+/* 40 fictional client organisations. open = [crit, high, med, low]; stale = collector down */
+const CLIENTS = [
+  ["EXM","Examplo Retail",      [2,3,4,2]], ["NVT","Novatek Energy",     [2,2,1,0]],
+  ["ARD","Ardent Health",       [1,2,3,1]], ["KSTL","Kestrel Air",       [1,1,0,2]],
+  ["ORM","Ormond Bank",         [1,3,2,0]], ["VLT","Veltis Insurance",   [0,2,2,1]],
+  ["HLX","Helix Pharma",        [0,0,0,0], "stale"], ["QRS","Quorus Media",[0,0,0,0], "stale"],
+  ["TRN","Ternio Logistics",    [0,2,1,1]], ["CMB","Cambria Foods",      [0,1,2,0]],
+  ["SLV","Silverline Tel",      [0,1,1,2]], ["PYR","Pyralis Mining",     [0,1,0,1]],
+  ["AXM","Axiom Legal",         [0,1,1,0]], ["BRC","Birchwood Credit",   [0,1,0,0]],
+  ["DLT","Deltora Shipping",    [0,0,3,1]], ["FNC","Fenwick Capital",    [0,0,2,2]],
+  ["GRV","Grovetech Labs",      [0,0,2,0]], ["HMT","Helmsworth Hotels",  [0,0,1,1]],
+  ["INB","Inverbrook Uni",      [0,0,1,2]], ["JNS","Jensen Motors",      [0,0,1,0]],
+  ["KRN","Kirrane Water",       [0,0,1,0]], ["LMR","Lumera Grid",        [0,0,0,3]],
+  ["MRC","Mercor Apparel",      [0,0,0,2]], ["NBL","Nabla Analytics",    [0,0,0,2]],
+  ["OSP","Osprey Freight",      [0,0,0,1]], ["PLD","Palladio Estates",   [0,0,0,1]],
+  ["QNT","Quentic Gaming",      [0,0,0,1]], ["RVS","Riverstone Agri",    [0,0,0,1]],
+  ["STM","Stratham Rail",       [0,0,0,0]], ["TLW","Tallow & Co",        [0,0,0,0]],
+  ["ULM","Ulmus Paper",         [0,0,0,0]], ["VRN","Verano Travel",      [0,0,0,0]],
+  ["WYC","Wycliffe Trust",      [0,0,0,0]], ["XNT","Xenith Sports",      [0,0,0,0]],
+  ["YLD","Yielder Farms",       [0,0,0,0]], ["ZEP","Zephyr Marine",      [0,0,0,0]],
+  ["ALD","Aldergate Metro",     [0,0,0,0]], ["BRM","Bramwell Press",     [0,0,0,0]],
+  ["CRS","Corsair Optics",      [0,0,0,0]], ["DVN","Devonia Clinics",    [0,0,0,0]],
+].map(([code, name, open, stale]) => ({ code, name, open, stale: stale === "stale" }));
+
+/* Alert queue. age in minutes. */
+const ALERTS = [
+  { id:"EXM-9203", sev:"crit", age:41, client:"EXM", title:"Ransomware precursor: mass shadow-copy deletion", rule:"vssadmin delete shadows /all via PsExec session", asset:"dc02.examplo.internal", ip:"10.4.2.12", state:"new", mitre:"T1490 Inhibit System Recovery", source:"EDR · CrowdNest agent", assetMeta:{ owner:"Platform Ops", tier:1, os:"Windows Server 2022", exposure:"Internal · domain controller", vulns:"3 open (1 critical)", lastSeen:"2 min", recent:"4 alerts / 7 d" } },
+  { id:"NVT-5518", sev:"crit", age:9, client:"NVT", title:"OT jump host: interactive logon from TOR exit node", rule:"Successful RDP auth, source IP on TOR exit list", asset:"scada-jump01.novatek.net", ip:"172.18.0.9", state:"new", mitre:"T1133 External Remote Services", source:"Firewall + IdP correlation", assetMeta:{ owner:"OT Engineering", tier:1, os:"Windows Server 2019", exposure:"Perimeter · VPN-reachable", vulns:"1 open (high)", lastSeen:"40 s", recent:"2 alerts / 7 d" } },
+  { id:"ORM-7741", sev:"crit", age:17, client:"ORM", title:"Possible SWIFT workstation credential dumping", rule:"LSASS handle acquired by unsigned binary", asset:"swift-ws04.ormond.bank", ip:"10.77.1.44", state:"ack", mitre:"T1003.001 LSASS Memory", source:"EDR · CrowdNest agent", assetMeta:{ owner:"Treasury IT", tier:1, os:"Windows 11 LTSC", exposure:"Internal · restricted VLAN", vulns:"0 open", lastSeen:"1 min", recent:"1 alert / 7 d" } },
+  { id:"ARD-3390", sev:"crit", age:63, client:"ARD", title:"PHI database: bulk export outside change window", rule:"58 GB egress from ehr-db01 to unclassified host", asset:"ehr-db01.ardent.health", ip:"10.12.8.5", state:"esc", mitre:"T1048 Exfiltration Over Alt Protocol", source:"NetFlow baseline", assetMeta:{ owner:"Clinical Systems", tier:1, os:"RHEL 9", exposure:"Internal · PHI scope", vulns:"5 open (2 high)", lastSeen:"3 min", recent:"6 alerts / 7 d" } },
+  { id:"KSTL-2217", sev:"crit", age:85, client:"KSTL", title:"Crew portal: auth bypass attempts, 3 distinct CVE probes", rule:"WAF: CVE-2025-31q payloads, 412 requests / 10 min", asset:"crew.kestrel.aero", ip:"203.0.113.40", state:"ack", mitre:"T1190 Exploit Public-Facing App", source:"WAF · edge", assetMeta:{ owner:"Digital Channels", tier:2, os:"Ubuntu 22.04 · nginx", exposure:"Internet-facing", vulns:"2 open (1 critical)", lastSeen:"55 s", recent:"9 alerts / 7 d" } },
+  { id:"EXM-9199", sev:"crit", age:112, client:"EXM", title:"Payment service account added to Domain Admins", rule:"Group membership change outside PAM workflow", asset:"dc01.examplo.internal", ip:"10.4.2.11", state:"esc", mitre:"T1098 Account Manipulation", source:"AD audit stream", assetMeta:{ owner:"Platform Ops", tier:1, os:"Windows Server 2022", exposure:"Internal · domain controller", vulns:"3 open (1 critical)", lastSeen:"2 min", recent:"4 alerts / 7 d" } },
+  { id:"VLT-6604", sev:"crit", age:134, client:"VLT", title:"Impossible travel: claims admin, Pune → Rotterdam in 11 min", rule:"IdP: geo-velocity > threshold, MFA fatigue pattern", asset:"m365 · a.rau@veltis.example", ip:"198.51.100.7", state:"ack", mitre:"T1621 MFA Request Generation", source:"Identity provider", assetMeta:{ owner:"Claims Ops", tier:2, os:"SaaS identity", exposure:"Cloud · M365 tenant", vulns:"n/a", lastSeen:"8 min", recent:"3 alerts / 7 d" } },
+  { id:"NVT-5511", sev:"high", age:26, client:"NVT", title:"New scheduled task persisting encoded PowerShell", rule:"schtasks create + -EncodedCommand, non-admin host", asset:"eng-ws112.novatek.net", ip:"172.18.4.112", state:"new", mitre:"T1053.005 Scheduled Task", source:"EDR · CrowdNest agent", assetMeta:{ owner:"Engineering", tier:3, os:"Windows 11", exposure:"Internal", vulns:"2 open", lastSeen:"4 min", recent:"1 alert / 7 d" } },
+  { id:"TRN-8830", sev:"high", age:34, client:"TRN", title:"Fleet API key used from unrecognised ASN", rule:"API key TRN-PROD-07 from AS398324, no prior history", asset:"api.ternio.example", ip:"192.0.2.88", state:"new", mitre:"T1078.004 Cloud Accounts", source:"API gateway logs", assetMeta:{ owner:"Platform", tier:2, os:"EKS · ap-south-1", exposure:"Internet-facing", vulns:"1 open", lastSeen:"1 min", recent:"2 alerts / 7 d" } },
+  { id:"ORM-7735", sev:"high", age:48, client:"ORM", title:"Spike in failed logons across 14 branch hosts", rule:"Password spray signature: 1 password / many accounts", asset:"branch-vlan · 14 hosts", ip:"10.77.0.0/16", state:"ack", mitre:"T1110.003 Password Spraying", source:"SIEM correlation", assetMeta:{ owner:"Branch IT", tier:2, os:"Mixed Windows 10/11", exposure:"Internal", vulns:"n/a", lastSeen:"6 min", recent:"2 alerts / 7 d" } },
+  { id:"ARD-3384", sev:"high", age:71, client:"ARD", title:"EDR tamper: sensor service stop attempted", rule:"Protected service stop by local admin, 2 attempts", asset:"lab-ws22.ardent.health", ip:"10.12.3.22", state:"new", mitre:"T1562.001 Disable or Modify Tools", source:"EDR · CrowdNest agent", assetMeta:{ owner:"Pathology Lab", tier:2, os:"Windows 10", exposure:"Internal · PHI adjacent", vulns:"4 open (1 high)", lastSeen:"5 min", recent:"3 alerts / 7 d" } },
+  { id:"SLV-4452", sev:"high", age:88, client:"SLV", title:"DNS tunnelling pattern to newly registered domain", rule:"High-entropy TXT queries, domain age 2 d", asset:"noc-mon3.silverline.tel", ip:"10.90.7.31", state:"ack", mitre:"T1071.004 DNS", source:"DNS resolver logs", assetMeta:{ owner:"NOC", tier:2, os:"Debian 12", exposure:"Internal", vulns:"0 open", lastSeen:"2 min", recent:"1 alert / 7 d" } },
+  { id:"CMB-1108", sev:"high", age:96, client:"CMB", title:"Okta session token replay from second device", rule:"Same session ID, divergent TLS fingerprint", asset:"okta · finance group", ip:"198.51.100.23", state:"new", mitre:"T1550.004 Web Session Cookie", source:"Identity provider", assetMeta:{ owner:"Finance", tier:2, os:"SaaS identity", exposure:"Cloud", vulns:"n/a", lastSeen:"12 min", recent:"1 alert / 7 d" } },
+  { id:"KSTL-2210", sev:"high", age:102, client:"KSTL", title:"S3 bucket policy changed to public-read", rule:"PutBucketPolicy: principal * on kstl-ops-exports", asset:"s3 · kstl-ops-exports", ip:"n/a", state:"sup", mitre:"T1530 Data from Cloud Storage", source:"CloudTrail", assetMeta:{ owner:"Data Eng", tier:2, os:"AWS · eu-west-1", exposure:"Cloud · was public 6 min", vulns:"n/a", lastSeen:"9 min", recent:"2 alerts / 7 d" } },
+  { id:"PYR-9915", sev:"high", age:118, client:"PYR", title:"Mimikatz-like memory access pattern on file server", rule:"Sequential LSASS reads, known tool heuristic", asset:"fs01.pyralis.example", ip:"10.33.2.8", state:"ack", mitre:"T1003 OS Credential Dumping", source:"EDR · CrowdNest agent", assetMeta:{ owner:"Site IT", tier:2, os:"Windows Server 2019", exposure:"Internal", vulns:"6 open (2 high)", lastSeen:"7 min", recent:"5 alerts / 7 d" } },
+  { id:"AXM-3061", sev:"med", age:57, client:"AXM", title:"Document management: unusual after-hours access volume", rule:"Partner account, 220 docs in 18 min, 02:10 local", asset:"dms.axiom.legal", ip:"10.61.1.20", state:"new", mitre:"T1213 Data from Info Repositories", source:"App audit log", assetMeta:{ owner:"Knowledge Mgmt", tier:3, os:"Windows Server 2022", exposure:"Internal", vulns:"1 open", lastSeen:"10 min", recent:"1 alert / 7 d" } },
+  { id:"DLT-7520", sev:"med", age:93, client:"DLT", title:"Outbound SMTP from non-mail host", rule:"Port 25 egress from warehouse controller", asset:"whs-ctl2.deltora.example", ip:"10.55.9.14", state:"new", mitre:"T1071.003 Mail Protocols", source:"Firewall", assetMeta:{ owner:"Warehouse Ops", tier:3, os:"Windows 10 IoT", exposure:"Internal · OT adjacent", vulns:"2 open", lastSeen:"15 min", recent:"1 alert / 7 d" } },
+  { id:"FNC-2288", sev:"med", age:121, client:"FNC", title:"Browser extension with clipboard access sideloaded", rule:"Unapproved extension hash on 3 trading desks", asset:"3 workstations · trading", ip:"10.21.4.0/24", state:"ack", mitre:"T1176 Browser Extensions", source:"EDR inventory", assetMeta:{ owner:"Trading IT", tier:2, os:"Windows 11", exposure:"Internal · MNPI scope", vulns:"n/a", lastSeen:"11 min", recent:"1 alert / 7 d" } },
+  { id:"GRV-6612", sev:"med", age:140, client:"GRV", title:"Container pulled from unvetted public registry", rule:"Image not in allow-list, deployed to staging", asset:"k8s-stg.grovetech.example", ip:"10.70.2.2", state:"sup", mitre:"T1610 Deploy Container", source:"Admission controller", assetMeta:{ owner:"DevOps", tier:3, os:"K8s 1.31", exposure:"Internal · staging", vulns:"3 open", lastSeen:"4 min", recent:"2 alerts / 7 d" } },
+  { id:"INB-4471", sev:"low", age:77, client:"INB", title:"Expired TLS certificate on internal portal", rule:"Cert expired 3 d, students-intranet", asset:"intranet.inverbrook.edu", ip:"10.88.1.9", state:"new", mitre:"n/a", source:"External scan", assetMeta:{ owner:"Campus IT", tier:3, os:"Ubuntu 24.04", exposure:"Internal", vulns:"1 open", lastSeen:"20 min", recent:"0 alerts / 7 d" } },
+  { id:"LMR-5540", sev:"low", age:103, client:"LMR", title:"New admin login from approved but unseen device", rule:"First-seen device for grid-admin role", asset:"ops.lumera.example", ip:"10.95.3.3", state:"ack", mitre:"n/a", source:"Identity provider", assetMeta:{ owner:"Grid Ops", tier:2, os:"SaaS identity", exposure:"Cloud", vulns:"n/a", lastSeen:"6 min", recent:"0 alerts / 7 d" } },
+  { id:"MRC-1192", sev:"low", age:160, client:"MRC", title:"Shadow IT: unsanctioned file-share domain observed", rule:"DNS: 41 queries to consumer share service", asset:"corp-proxy.mercor.example", ip:"10.14.0.4", state:"new", mitre:"n/a", source:"Proxy logs", assetMeta:{ owner:"Corp IT", tier:3, os:"n/a", exposure:"Internal", vulns:"n/a", lastSeen:"9 min", recent:"0 alerts / 7 d" } },
+];
+
+/* 24 h hourly volumes [crit, high, med, low], deterministic placeholder */
+const TREND = [
+  [0,2,4,6],[0,1,3,5],[1,2,3,4],[0,1,4,6],[0,2,5,5],[1,3,4,7],
+  [0,2,6,8],[1,4,5,6],[2,5,7,9],[1,6,8,7],[2,4,6,8],[1,3,7,10],
+  [0,4,8,9],[1,5,6,7],[2,6,9,8],[3,7,8,10],[2,5,7,9],[1,4,6,8],
+  [2,6,8,7],[4,8,9,11],[3,9,11,9],[2,7,9,10],[3,6,8,8],[2,5,7,9],
+];
+
+/* ================= Rendering ================= */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+const state = { sev: "all", client: null, search: "", selected: null };
+
+function fmtAge(min) {
+  if (min < 60) return min + " m";
+  return Math.floor(min / 60) + " h " + String(min % 60).padStart(2, "0") + " m";
+}
+const STATE_LABEL = { new: ["NEW", "st-new"], ack: ["ACK", "st-ack"], esc: ["ESCALATED", "st-esc"], sup: ["SUPPRESSED", "st-sup"] };
+const SEV_ORDER = { crit: 0, high: 1, med: 2, low: 3 };
+
+function visibleAlerts() {
+  const q = state.search.trim().toLowerCase();
+  return ALERTS
+    .filter(a => state.sev === "all" || a.sev === state.sev)
+    .filter(a => !state.client || a.client === state.client)
+    .filter(a => !q || (a.title + " " + a.rule + " " + a.client + " " + a.asset + " " + a.id).toLowerCase().includes(q))
+    .sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev] || a.age - b.age);
+}
+
+function clientOf(code) { return CLIENTS.find(c => c.code === code); }
+
+function renderQueue() {
+  const rows = visibleAlerts();
+  const tb = $("queue-body");
+  tb.innerHTML = rows.map(a => {
+    const c = clientOf(a.client);
+    const [sl, sc] = STATE_LABEL[a.state];
+    return `<tr tabindex="0" data-id="${a.id}" class="r-${a.sev}" aria-selected="${state.selected === a.id}">
+      <td><span class="sev sev-${a.sev}">${SEV[a.sev].label}</span></td>
+      <td class="c-time">${fmtAge(a.age)}</td>
+      <td class="c-client"><span class="client-code">${esc(a.client)}</span><span class="client-name">${esc(c ? c.name : "")}</span></td>
+      <td class="c-alert"><span class="t">${esc(a.title)}</span><span class="m">${esc(a.rule)}</span></td>
+      <td class="c-asset">${esc(a.asset)}<span class="ip">${esc(a.ip)}</span></td>
+      <td><span class="state ${sc}">${sl}</span></td>
+    </tr>`;
+  }).join("");
+  $("queue-empty").hidden = rows.length > 0;
+  const total = ALERTS.length;
+  $("queue-count").textContent = rows.length === total ? `${total} open` : `${rows.length} of ${total} open`;
+  tb.querySelectorAll("tr").forEach(tr => {
+    tr.addEventListener("click", () => selectAlert(tr.dataset.id, false));
+    tr.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectAlert(tr.dataset.id, false); }
+      if (e.key === "ArrowDown") { e.preventDefault(); (tr.nextElementSibling || tr).focus(); }
+      if (e.key === "ArrowUp") { e.preventDefault(); (tr.previousElementSibling || tr).focus(); }
+    });
+  });
+}
+
+function selectAlert(id, scroll) {
+  state.selected = id;
+  document.querySelectorAll("#queue-body tr").forEach(tr =>
+    tr.setAttribute("aria-selected", String(tr.dataset.id === id)));
+  renderDetail();
+  if (scroll) {
+    const tr = document.querySelector(`#queue-body tr[data-id="${id}"]`);
+    if (tr) tr.scrollIntoView({ block: "nearest" });
+  }
+}
+
+function renderDetail(feedback) {
+  const a = ALERTS.find(x => x.id === state.selected);
+  const empty = $("detail-empty"), body = $("detail-body");
+  if (!a) { empty.hidden = false; body.hidden = true; $("d-hint").textContent = ""; return; }
+  empty.hidden = true; body.hidden = false;
+  const c = clientOf(a.client);
+  const m = a.assetMeta;
+  const [sl, sc] = STATE_LABEL[a.state];
+  const tierCls = m.tier === 1 ? "t1" : m.tier === 2 ? "t2" : "t3";
+  $("d-hint").textContent = a.id;
+  body.innerHTML = `
+    <div class="d-head">
+      <div class="row1">
+        <span class="sev sev-${a.sev}">${SEV[a.sev].label}</span>
+        <span class="state ${sc}">${sl}</span>
+        <span class="d-id">${esc(a.id)}</span>
+      </div>
+      <div class="d-title">${esc(a.title)}</div>
+      <div class="d-sub">${esc(c.name)} (${esc(a.client)}) · first seen ${fmtAge(a.age)} ago · ${esc(a.source)}</div>
+    </div>
+    <div class="d-actions" role="group" aria-label="Triage actions">
+      <button class="btn btn-pri" data-act="ack" ${a.state !== "new" ? "disabled" : ""}>Acknowledge</button>
+      <button class="btn" data-act="esc" ${a.state === "esc" ? "disabled" : ""}>Escalate</button>
+      <button class="btn" data-act="sup" ${a.state === "sup" ? "disabled" : ""}>Suppress</button>
+    </div>
+    <div class="d-feedback" role="status">${feedback ? esc(feedback) : ""}</div>
+    <div class="d-section">
+      <h3>Detection</h3>
+      <dl class="kv">
+        <dt>Rule</dt><dd>${esc(a.rule)}</dd>
+        <dt>Technique</dt><dd class="mono">${esc(a.mitre)}</dd>
+        <dt>Source</dt><dd>${esc(a.source)}</dd>
+      </dl>
+    </div>
+    <div class="d-section">
+      <h3>Asset context</h3>
+      <div class="asset-card">
+        <dl class="kv">
+          <dt>Asset</dt><dd class="mono">${esc(a.asset)}</dd>
+          <dt>IP</dt><dd class="mono">${esc(a.ip)}</dd>
+          <dt>Business tier</dt><dd><span class="crit-tag ${tierCls}">Tier ${m.tier}${m.tier === 1 ? " · crown jewel" : ""}</span></dd>
+          <dt>Owner</dt><dd>${esc(m.owner)}</dd>
+          <dt>Platform</dt><dd>${esc(m.os)}</dd>
+          <dt>Exposure</dt><dd>${esc(m.exposure)}</dd>
+          <dt>Open vulns</dt><dd>${esc(m.vulns)}</dd>
+          <dt>Telemetry</dt><dd>last seen ${esc(m.lastSeen)} ago</dd>
+          <dt>History</dt><dd>${esc(m.recent)} on this asset</dd>
+        </dl>
+      </div>
+    </div>
+    <p class="d-note">Suppression requires a reason and expires after 7 days. Escalation pages the on-call IR lead for ${esc(c.name)} and opens a case.</p>
+  `;
+  body.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
+    a.state = b.dataset.act;
+    const verbs = { ack: "Acknowledged", esc: "Escalated to IR on-call", sup: "Suppressed for 7 days" };
+    renderQueue(); renderStats();
+    renderDetail(`${verbs[b.dataset.act]} · ${a.id} · just now`);
+  }));
+}
+
+function renderClients() {
+  const grid = $("client-grid");
+  grid.innerHTML = CLIENTS.map(c => {
+    const [cr, hi, me, lo] = c.open;
+    const total = cr + hi + me + lo;
+    let cls, n, label;
+    if (c.stale) { cls = "cs-stale"; n = "NO DATA"; label = `${c.name}: collector stale, coverage unknown`; }
+    else if (cr) { cls = "cs-crit"; n = total; label = `${c.name}: ${cr} critical, ${total} open`; }
+    else if (hi) { cls = "cs-high"; n = total; label = `${c.name}: ${hi} high, ${total} open`; }
+    else if (me) { cls = "cs-med"; n = total; label = `${c.name}: ${total} open, worst medium`; }
+    else { cls = "cs-quiet"; n = total; label = `${c.name}: ${total ? total + " low open" : "no open alerts"}`; }
+    return `<button class="ccell ${cls}" data-client="${c.code}" aria-pressed="${state.client === c.code}" title="${esc(label)}" aria-label="${esc(label)}">
+      <span class="code">${esc(c.code)}</span><span class="n">${n}</span>
+    </button>`;
+  }).join("");
+  grid.querySelectorAll(".ccell").forEach(b => b.addEventListener("click", () => {
+    state.client = state.client === b.dataset.client ? null : b.dataset.client;
+    renderClients(); renderQueue();
+  }));
+}
+
+function renderTrend() {
+  const W = 640, H = 118, padL = 24, padB = 16, padT = 6;
+  const n = TREND.length, gap = 3;
+  const bw = (W - padL - (n - 1) * gap) / n;
+  const max = Math.max(...TREND.map(h => h.reduce((a, b) => a + b, 0)));
+  const yscale = (H - padB - padT) / max;
+  const cols = ["#FF7A72", "#FFB454", "#E3C34D", "#5E7490"]; /* low demoted to neutral so crit/high dominate */
+  let bars = "";
+  const nowH = new Date(NOW).getUTCHours();
+  TREND.forEach((h, i) => {
+    const x = padL + i * (bw + gap);
+    let y = H - padB;
+    for (let s = 3; s >= 0; s--) {
+      const v = h[s]; if (!v) continue;
+      const hh = v * yscale;
+      y -= hh;
+      bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(hh - 0.5, 0.5).toFixed(1)}" fill="${cols[s]}" />`;
+    }
+    const hr = (nowH - (n - 1 - i) + 48) % 24;
+    if (hr % 6 === 0) bars += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 4}" fill="#8292A3" font-size="9" text-anchor="middle" font-family="Menlo,monospace">${String(hr).padStart(2, "0")}</text>`;
+  });
+  const gridLines = [0.5, 1].map(f => {
+    const y = H - padB - f * (max * yscale);
+    return `<line x1="${padL}" x2="${W}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#273140" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="${padL - 5}" y="${(y + 3).toFixed(1)}" fill="#8292A3" font-size="9" text-anchor="end" font-family="Menlo,monospace">${Math.round(f * max)}</text>`;
+  }).join("");
+  $("trend").innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="trend-t" preserveAspectRatio="none">
+      <title id="trend-t">Hourly alert volume for the last 24 hours, stacked by severity; totals in the legend to the right</title>
+      ${gridLines}${bars}
+      <line x1="${padL}" x2="${W}" y1="${H - padB}" y2="${H - padB}" stroke="#596C82" stroke-width="1"/>
+    </svg>`;
+  const totals = [0, 0, 0, 0];
+  TREND.forEach(h => h.forEach((v, i) => totals[i] += v));
+  $("tt-crit").textContent = totals[0]; $("tt-high").textContent = totals[1];
+  $("tt-med").textContent = totals[2]; $("tt-low").textContent = totals[3];
+  $("tt-all").textContent = totals.reduce((a, b) => a + b, 0);
+}
+
+function renderStats() {
+  const openBy = { crit: 0, high: 0, med: 0, low: 0 };
+  let unack = 0;
+  ALERTS.forEach(a => {
+    if (a.state === "sup") return;
+    openBy[a.sev]++;
+    if (a.state === "new" && a.age > 15) unack++;
+  });
+  $("st-crit").textContent = openBy.crit;
+  $("st-high").textContent = openBy.high + 16; /* queue shows a sample; band shows fleet totals */
+  $("st-unack").textContent = unack;
+  $("top-open").textContent = ALERTS.filter(a => a.state !== "sup").length + 61;
+}
+
+/* ================= Controls ================= */
+document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", () => {
+  state.sev = ch.dataset.sev;
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === ch)));
+  renderQueue();
+}));
+$("search").addEventListener("input", (e) => { state.search = e.target.value; renderQueue(); });
+
+function tickClock() {
+  const d = new Date();
+  const p = (x) => String(x).padStart(2, "0");
+  $("clock").innerHTML = `<b>${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}</b> UTC`;
+}
+tickClock(); setInterval(tickClock, 1000);
+
+let syncSec = 12;
+setInterval(() => { syncSec = (syncSec + 1) % 60; $("sync-ago").textContent = syncSec + " s"; }, 1000);
+
+renderTrend(); renderClients(); renderQueue(); renderStats();
+selectAlert("EXM-9203", true);
+</script>
+</body>
+</html>

@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentry Grid SOC</title>
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg-2:#0e141d;
+    --panel:#111926;
+    --panel-2:#16202f;
+    --line:#1f2b3d;
+    --line-soft:#182335;
+    --text:#dbe4f0;
+    --text-dim:#8295ad;
+    --text-faint:#5a6b82;
+    --accent:#3fd2c7;
+    --accent-dim:rgba(63,210,199,.14);
+    --crit:#ff5468;
+    --crit-bg:rgba(255,84,104,.13);
+    --high:#ff9950;
+    --high-bg:rgba(255,153,80,.12);
+    --med:#f2c94c;
+    --med-bg:rgba(242,201,76,.11);
+    --low:#5fa8ff;
+    --low-bg:rgba(95,168,255,.11);
+    --ok:#3ecf8e;
+    --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font:13px/1.45 var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input,select{font:inherit}
+
+  /* ---------- Shell ---------- */
+  .app{display:flex;flex-direction:column;height:100vh;min-width:1100px}
+  header.topbar{
+    display:flex;align-items:center;gap:20px;
+    height:52px;padding:0 20px;flex:none;
+    background:var(--bg-2);border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:.4px;font-size:14px;white-space:nowrap}
+  .brand .logo{
+    width:22px;height:22px;border-radius:6px;flex:none;
+    background:conic-gradient(from 210deg,var(--accent),#2b6cb0 60%,var(--accent));
+    box-shadow:0 0 10px rgba(63,210,199,.45);
+  }
+  .brand small{color:var(--text-faint);font-weight:500;letter-spacing:.8px;text-transform:uppercase;font-size:10px}
+  .topbar .spacer{flex:1}
+  .searchbox{position:relative}
+  .searchbox input{
+    width:280px;height:30px;padding:0 10px 0 30px;
+    background:var(--panel);border:1px solid var(--line);border-radius:7px;
+    color:var(--text);outline:none;
+  }
+  .searchbox input:focus{border-color:var(--accent)}
+  .searchbox input::placeholder{color:var(--text-faint)}
+  .searchbox svg{position:absolute;left:9px;top:8px;opacity:.5}
+  .clock{font-family:var(--mono);font-size:12px;color:var(--text-dim);white-space:nowrap}
+  .clock b{color:var(--text);font-weight:600}
+  .ingest{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-dim);white-space:nowrap}
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .analyst{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim)}
+  .analyst .avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#2b6cb0,var(--accent));display:grid;place-items:center;font-size:10px;font-weight:700;color:#06121a}
+
+  /* ---------- KPI strip ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr) 1.1fr 1.1fr 1.1fr;gap:10px;padding:12px 16px 0;flex:none}
+  .kpi{
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;
+    padding:10px 14px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;
+  }
+  .kpi.sev{cursor:pointer;transition:border-color .12s, background .12s}
+  .kpi.sev:hover{border-color:var(--line)}
+  .kpi .label{font-size:10px;letter-spacing:.9px;text-transform:uppercase;color:var(--text-faint);font-weight:600}
+  .kpi .value{font-size:24px;font-weight:700;font-family:var(--mono);line-height:1.1}
+  .kpi .sub{font-size:11px;color:var(--text-dim)}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+  .kpi.crit::before{background:var(--crit)} .kpi.crit .value{color:var(--crit)}
+  .kpi.high::before{background:var(--high)} .kpi.high .value{color:var(--high)}
+  .kpi.med::before{background:var(--med)}  .kpi.med .value{color:var(--med)}
+  .kpi.low::before{background:var(--low)}  .kpi.low .value{color:var(--low)}
+  .kpi.sev.active{background:var(--panel-2);border-color:var(--text-faint)}
+  .kpi .delta{font-size:10px;font-family:var(--mono)}
+  .delta.up{color:var(--crit)} .delta.down{color:var(--ok)}
+  .kpi.alert-sla .value{color:var(--crit)}
+  .kpi.meta .value{color:var(--text)}
+
+  /* ---------- Main grid ---------- */
+  main{
+    flex:1;min-height:0;
+    display:grid;grid-template-columns:1fr 390px;gap:12px;
+    padding:12px 16px 14px;
+  }
+  .panel{
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;
+    display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  }
+  .panel-h{
+    display:flex;align-items:center;gap:10px;flex:none;
+    padding:10px 14px;border-bottom:1px solid var(--line-soft);
+  }
+  .panel-h h2{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:650}
+  .panel-h .count{font-family:var(--mono);font-size:11px;color:var(--text-faint)}
+
+  /* ---------- Queue ---------- */
+  .queue-controls{display:flex;align-items:center;gap:8px;margin-left:auto}
+  .queue-controls select{
+    height:26px;background:var(--bg-2);border:1px solid var(--line);border-radius:6px;
+    color:var(--text-dim);padding:0 6px;outline:none;max-width:170px;font-size:12px;
+  }
+  .chip{
+    height:24px;padding:0 10px;border-radius:12px;font-size:11px;font-weight:600;
+    border:1px solid var(--line);color:var(--text-dim);background:var(--bg-2);
+  }
+  .chip.on{color:var(--text);border-color:var(--text-faint);background:var(--panel-2)}
+  .qtable-wrap{flex:1;overflow-y:auto;min-height:0}
+  table.qtable{width:100%;border-collapse:collapse}
+  .qtable thead th{
+    position:sticky;top:0;z-index:2;background:var(--panel);
+    font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-faint);
+    text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);font-weight:600;
+    white-space:nowrap;
+  }
+  .qtable thead th.sortable{cursor:pointer;user-select:none}
+  .qtable thead th.sortable:hover{color:var(--text-dim)}
+  .qtable tbody tr{border-bottom:1px solid var(--line-soft);cursor:pointer}
+  .qtable tbody tr:hover{background:var(--panel-2)}
+  .qtable tbody tr.sel{background:var(--accent-dim);box-shadow:inset 3px 0 0 var(--accent)}
+  .qtable td{padding:8px 10px;vertical-align:middle;white-space:nowrap}
+  .sev-pill{
+    display:inline-block;min-width:44px;text-align:center;
+    font-size:9.5px;font-weight:700;letter-spacing:.7px;padding:3px 7px;border-radius:4px;
+    font-family:var(--mono);
+  }
+  .sev-pill.CRITICAL{color:var(--crit);background:var(--crit-bg);border:1px solid rgba(255,84,104,.35)}
+  .sev-pill.HIGH{color:var(--high);background:var(--high-bg);border:1px solid rgba(255,153,80,.3)}
+  .sev-pill.MEDIUM{color:var(--med);background:var(--med-bg);border:1px solid rgba(242,201,76,.28)}
+  .sev-pill.LOW{color:var(--low);background:var(--low-bg);border:1px solid rgba(95,168,255,.28)}
+  .a-title{font-weight:600;max-width:330px;overflow:hidden;text-overflow:ellipsis}
+  .a-title .tech{display:block;font-size:10.5px;color:var(--text-faint);font-weight:400;font-family:var(--mono)}
+  td.client{color:var(--text-dim);max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  td.asset-cell{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  td.age{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);text-align:right}
+  td.age.breach{color:var(--crit);font-weight:700}
+  td.age .sla{display:block;font-size:9px;letter-spacing:.6px;color:var(--crit)}
+  .status-b{font-size:10px;letter-spacing:.5px;padding:2px 7px;border-radius:9px;border:1px solid var(--line);color:var(--text-dim)}
+  .status-b.New{color:#fff;border-color:var(--text-faint)}
+  .status-b.Acknowledged{color:var(--accent);border-color:rgba(63,210,199,.4)}
+  .status-b.Investigating{color:var(--med);border-color:rgba(242,201,76,.4)}
+  .status-b.Contained{color:var(--ok);border-color:rgba(62,207,142,.4)}
+  .src{font-size:10.5px;color:var(--text-faint);font-family:var(--mono)}
+  .empty{padding:40px;text-align:center;color:var(--text-faint)}
+
+  /* ---------- Right column ---------- */
+  .right{display:flex;flex-direction:column;gap:12px;min-height:0;overflow-y:auto}
+  .right .panel{flex:none}
+
+  /* asset context */
+  .ctx-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+  .ctx-head{display:flex;align-items:flex-start;gap:10px}
+  .ctx-head .hosticon{
+    width:34px;height:34px;border-radius:8px;flex:none;display:grid;place-items:center;
+    background:var(--panel-2);border:1px solid var(--line);font-size:15px;
+  }
+  .ctx-head .host{font-family:var(--mono);font-size:14px;font-weight:700}
+  .ctx-head .sub{font-size:11px;color:var(--text-dim)}
+  .crit-badge{margin-left:auto;font-size:9.5px;font-weight:700;letter-spacing:.6px;padding:3px 8px;border-radius:4px}
+  .crit-badge.Crown{color:var(--crit);background:var(--crit-bg)}
+  .crit-badge.High{color:var(--high);background:var(--high-bg)}
+  .crit-badge.Standard{color:var(--low);background:var(--low-bg)}
+  .ctx-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+  .ctx-grid .f label{display:block;font-size:9.5px;letter-spacing:.7px;text-transform:uppercase;color:var(--text-faint);margin-bottom:1px}
+  .ctx-grid .f div{font-family:var(--mono);font-size:11.5px;color:var(--text)}
+  .tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-size:10px;padding:2px 8px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim)}
+  .tag.exp{color:var(--high);border-color:rgba(255,153,80,.35)}
+  .ctx-narr{font-size:12px;color:var(--text-dim);border-left:2px solid var(--line);padding-left:10px}
+  .timeline{display:flex;flex-direction:column;gap:6px}
+  .tl{display:flex;gap:8px;font-size:11px;color:var(--text-dim);align-items:baseline}
+  .tl .t{font-family:var(--mono);color:var(--text-faint);flex:none;width:40px}
+  .tl .dot{width:6px;height:6px;border-radius:50%;background:var(--text-faint);flex:none;position:relative;top:-1px}
+  .tl.hot .dot{background:var(--crit);box-shadow:0 0 5px var(--crit)}
+  .ctx-actions{display:flex;gap:8px;padding-top:2px}
+  .btn{
+    flex:1;height:30px;border-radius:7px;font-size:12px;font-weight:600;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--text-dim);
+    transition:all .12s;
+  }
+  .btn:hover{border-color:var(--text-faint);color:var(--text)}
+  .btn.primary{background:var(--accent-dim);border-color:rgba(63,210,199,.5);color:var(--accent)}
+  .btn.primary:hover{background:rgba(63,210,199,.22)}
+  .btn.danger{color:var(--crit);border-color:rgba(255,84,104,.4)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .related{font-size:11px;color:var(--text-faint)}
+  .related b{color:var(--high);font-family:var(--mono)}
+
+  /* trend */
+  .trend-body{padding:10px 14px 12px}
+  .legend{display:flex;gap:14px;margin-bottom:6px}
+  .legend span{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-dim)}
+  .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .trend-stats{display:flex;gap:16px;margin-top:8px}
+  .trend-stats .s{font-size:10.5px;color:var(--text-faint)}
+  .trend-stats .s b{display:block;font-family:var(--mono);font-size:14px;color:var(--text);font-weight:700}
+  .spike-note{font-size:10.5px;color:var(--high);margin-top:6px;display:flex;gap:6px;align-items:center}
+
+  /* client load */
+  .clients-body{padding:6px 10px 10px;display:flex;flex-direction:column}
+  .crow{
+    display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;
+    padding:5px 6px;border-radius:6px;cursor:pointer;
+  }
+  .crow:hover{background:var(--panel-2)}
+  .crow.on{background:var(--accent-dim)}
+  .crow .nm{font-size:11.5px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crow.on .nm{color:var(--text)}
+  .bar{height:8px;border-radius:4px;background:var(--bg-2);overflow:hidden;display:flex}
+  .bar i{height:100%}
+  .bar .bc{background:var(--crit)} .bar .bh{background:var(--high)}
+  .bar .bm{background:var(--med)} .bar .bl{background:var(--low)}
+  .crow .n{font-family:var(--mono);font-size:11px;color:var(--text-faint);text-align:right}
+  .crow .n b{color:var(--crit)}
+  .clients-foot{padding:6px 8px 2px;font-size:10.5px;color:var(--text-faint)}
+
+  footer{
+    flex:none;height:26px;display:flex;align-items:center;gap:18px;
+    padding:0 18px;border-top:1px solid var(--line);background:var(--bg-2);
+    font-size:10.5px;color:var(--text-faint);font-family:var(--mono);
+  }
+  footer .ok{color:var(--ok)}
+
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px;border:2px solid var(--panel)}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>SENTRY&nbsp;GRID <small>multi-tenant soc</small></div>
+    </div>
+    <div class="searchbox">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8295ad" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Search alerts, clients, assets…" autocomplete="off">
+    </div>
+    <div class="spacer"></div>
+    <div class="ingest"><span class="pulse"></span> ingest <b id="eps" style="color:var(--text)">2,418</b> eps · 40 tenants</div>
+    <div class="clock"><b id="clock">--:--:--</b> UTC · shift B</div>
+    <div class="analyst"><div class="avatar">DK</div> d.kade</div>
+  </header>
+
+  <section class="kpis" id="kpis">
+    <div class="kpi sev crit" data-sev="CRITICAL"><span class="label">Critical</span><span class="value" id="k-crit">0</span><span class="delta up" id="k-crit-d"></span></div>
+    <div class="kpi sev high" data-sev="HIGH"><span class="label">High</span><span class="value" id="k-high">0</span><span class="delta up" id="k-high-d"></span></div>
+    <div class="kpi sev med" data-sev="MEDIUM"><span class="label">Medium</span><span class="value" id="k-med">0</span><span class="delta down" id="k-med-d"></span></div>
+    <div class="kpi sev low" data-sev="LOW"><span class="label">Low</span><span class="value" id="k-low">0</span><span class="delta down" id="k-low-d"></span></div>
+    <div class="kpi alert-sla"><span class="label">SLA breaches</span><span class="value" id="k-sla">0</span><span class="sub">unacked past target</span></div>
+    <div class="kpi meta"><span class="label">Clients affected</span><span class="value" id="k-clients">0</span><span class="sub">of 40 monitored</span></div>
+    <div class="kpi meta"><span class="label">Median time to ack</span><span class="value">11<span style="font-size:13px;color:var(--text-dim)">m</span></span><span class="sub">target ≤ 15m · <span style="color:var(--ok)">on track</span></span></div>
+  </section>
+
+  <main>
+    <section class="panel" id="queuePanel">
+      <div class="panel-h">
+        <h2>Alert queue</h2><span class="count" id="qcount"></span>
+        <div class="queue-controls">
+          <button class="chip on" id="chip-open">Open only</button>
+          <select id="clientFilter"><option value="">All clients (40)</option></select>
+          <select id="sortSel">
+            <option value="sev">Sort: severity</option>
+            <option value="new">Sort: newest</option>
+            <option value="old">Sort: oldest</option>
+          </select>
+        </div>
+      </div>
+      <div class="qtable-wrap">
+        <table class="qtable">
+          <thead><tr>
+            <th style="width:70px">Sev</th>
+            <th>Alert</th>
+            <th style="width:150px">Client</th>
+            <th style="width:150px">Asset</th>
+            <th style="width:70px">Source</th>
+            <th style="width:100px">Status</th>
+            <th style="width:72px;text-align:right">Age</th>
+          </tr></thead>
+          <tbody id="qbody"></tbody>
+        </table>
+        <div class="empty" id="qempty" style="display:none">No alerts match the current filters.</div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <section class="panel">
+        <div class="panel-h"><h2>Asset context</h2><span class="count" id="ctxid"></span></div>
+        <div class="ctx-body" id="ctxBody"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-h"><h2>Alert volume · 24h</h2><span class="count">all tenants</span></div>
+        <div class="trend-body">
+          <div class="legend">
+            <span><i style="background:var(--crit)"></i>Critical</span>
+            <span><i style="background:var(--high)"></i>High</span>
+            <span><i style="background:var(--med)"></i>Medium</span>
+            <span><i style="background:var(--low)"></i>Low</span>
+          </div>
+          <svg id="trend" viewBox="0 0 360 120" width="100%" height="120" role="img" aria-label="Stacked hourly alert volume for the last 24 hours"></svg>
+          <div class="trend-stats">
+            <div class="s"><b id="t-total">0</b>alerts / 24h</div>
+            <div class="s"><b id="t-peak">0</b>peak hour</div>
+            <div class="s"><b id="t-delta" style="color:var(--high)">+38%</b>vs prior 24h</div>
+          </div>
+          <div class="spike-note" id="spikeNote"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-h"><h2>Client load</h2><span class="count">top 10 by open alerts</span></div>
+        <div class="clients-body" id="clientsBody"></div>
+        <div class="clients-foot" id="clientsFoot"></div>
+      </section>
+    </aside>
+  </main>
+
+  <footer>
+    <span class="ok">● all collectors healthy</span>
+    <span>queue lag 0.8s</span>
+    <span>rules 4,112 active</span>
+    <span id="lastEval">last correlation pass —</span>
+    <span style="margin-left:auto">sentry-grid v4.2.1 · demo data</span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ---------------- deterministic placeholder data ---------------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(20261018);
+const pick = a => a[Math.floor(rnd()*a.length)];
+
+const CLIENTS = [
+"Northgate Capital","Examplo Retail","Vantor Logistics","Bluepeak Health","Ferrand Insurance",
+"Oakline Bank","Trisol Energy","Mercury Foods","Halcyon Media","Quintar Pharma",
+"Westbrook Mutual","Arcadia Travel","Novamint Fintech","Kestrel Aviation","Polaris Mining",
+"Driftwood Hotels","Cobalt Telecom","Stonebridge Legal","Veridian Agro","Lumen Apparel",
+"Saffron Airlines","Tidewater Shipping","Granite REIT","Helix Biolabs","Orchid Cosmetics",
+"Falkner Motors","Brightline Edu","Cascade Utilities","Ironvale Steel","Mosaic Gaming",
+"Pennon Dairy","Redcliff Security","Silverpine Resorts","Tanager Software","Umbra Analytics",
+"Vellum Press","Wrenfield HVAC","Yarrow Chemicals","Zephyr Couriers","Alder & Finch"];
+
+const DETECTIONS = [
+ ["Beaconing to known C2 infrastructure","T1071.001 · Command & Control","EDR","CRITICAL","Periodic HTTPS callbacks (jitter 8%) to a tracked C2 node. 412 connections over 6h from a single host process chain: outlook.exe → powershell.exe."],
+ ["Ransomware canary file modified","T1486 · Impact","FIM","CRITICAL","Honeypot file share canary rewritten with high-entropy content; same host enumerated 2,300 SMB paths in 4 minutes."],
+ ["Credential dumping via LSASS access","T1003.001 · Credential Access","EDR","CRITICAL","Non-system process opened LSASS with PROCESS_VM_READ. Parent chain lacks signed binaries."],
+ ["Impossible travel sign-in","T1078 · Initial Access","Identity","HIGH","Successful MFA-passed logins from two countries 41 minutes apart for the same principal; legacy IMAP protocol used on second login."],
+ ["Mass mailbox rule creation","T1114.003 · Collection","Email GW","HIGH","Inbox rules auto-forwarding finance keywords to external domain created on 3 mailboxes within 10 minutes."],
+ ["Suspicious OAuth consent grant","T1528 · Credential Access","Cloud","HIGH","New multi-tenant app granted offline_access + Mail.Read by 2 users; publisher unverified, created 48h ago."],
+ ["Outbound data volume anomaly","T1048 · Exfiltration","NetFlow","HIGH","Host uploaded 9.4 GB to an unclassified cloud storage endpoint, 14× its 30-day baseline, outside business hours."],
+ ["Kerberoasting activity detected","T1558.003 · Credential Access","SIEM","HIGH","61 TGS requests for SPN accounts with RC4 encryption from one workstation in 90 seconds."],
+ ["EDR agent tampering attempt","T1562.001 · Defense Evasion","EDR","HIGH","Repeated attempts to stop sensor service and delete its driver; blocked, source is an interactive admin session."],
+ ["Phishing URL clicked by user","T1566.002 · Initial Access","Email GW","MEDIUM","User clicked a credential-harvesting link post-delivery reclassification; no submission observed yet, session cookies at risk."],
+ ["New local admin account created","T1136.001 · Persistence","SIEM","MEDIUM","Account 'svc_update2' added to local Administrators outside change window; creator logged on via RDP."],
+ ["Internal port scan detected","T1046 · Discovery","IDS","MEDIUM","Workstation probed 254 hosts on 445/3389 within one subnet over 12 minutes."],
+ ["Anomalous service installation","T1543.003 · Persistence","EDR","MEDIUM","Unsigned binary registered as auto-start service from %TEMP%; hash unknown to reputation feeds."],
+ ["DNS tunneling pattern","T1071.004 · Command & Control","DNS","MEDIUM","2,900 TXT queries to a single young domain; avg label entropy 4.6, consistent with encoded channel."],
+ ["Expired TLS certificate on exposed asset","T1190 · Attack Surface","ASM","LOW","Public HTTPS endpoint serving a certificate expired 11 days ago; service fingerprint unchanged."],
+ ["Legacy protocol authentication","T1110 · Credential Access","Identity","LOW","NTLMv1 authentication observed from printer subnet; policy flags for deprecation."],
+ ["New external service exposed","T1190 · Attack Surface","ASM","LOW","Port 9200 (Elasticsearch, unauthenticated banner) newly reachable on a cloud IP attributed to the client."],
+ ["Excessive failed logins","T1110.001 · Credential Access","SIEM","LOW","318 failures against 9 accounts from one internal IP; lockout threshold not reached."]
+];
+
+const OS = ["Windows Server 2019","Windows 11 23H2","Ubuntu 22.04","RHEL 9.3","Windows Server 2022","macOS 14.6","Amazon Linux 2023"];
+const ROLES = ["Domain Controller","Finance workstation","Web server (prod)","VPN concentrator","Jump host","Developer laptop","DB server (prod)","HR workstation","Build runner","File server","Payment gateway","Mail relay"];
+const SITES = ["mum-dc1","blr-dc2","aws-ap-south-1","azure-centralindia","del-branch","gcp-asia-south1","hyd-hq"];
+const OWNERS = ["r.menon","a.bose","s.iyer","k.rao","j.dsouza","p.nair","m.varma","t.ghosh"];
+const STATUSES = ["New","New","New","Acknowledged","Investigating","Contained"];
+const CRITICALITY = {CRITICAL:["Crown","Crown","High"],HIGH:["Crown","High","High","Standard"],MEDIUM:["High","Standard","Standard"],LOW:["Standard","Standard","High"]};
+const SLA_MIN = {CRITICAL:15,HIGH:60,MEDIUM:240,LOW:1440};
+const SEVS = ["CRITICAL","HIGH","MEDIUM","LOW"];
+const SEV_RANK = {CRITICAL:0,HIGH:1,MEDIUM:2,LOW:3};
+
+const NOW = Date.now();
+function hostFor(role,i){
+  const p = role.includes("Domain")?"dc":role.includes("Web")?"web":role.includes("DB")?"db":
+            role.includes("laptop")||role.includes("workstation")?"wks":role.includes("VPN")?"vpn":
+            role.includes("Mail")?"mx":role.includes("File")?"fs":role.includes("Build")?"ci":
+            role.includes("Jump")?"jmp":role.includes("Payment")?"pay":"srv";
+  return p+"-"+String(100+Math.floor(rnd()*880));
+}
+const alerts = [];
+(function gen(){
+  let id = 48112;
+  const N = 96;
+  for(let i=0;i<N;i++){
+    const r = rnd();
+    const sev = r<.10?"CRITICAL":r<.33?"HIGH":r<.70?"MEDIUM":"LOW";
+    const cands = DETECTIONS.filter(d=>d[3]===sev);
+    const d = pick(cands);
+    // cluster timestamps: 35% of alerts in the 17:00-19:00 spike window (5-7h ago)
+    let ageMin;
+    if(rnd()<.35) ageMin = 300 + rnd()*120;          // spike window
+    else ageMin = rnd()<.5 ? rnd()*240 : 240+rnd()*1200; // recent vs older tail
+    if(sev==="CRITICAL" && i%3===0) ageMin = rnd()*45; // keep some fresh criticals
+    const role = pick(ROLES);
+    const client = CLIENTS[Math.floor(rnd()*40)];
+    const status = sev==="CRITICAL" ? pick(["New","New","Acknowledged","Investigating"]) : pick(STATUSES);
+    alerts.push({
+      id:"ALR-"+(id++),
+      sev, title:d[0], tech:d[1], source:d[2], narrative:d[4],
+      client,
+      ts: NOW - ageMin*60000,
+      status,
+      asset:{
+        host: hostFor(role,i),
+        ip: "10."+Math.floor(rnd()*250)+"."+Math.floor(rnd()*250)+"."+(2+Math.floor(rnd()*250)),
+        os: pick(OS), role,
+        site: pick(SITES),
+        owner: pick(OWNERS),
+        criticality: pick(CRITICALITY[sev]),
+        tags: [pick(["pci","sox","gdpr","none"]), pick(["edr:ok","edr:stale","edr:ok"]), rnd()<.3?"internet-facing":"internal"].filter(t=>t!=="none"),
+        open: 1+Math.floor(rnd()*5)
+      }
+    });
+  }
+  alerts.sort((a,b)=>SEV_RANK[a.sev]-SEV_RANK[b.sev] || b.ts-a.ts);
+})();
+
+/* ---------------- state ---------------- */
+const state = { sev:null, client:"", search:"", openOnly:true, sort:"sev", selected:null };
+
+/* ---------------- helpers ---------------- */
+const $ = s=>document.querySelector(s);
+function ageStr(ts){
+  const m = Math.max(0,Math.round((NOW-ts)/60000));
+  if(m<60) return m+"m";
+  const h = Math.floor(m/60);
+  if(h<24) return h+"h "+String(m%60).padStart(2,"0")+"m";
+  return Math.floor(h/24)+"d "+(h%24)+"h";
+}
+function hhmm(ts){const d=new Date(ts);return String(d.getUTCHours()).padStart(2,"0")+":"+String(d.getUTCMinutes()).padStart(2,"0")}
+function isBreach(a){return a.status==="New" && (NOW-a.ts)/60000 > SLA_MIN[a.sev]}
+function isOpen(a){return a.status!=="Contained"}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* ---------------- filtering ---------------- */
+function filtered(){
+  const q = state.search.toLowerCase();
+  let rows = alerts.filter(a=>
+    (!state.sev || a.sev===state.sev) &&
+    (!state.client || a.client===state.client) &&
+    (!state.openOnly || isOpen(a)) &&
+    (!q || (a.title+" "+a.client+" "+a.asset.host+" "+a.id+" "+a.tech).toLowerCase().includes(q))
+  );
+  if(state.sort==="new") rows = rows.slice().sort((a,b)=>b.ts-a.ts);
+  else if(state.sort==="old") rows = rows.slice().sort((a,b)=>a.ts-b.ts);
+  return rows;
+}
+
+/* ---------------- render: KPIs ---------------- */
+function renderKpis(){
+  const open = alerts.filter(isOpen);
+  const by = s=>open.filter(a=>a.sev===s).length;
+  $("#k-crit").textContent = by("CRITICAL");
+  $("#k-high").textContent = by("HIGH");
+  $("#k-med").textContent  = by("MEDIUM");
+  $("#k-low").textContent  = by("LOW");
+  $("#k-crit-d").textContent="▲ 3 last hour";
+  $("#k-high-d").textContent="▲ 5 last hour";
+  $("#k-med-d").textContent ="▼ 2 last hour";
+  $("#k-low-d").textContent ="▼ 6 last hour";
+  $("#k-sla").textContent = alerts.filter(isBreach).length;
+  $("#k-clients").textContent = new Set(open.map(a=>a.client)).size;
+  document.querySelectorAll(".kpi.sev").forEach(k=>k.classList.toggle("active",k.dataset.sev===state.sev));
+}
+
+/* ---------------- render: queue ---------------- */
+function renderQueue(){
+  const rows = filtered();
+  const tb = $("#qbody");
+  tb.innerHTML = rows.map(a=>{
+    const breach = isBreach(a);
+    return `<tr data-id="${a.id}" class="${state.selected===a.id?"sel":""}">
+      <td><span class="sev-pill ${a.sev}">${a.sev.slice(0,4)}</span></td>
+      <td><div class="a-title">${esc(a.title)}<span class="tech">${a.id} · ${esc(a.tech)}</span></div></td>
+      <td class="client" title="${esc(a.client)}">${esc(a.client)}</td>
+      <td class="asset-cell">${a.asset.host}<br><span style="color:var(--text-faint)">${a.asset.ip}</span></td>
+      <td><span class="src">${a.source}</span></td>
+      <td><span class="status-b ${a.status}">${a.status}</span></td>
+      <td class="age ${breach?"breach":""}">${ageStr(a.ts)}${breach?'<span class="sla">SLA</span>':""}</td>
+    </tr>`;
+  }).join("");
+  $("#qempty").style.display = rows.length?"none":"block";
+  $("#qcount").textContent = rows.length+" of "+alerts.length;
+  tb.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>select(tr.dataset.id)));
+}
+
+/* ---------------- render: asset context ---------------- */
+function select(id){
+  state.selected = id;
+  renderQueue(); renderCtx();
+}
+function renderCtx(){
+  const a = alerts.find(x=>x.id===state.selected) || filtered()[0] || alerts[0];
+  if(!a){ $("#ctxBody").innerHTML='<div class="empty">No alert selected</div>'; return }
+  state.selected = a.id;
+  $("#ctxid").textContent = a.id;
+  const s = a.asset;
+  const related = alerts.filter(x=>x.client===a.client && x.id!==a.id && isOpen(x)).length;
+  const tl = [
+    {t:hhmm(a.ts-52*60000), txt:"First related telemetry on "+s.host, hot:false},
+    {t:hhmm(a.ts-18*60000), txt:"Correlation rule staged (2 weak signals)", hot:false},
+    {t:hhmm(a.ts), txt:"Alert raised: "+a.title, hot:true},
+    {t:hhmm(Math.min(NOW,a.ts+9*60000)), txt: a.status==="New"?"Awaiting acknowledgement":"Status → "+a.status, hot:a.status==="New"}
+  ];
+  $("#ctxBody").innerHTML = `
+    <div class="ctx-head">
+      <div class="hosticon">🖥</div>
+      <div>
+        <div class="host">${s.host}</div>
+        <div class="sub">${esc(a.client)} · ${s.site}</div>
+      </div>
+      <span class="crit-badge ${s.criticality}">${s.criticality==="Crown"?"CROWN JEWEL":s.criticality.toUpperCase()}</span>
+    </div>
+    <div class="ctx-grid">
+      <div class="f"><label>IP address</label><div>${s.ip}</div></div>
+      <div class="f"><label>Operating system</label><div>${s.os}</div></div>
+      <div class="f"><label>Role</label><div>${s.role}</div></div>
+      <div class="f"><label>Owner</label><div>${s.owner}</div></div>
+    </div>
+    <div class="tags">${s.tags.map(t=>`<span class="tag ${t==="internet-facing"||t==="edr:stale"?"exp":""}">${t}</span>`).join("")}
+      <span class="tag">${s.open} open on asset</span></div>
+    <div class="ctx-narr">${esc(a.narrative)}</div>
+    <div class="timeline">${tl.map(e=>`<div class="tl ${e.hot?"hot":""}"><span class="t">${e.t}</span><span class="dot"></span><span>${esc(e.txt)}</span></div>`).join("")}</div>
+    <div class="related">Client context: <b>${related}</b> other open alert${related===1?"":"s"} at ${esc(a.client)}</div>
+    <div class="ctx-actions">
+      <button class="btn primary" id="ackBtn" ${a.status!=="New"?"disabled":""}>Acknowledge</button>
+      <button class="btn" id="escBtn">Escalate</button>
+      <button class="btn danger" id="closeBtn" ${a.status==="Contained"?"disabled":""}>Contain</button>
+    </div>`;
+  $("#ackBtn").addEventListener("click",()=>{a.status="Acknowledged";refresh()});
+  $("#escBtn").addEventListener("click",()=>{a.sev="CRITICAL";a.status=a.status==="New"?"Acknowledged":a.status;alerts.sort((x,y)=>SEV_RANK[x.sev]-SEV_RANK[y.sev]||y.ts-x.ts);refresh()});
+  $("#closeBtn").addEventListener("click",()=>{a.status="Contained";refresh()});
+}
+
+/* ---------------- render: trend (stacked hourly bars, SVG) ---------------- */
+function renderTrend(){
+  const H=24, buckets=Array.from({length:H},()=>({CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0}));
+  // baseline synthetic load + the real alert set on top (trend covers resolved volume too)
+  const tr = mulberry32(7);
+  for(let h=0;h<H;h++){
+    const spike = (h>=5&&h<=7)?2.4:1;             // same window as the alert-set spike (5-7h ago)
+    buckets[h].LOW    += Math.round(3+tr()*4);
+    buckets[h].MEDIUM += Math.round((2+tr()*4)*spike);
+    buckets[h].HIGH   += Math.round((1+tr()*2.4)*spike);
+    buckets[h].CRITICAL += tr()<(spike>1?.75:.3)?Math.round(1+tr()*2):0;
+  }
+  alerts.forEach(a=>{
+    const h = Math.min(H-1, Math.floor((NOW-a.ts)/3600000));
+    buckets[h][a.sev]++;
+  });
+  const totals = buckets.map(b=>b.CRITICAL+b.HIGH+b.MEDIUM+b.LOW);
+  const max = Math.max(...totals);
+  const svg = $("#trend");
+  const W=360, Ht=120, padB=16, padT=6, bw=W/H*0.68, step=W/H;
+  const col={CRITICAL:"#ff5468",HIGH:"#ff9950",MEDIUM:"#f2c94c",LOW:"#5fa8ff"};
+  let out="";
+  // gridlines
+  for(const f of [0.5,1]){
+    const y = padT+(Ht-padB-padT)*(1-f);
+    out+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="#1f2b3d" stroke-width="1" stroke-dasharray="3 4"/>`;
+    out+=`<text x="${W-2}" y="${f===1?y+9:y-3}" fill="#5a6b82" font-size="8" text-anchor="end">${Math.round(max*f)}</text>`;
+  }
+  for(let h=0;h<H;h++){
+    const i = H-1-h; // oldest left
+    const x = h*step+(step-bw)/2;
+    let y = Ht-padB;
+    for(const s of ["LOW","MEDIUM","HIGH","CRITICAL"]){
+      const v = buckets[i][s];
+      if(!v) continue;
+      const hh = (Ht-padB-padT)*v/max;
+      y-=hh;
+      out+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(hh,0.5).toFixed(1)}" fill="${col[s]}" rx="1" opacity="${s==="LOW"?0.75:0.92}"/>`;
+    }
+    if(i>=5&&i<=7) out+=`<rect x="${(h*step).toFixed(1)}" y="${padT}" width="${step.toFixed(1)}" height="${Ht-padB-padT}" fill="#ff9950" opacity="0.07"/>`;
+  }
+  // x labels every 6h
+  for(let h=0;h<=H;h+=6){
+    const d=new Date(NOW-(H-h)*3600000);
+    const last = h===H;
+    out+=`<text x="${last?W-1:h*step+2}" y="${Ht-4}" fill="#5a6b82" font-size="8"${last?' text-anchor="end"':""}>${String(d.getUTCHours()).padStart(2,"0")}:00</text>`;
+  }
+  svg.innerHTML=out;
+  $("#t-total").textContent = totals.reduce((a,b)=>a+b,0);
+  $("#t-peak").textContent = max;
+  const hFmt = ago => String(new Date(NOW-ago*3600000).getUTCHours()).padStart(2,"0")+":00";
+  $("#spikeNote").textContent = "▲ Spike "+hFmt(7)+"–"+hFmt(5)+" correlates with phishing wave across 6 clients";
+}
+
+/* ---------------- render: client load ---------------- */
+function renderClients(){
+  const open = alerts.filter(isOpen);
+  const byClient = {};
+  open.forEach(a=>{(byClient[a.client]=byClient[a.client]||{CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,n:0});byClient[a.client][a.sev]++;byClient[a.client].n++});
+  const rows = Object.entries(byClient).sort((a,b)=> (b[1].CRITICAL-a[1].CRITICAL)||(b[1].n-a[1].n)).slice(0,10);
+  const maxN = Math.max(...rows.map(r=>r[1].n));
+  $("#clientsBody").innerHTML = rows.map(([c,v])=>`
+    <div class="crow ${state.client===c?"on":""}" data-c="${esc(c)}">
+      <span class="nm" title="${esc(c)}">${esc(c)}</span>
+      <span class="bar">
+        ${["CRITICAL","HIGH","MEDIUM","LOW"].map(s=>v[s]?`<i class="b${s[0].toLowerCase()}" style="width:${(v[s]/maxN*100).toFixed(1)}%"></i>`:"").join("")}
+      </span>
+      <span class="n">${v.CRITICAL?`<b>${v.CRITICAL}</b>·`:""}${v.n}</span>
+    </div>`).join("");
+  const quiet = 40 - Object.keys(byClient).length;
+  $("#clientsFoot").textContent = quiet>0 ? quiet+" clients with no open alerts" : "all 40 clients have open alerts";
+  document.querySelectorAll(".crow").forEach(r=>r.addEventListener("click",()=>{
+    state.client = state.client===r.dataset.c ? "" : r.dataset.c;
+    $("#clientFilter").value = state.client;
+    refresh();
+  }));
+}
+
+/* ---------------- wiring ---------------- */
+function refresh(){renderKpis();renderQueue();renderCtx();renderClients();}
+
+const cf = $("#clientFilter");
+CLIENTS.slice().sort().forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;cf.appendChild(o)});
+cf.addEventListener("change",()=>{state.client=cf.value;refresh()});
+$("#sortSel").addEventListener("change",e=>{state.sort=e.target.value;renderQueue()});
+$("#search").addEventListener("input",e=>{state.search=e.target.value;renderQueue()});
+$("#chip-open").addEventListener("click",e=>{state.openOnly=!state.openOnly;e.target.classList.toggle("on",state.openOnly);refresh()});
+document.querySelectorAll(".kpi.sev").forEach(k=>k.addEventListener("click",()=>{
+  state.sev = state.sev===k.dataset.sev ? null : k.dataset.sev; refresh();
+}));
+
+function tick(){
+  const d=new Date();
+  $("#clock").textContent = String(d.getUTCHours()).padStart(2,"0")+":"+String(d.getUTCMinutes()).padStart(2,"0")+":"+String(d.getUTCSeconds()).padStart(2,"0");
+}
+setInterval(tick,1000); tick();
+$("#lastEval").textContent = "last correlation pass "+hhmm(NOW-3*60000)+"Z";
+
+/* default selection: newest open critical */
+const firstCrit = alerts.find(a=>a.sev==="CRITICAL"&&isOpen(a));
+state.selected = firstCrit ? firstCrit.id : alerts[0].id;
+renderTrend();
+refresh();
+</script>
+</body>
+</html>

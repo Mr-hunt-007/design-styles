@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northbeam Status</title>
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --ink: #1a2330;
+    --ink-soft: #52606f;
+    --ink-faint: #8694a3;
+    --line: #e3e8ee;
+    --brand: #1b4f72;
+    --brand-ink: #ffffff;
+    --ok: #1e8e3e;
+    --ok-bg: #e9f6ec;
+    --warn: #b06000;
+    --warn-bg: #fdf3e3;
+    --down: #c5221f;
+    --down-bg: #fdecea;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand); }
+
+  .top {
+    background: var(--brand);
+    color: var(--brand-ink);
+    padding: 28px 16px 72px;
+  }
+  .top-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .top h1 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .top .sub { font-size: 14px; opacity: 0.75; }
+
+  .wrap {
+    max-width: 720px;
+    margin: -48px auto 0;
+    padding: 0 16px 48px;
+  }
+
+  .banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--warn);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(20, 35, 50, 0.07);
+  }
+  .banner .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--warn); flex: none; }
+  .banner b { font-size: 16px; }
+  .banner .when { margin-left: auto; color: var(--ink-faint); font-size: 12.5px; white-space: nowrap; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-soft);
+    margin: 32px 0 10px;
+  }
+
+  .components {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .component {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  .component + .component { border-top: 1px solid var(--line); }
+  .component .name { font-weight: 500; }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status.ok { color: var(--ok); background: var(--ok-bg); }
+  .status.degraded { color: var(--warn); background: var(--warn-bg); }
+  .status.down { color: var(--down); background: var(--down-bg); }
+
+  .incident {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 10px;
+  }
+  .incident h3 { font-size: 15px; margin: 0 0 6px; }
+  .incident p { margin: 0; color: var(--ink-soft); }
+  .incident .meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .badge.investigating { color: var(--down); background: var(--down-bg); }
+  .badge.monitoring { color: var(--warn); background: var(--warn-bg); }
+  .badge.resolved { color: var(--ok); background: var(--ok-bg); }
+
+  .subscribe {
+    margin-top: 36px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .subscribe h2 { margin: 0 0 4px; }
+  .subscribe p { margin: 0 0 14px; color: var(--ink-soft); font-size: 13.5px; }
+  .subscribe form {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .subscribe input {
+    padding: 9px 12px;
+    width: 260px;
+    max-width: 100%;
+    font: inherit;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--bg);
+  }
+  .subscribe input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+  .subscribe button {
+    padding: 9px 18px;
+    font: inherit;
+    font-weight: 600;
+    background: var(--brand);
+    color: #fff;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .subscribe button:hover { background: #163f5c; }
+
+  .footer {
+    margin-top: 40px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+  }
+  .footer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 8px;
+    row-gap: 2px;
+  }
+  .footer span { white-space: nowrap; }
+
+  @media (max-width: 480px) {
+    .banner .when { display: none; }
+    .component { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <h1>Northbeam</h1>
+      <span class="sub">System Status</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="banner" role="status">
+      <span class="dot" aria-hidden="true"></span>
+      <b>Some systems are experiencing issues</b>
+      <span class="when">2 active incidents</span>
+    </div>
+
+    <h2>Current status</h2>
+    <ul class="components" style="list-style:none; margin:0; padding:0;">
+      <li class="component"><span class="name">API</span><span class="status ok">Operational</span></li>
+      <li class="component"><span class="name">Web dashboard</span><span class="status degraded">Degraded performance</span></li>
+      <li class="component"><span class="name">Webhooks</span><span class="status ok">Operational</span></li>
+      <li class="component"><span class="name">Data ingest (EU)</span><span class="status down">Partial outage</span></li>
+      <li class="component"><span class="name">Data ingest (US)</span><span class="status ok">Operational</span></li>
+      <li class="component"><span class="name">Email notifications</span><span class="status ok">Operational</span></li>
+    </ul>
+
+    <h2>Active incidents</h2>
+    <article class="incident">
+      <h3>INC-4412: Elevated error rate on EU ingest</h3>
+      <p>We are investigating elevated 5xx responses on the EU ingest endpoints. Customers may see delayed event processing. Next update within 60 minutes.</p>
+      <div class="meta"><span class="badge investigating">Investigating</span> Opened 09:14 UTC</div>
+    </article>
+    <article class="incident">
+      <h3>INC-4415: Delayed webhook delivery</h3>
+      <p>Webhook deliveries are delayed up to 15 minutes due to queue backlog from the EU ingest incident.</p>
+      <div class="meta"><span class="badge monitoring">Monitoring</span> Opened 09:40 UTC</div>
+    </article>
+
+    <h2>Past incidents (7 days)</h2>
+    <article class="incident">
+      <h3>API latency spike</h3>
+      <p>Resolved after a configuration rollback.</p>
+      <div class="meta"><span class="badge resolved">Resolved</span> 16 Oct · Resolved in 42 min</div>
+    </article>
+
+    <section class="subscribe">
+      <h2>Get updates</h2>
+      <p>Receive an email when an incident is opened, updated, or resolved.</p>
+      <form onsubmit="return false">
+        <label for="sub-email" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);">Email address</label>
+        <input id="sub-email" type="email" autocomplete="email" placeholder="you@company.com">
+        <button type="submit">Subscribe</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <span>Northbeam Inc</span><span aria-hidden="true">·</span><span>status.northbeam.example</span><span aria-hidden="true">·</span><span><a href="mailto:support@northbeam.example">support@northbeam.example</a></span>
+    </footer>
+  </main>
+</body>
+</html>

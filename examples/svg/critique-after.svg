@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" role="img" aria-labelledby="ca-title ca-desc" font-family="Helvetica, Arial, sans-serif">
+  <title id="ca-title">Three-stage pipeline status</title>
+  <desc id="ca-desc">Three pipeline stages connected left to right. Ingest is healthy, Process is failing, Publish is degraded. State is shown by icon shape and label as well as colour.</desc>
+  <defs>
+    <linearGradient id="ca-node" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4a90d9"/><stop offset="1" stop-color="#2b6cb0"/>
+    </linearGradient>
+    <marker id="ca-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#555e6b"/>
+    </marker>
+  </defs>
+
+  <!-- stages: one gradient reused, aligned to a common baseline y=30 -->
+  <g>
+    <rect x="24" y="30" width="96" height="44" rx="6" fill="url(#ca-node)"/>
+    <rect x="152" y="30" width="96" height="44" rx="6" fill="url(#ca-node)"/>
+    <rect x="280" y="30" width="96" height="44" rx="6" fill="url(#ca-node)"/>
+  </g>
+  <g font-size="13" fill="#ffffff" text-anchor="middle" font-weight="bold">
+    <text x="72" y="57">Ingest</text>
+    <text x="200" y="57">Process</text>
+    <text x="328" y="57">Publish</text>
+  </g>
+
+  <!-- connectors: one weight, horizontal, arrowed -->
+  <g stroke="#555e6b" stroke-width="2" marker-end="url(#ca-arrow)">
+    <line x1="120" y1="52" x2="148" y2="52"/>
+    <line x1="248" y1="52" x2="276" y2="52"/>
+  </g>
+
+  <!-- status: colour + distinct shape + text label. Label inks are tuned for light
+       backgrounds; supply a dark-theme variant (light inks) if embedding on dark. -->
+  <g text-anchor="middle" font-size="11">
+    <circle cx="72" cy="124" r="14" fill="#1e7e4f"/>
+    <path d="M66 124 l4 5 l8 -9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="72" y="158" fill="#1e3a2d" font-weight="bold">Healthy</text>
+
+    <circle cx="200" cy="124" r="14" fill="#b03a2e"/>
+    <path d="M194 118 l12 12 M206 118 l-12 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="200" y="158" fill="#6e2419" font-weight="bold">Failing</text>
+
+    <circle cx="328" cy="124" r="14" fill="#9c6f1d"/>
+    <path d="M328 116 v9 M328 131 v1.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="328" y="158" fill="#5e430f" font-weight="bold">Degraded</text>
+  </g>
+
+  <text x="24" y="188" font-size="12" fill="#555e6b">Pipeline status overview</text>
+</svg>

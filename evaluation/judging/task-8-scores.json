@@ -1,0 +1,43 @@
+{
+  "task": 8,
+  "scores": {
+    "A": {
+      "brief_alignment": 5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4.5,
+      "efficiency_no_unnecessary_complexity": 4.5
+    },
+    "B": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4.5
+    }
+  },
+  "defects": {
+    "A": [
+      "Leans on 'the catalogue's own entry' as authority several times, which weakens the argument if the reader lacks that catalogue",
+      "Champagne/brass precious accent is a known AA contrast risk on ivory; flagged for testing but still an added failure point the design does not strictly need",
+      "Slight meta-framing verbosity (selection-sentence scaffolding) spends lines on process rather than the design itself"
+    ],
+    "B": [
+      "Less structural guidance on page-level hierarchy: no fixed positions for critical data, no explicit overview-vs-drill-down density architecture beyond a row-height toggle",
+      "Overstates that neumorphism is 'nearly impossible' to retrofit to WCAG 2.2 AA; the directionally right point is asserted beyond what is defensible",
+      "No verification/QA step: contrast and semantic-colour discipline are specified but nothing enforces them (A ships explicit QA gates); minor typo 'no gradients fills'",
+      "Rejected alternative 3 (playful neobank style) was never a plausible candidate for a private bank, so one of the three rejections does less analytical work"
+    ]
+  },
+  "better_overall": "A",
+  "confidence": "medium",
+  "notes": "Both converge on the same correct answer (Swiss/International primary with an editorial-serif financial influence) and both nail the fashionable-but-unsuitable rejection with sound contrast and register arguments. A wins on system thinking: derived selection criteria, a two-tier overview/drill-down density architecture, absolute semantic-colour reservation, data-freshness as a regulatory feature, token-level AA guarantees, and shippable QA gates. B is tighter and more concrete in places (named typefaces, hex-class values, 24px targets, focus-ring spec, ARIA live regions, inducement-rule reasoning) but is thinner on composition, enforcement, and picks one strawman rejection. Margin is real but modest; weighted ~4.6 vs ~4.3."
+}

@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian</title>
+<meta name="description" content="Meridian maps, ranks, and monitors your external attack surface.">
+<style>
+  :root{
+    --ink:#141412;
+    --paper:#F2EFE8;
+    --paper-2:#EAE6DC;
+    --red:#E0301E;
+    --line:#141412;
+    --hair:1px solid var(--ink);
+    --sans:"Helvetica Neue",Helvetica,"Segoe UI",Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,Menlo,Consolas,"Liberation Mono",monospace;
+    --gutter:clamp(16px,3.4vw,48px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    font-size:16px;
+    line-height:1.5;
+  }
+  ::selection{background:var(--red);color:var(--paper)}
+
+  .wrap{max-width:1360px;margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter)}
+  .frame{max-width:1360px;margin:0 auto;border-left:var(--hair);border-right:var(--hair)}
+  @media (max-width:1392px){ .frame{border-left:none;border-right:none} }
+
+  /* ---------- type utilities ---------- */
+  .mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+  .mono-lg{font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+  .index{font-family:var(--mono);font-size:11px;letter-spacing:.14em}
+  .tick::before{content:"";display:inline-block;width:8px;height:8px;background:var(--red);margin-right:10px;vertical-align:baseline}
+
+  h1,h2,h3{font-weight:700;letter-spacing:-.035em}
+
+  a{color:inherit}
+
+  /* ---------- top bar ---------- */
+  header{border-bottom:var(--hair);position:sticky;top:0;background:var(--paper);z-index:50}
+  .bar{display:flex;align-items:stretch;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px;padding:18px var(--gutter) 18px 0;font-weight:700;font-size:20px;letter-spacing:-.02em}
+  .brand svg{display:block}
+  nav.primary{display:flex;align-items:stretch}
+  nav.primary a{
+    display:flex;align-items:center;padding:0 22px;text-decoration:none;
+    border-left:var(--hair);
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  }
+  nav.primary a:hover{background:var(--ink);color:var(--paper)}
+  nav.primary a.cta{background:var(--red);color:var(--paper);font-weight:600}
+  nav.primary a.cta:hover{background:var(--ink)}
+  @media (max-width:860px){
+    nav.primary a{padding:0 14px}
+    nav.primary a[data-opt]{display:none}
+  }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+    text-decoration:none;padding:18px 28px;border:var(--hair);
+    background:var(--ink);color:var(--paper);transition:background .15s,color .15s;
+  }
+  .btn:hover{background:var(--red);border-color:var(--red);color:var(--paper)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .btn .arr{font-family:var(--sans);font-size:14px;line-height:1}
+
+  /* ---------- section chrome ---------- */
+  .sec-head{
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:var(--hair);
+    padding:10px var(--gutter);
+    gap:16px;
+  }
+  .sec-head .right{text-align:right;color:rgba(20,20,18,.62)}
+
+  /* ---------- hero ---------- */
+  .hero{border-bottom:var(--hair);position:relative;overflow:hidden}
+  .hero-grid{
+    display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);
+    min-height:min(78vh,760px);
+  }
+  .hero-copy{
+    padding:clamp(40px,6vw,84px) var(--gutter);
+    display:flex;flex-direction:column;justify-content:space-between;gap:48px;
+  }
+  .hero h1{
+    font-size:clamp(46px,7.2vw,108px);
+    line-height:.94;
+    text-transform:uppercase;
+    letter-spacing:-.035em;
+  }
+  .hero h1 .alt{color:var(--red)}
+  .hero-sub{max-width:52ch;font-size:clamp(16px,1.35vw,19px);line-height:1.55;color:rgba(20,20,18,.84)}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .hero-kicker{display:flex;align-items:center;gap:18px;flex-wrap:wrap;color:rgba(20,20,18,.62)}
+  .hero-kicker .sep{width:34px;height:1px;background:var(--ink);opacity:.4}
+  @media (max-width:560px){
+    .hero h1{font-size:clamp(30px,9.8vw,44px)}
+  }
+
+  .hero-viz{
+    border-left:var(--hair);
+    position:relative;
+    background:
+      repeating-linear-gradient(to right, transparent 0 calc(100%/8 - 1px), rgba(20,20,18,.09) calc(100%/8 - 1px) calc(100%/8)),
+      repeating-linear-gradient(to bottom, transparent 0 79px, rgba(20,20,18,.09) 79px 80px),
+      var(--paper-2);
+    display:flex;align-items:center;justify-content:center;
+    padding:32px;
+    min-height:420px;
+  }
+  .hero-viz svg{width:100%;height:auto;max-width:560px;display:block}
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr}
+    .hero-viz{border-left:none;border-top:var(--hair);min-height:0;padding:24px 16px}
+  }
+
+  /* radar sweep */
+  @keyframes sweep{to{transform:rotate(360deg)}}
+  .sweep{transform-origin:260px 260px;animation:sweep 14s linear infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .blip{animation:blink 2.2s ease-in-out infinite}
+  .blip.d2{animation-delay:.7s}
+  .blip.d3{animation-delay:1.3s}
+  @media (prefers-reduced-motion:reduce){
+    .sweep{animation:none}
+    .blip{animation:none}
+    .tickerline{animation:none}
+  }
+
+  /* ---------- ticker ---------- */
+  .ticker{border-bottom:var(--hair);overflow:hidden;background:var(--ink);color:var(--paper)}
+  .tickerline{
+    display:flex;gap:0;white-space:nowrap;width:max-content;
+    animation:slide 48s linear infinite;
+  }
+  .tickerline span{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    padding:12px 0 12px 28px;
+  }
+  .tickerline span::after{content:"";display:inline-block;width:7px;height:7px;background:var(--red);margin-left:28px;vertical-align:1px}
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  /* ---------- features ---------- */
+  .feature{border-bottom:var(--hair)}
+  .feature-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .feature.flip .feature-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  .feature-copy{padding:clamp(40px,5vw,72px) var(--gutter);display:flex;flex-direction:column;gap:26px;justify-content:center}
+  .feature-num{
+    font-size:clamp(64px,8vw,120px);font-weight:700;line-height:.9;letter-spacing:-.04em;
+    color:transparent;-webkit-text-stroke:1.5px var(--ink);
+  }
+  .feature h2{font-size:clamp(28px,3.2vw,46px);line-height:1.04;text-transform:uppercase;max-width:16ch}
+  .feature p.lede{font-size:clamp(15px,1.25vw,18px);line-height:1.6;color:rgba(20,20,18,.84);max-width:50ch}
+  .spec-list{list-style:none;border-top:var(--hair)}
+  .spec-list li{
+    display:flex;justify-content:space-between;gap:20px;align-items:baseline;
+    border-bottom:1px solid rgba(20,20,18,.28);
+    padding:10px 0;font-size:14px;
+  }
+  .spec-list .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(20,20,18,.62);flex:none}
+  .spec-list .v{text-align:right;font-weight:500}
+  .feature-viz{
+    border-left:var(--hair);
+    background:var(--paper-2);
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(24px,4vw,56px);
+    position:relative;
+  }
+  .feature.flip .feature-viz{border-left:none;border-right:var(--hair)}
+  .feature-viz svg{width:100%;height:auto;max-width:640px;display:block}
+  .corner{position:absolute;width:14px;height:14px;pointer-events:none}
+  .corner.tl{top:10px;left:10px;border-top:var(--hair);border-left:var(--hair)}
+  .corner.tr{top:10px;right:10px;border-top:var(--hair);border-right:var(--hair)}
+  .corner.bl{bottom:10px;left:10px;border-bottom:var(--hair);border-left:var(--hair)}
+  .corner.br{bottom:10px;right:10px;border-bottom:var(--hair);border-right:var(--hair)}
+  @media (max-width:980px){
+    .feature-grid,.feature.flip .feature-grid{grid-template-columns:1fr}
+    .feature-viz,.feature.flip .feature-viz{border-left:none;border-right:none;border-top:var(--hair)}
+    .feature.flip .feature-viz{order:2}
+  }
+
+  /* ---------- social proof ---------- */
+  .proof{background:var(--ink);color:var(--paper);border-bottom:var(--hair)}
+  .proof .sec-head{border-bottom:1px solid rgba(242,239,232,.3)}
+  .proof .sec-head .right{color:rgba(242,239,232,.55)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat{
+    padding:clamp(32px,4vw,56px) var(--gutter);
+    border-right:1px solid rgba(242,239,232,.3);
+    display:flex;flex-direction:column;gap:14px;
+  }
+  .stat:last-child{border-right:none}
+  .stat .num{font-size:clamp(40px,4.6vw,68px);font-weight:700;letter-spacing:-.04em;line-height:1}
+  .stat .num sup{font-size:.45em;vertical-align:super;color:var(--red);letter-spacing:0}
+  .stat .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,239,232,.55)}
+  @media (max-width:980px){
+    .stats{grid-template-columns:1fr 1fr}
+    .stat{border-bottom:1px solid rgba(242,239,232,.3)}
+    .stat:nth-child(2n){border-right:none}
+    .stat:nth-child(3),.stat:nth-child(4){border-bottom:none}
+  }
+  .quote-row{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);border-top:1px solid rgba(242,239,232,.3)}
+  .quote{padding:clamp(40px,5vw,72px) var(--gutter)}
+  .quote blockquote{
+    font-size:clamp(22px,2.6vw,36px);font-weight:500;letter-spacing:-.02em;line-height:1.25;
+    max-width:28ch;text-wrap:balance;
+  }
+  .quote blockquote em{font-style:normal;color:var(--red)}
+  .quote figcaption{margin-top:28px;display:flex;gap:16px;align-items:center}
+  .quote .avatar{width:44px;height:44px;border:1px solid rgba(242,239,232,.5);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em}
+  .quote .who{font-size:14px;line-height:1.4}
+  .quote .who .mono{color:rgba(242,239,232,.55)}
+  .logos{
+    border-left:1px solid rgba(242,239,232,.3);
+    display:flex;flex-direction:column;
+  }
+  .logos .logo{
+    flex:1;display:flex;align-items:center;padding:18px var(--gutter);
+    border-bottom:1px solid rgba(242,239,232,.3);
+    font-family:var(--mono);font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(242,239,232,.78);
+  }
+  .logos .logo:last-child{border-bottom:none}
+  .logos .logo b{font-family:var(--sans);font-weight:700;letter-spacing:.04em;margin-right:8px}
+  @media (max-width:980px){
+    .quote-row{grid-template-columns:1fr}
+    .logos{border-left:none;border-top:1px solid rgba(242,239,232,.3)}
+    .logos .logo{padding:16px var(--gutter)}
+  }
+
+  /* ---------- CTA ---------- */
+  .cta{background:var(--red);color:var(--paper);border-bottom:var(--hair)}
+  .cta .inner{
+    padding:clamp(56px,8vw,120px) var(--gutter);
+    display:flex;flex-direction:column;gap:40px;align-items:flex-start;
+  }
+  .cta h2{
+    font-size:clamp(40px,6.4vw,96px);line-height:.95;text-transform:uppercase;letter-spacing:-.035em;
+    max-width:16ch;
+  }
+  .cta .mono{color:rgba(242,239,232,.8)}
+  .cta-actions{display:flex;gap:16px;flex-wrap:wrap}
+  .cta .btn{background:var(--ink);border-color:var(--ink)}
+  .cta .btn:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .cta .btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper)}
+  .cta .btn.ghost:hover{background:var(--paper);color:var(--red)}
+  .cta .fine{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,239,232,.75)}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--paper)}
+  .foot{
+    display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    padding:22px var(--gutter);
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:rgba(20,20,18,.62);
+  }
+  .foot a{text-decoration:none}
+  .foot a:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+<!-- ======================= TOP BAR ======================= -->
+<header>
+  <div class="bar" style="padding-left:var(--gutter)">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <circle cx="13" cy="13" r="11.5" fill="none" stroke="#141412" stroke-width="1.5"/>
+        <line x1="13" y1="1.5" x2="13" y2="24.5" stroke="#141412" stroke-width="1.5"/>
+        <circle cx="13" cy="13" r="3" fill="#E0301E"/>
+      </svg>
+      MERIDIAN
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <a href="#discover" data-opt>Discover</a>
+      <a href="#rank" data-opt>Prioritize</a>
+      <a href="#watch" data-opt>Monitor</a>
+      <a href="#proof" data-opt>Customers</a>
+      <a class="cta" href="#start">Map my surface</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ======================= HERO ======================= -->
+<section class="hero" aria-label="Overview">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="hero-kicker">
+        <span class="mono tick">External attack surface management</span>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="mono">EST. SCAN HORIZON · 24/7</span>
+      </div>
+      <div>
+        <h1>Every asset.<br>Every exposure.<br><span class="alt">One&nbsp;map.</span></h1>
+        <p class="hero-sub" style="margin-top:28px">
+          Meridian continuously discovers the internet-facing assets your teams forgot,
+          inherited, or never knew existed, then ranks what an attacker would reach first.
+          No agents. No seed lists to babysit. Just the truth about your perimeter.
+        </p>
+      </div>
+      <div>
+        <div class="hero-actions">
+          <a class="btn" href="#start">Start free scan <span class="arr">&rarr;</span></a>
+          <a class="btn ghost" href="#discover">See the method <span class="arr">&darr;</span></a>
+        </div>
+        <p class="mono" style="margin-top:22px;color:rgba(20,20,18,.62)">
+          First inventory in &lt; 48 h &nbsp;/&nbsp; No deployment &nbsp;/&nbsp; SOC 2 Type II
+        </p>
+      </div>
+    </div>
+
+    <div class="hero-viz" aria-hidden="true">
+      <!-- Instrument: perimeter radar -->
+      <svg viewBox="0 0 520 520" fill="none">
+        <defs>
+          <clipPath id="clip"><rect x="0" y="0" width="520" height="520"/></clipPath>
+        </defs>
+        <g clip-path="url(#clip)" font-family="SF Mono,ui-monospace,Menlo,monospace">
+          <!-- rings -->
+          <circle cx="260" cy="260" r="228" stroke="#141412" stroke-width="1"/>
+          <circle cx="260" cy="260" r="170" stroke="#141412" stroke-width="1" stroke-dasharray="3 5"/>
+          <circle cx="260" cy="260" r="112" stroke="#141412" stroke-width="1" stroke-dasharray="3 5"/>
+          <circle cx="260" cy="260" r="54" stroke="#141412" stroke-width="1"/>
+          <!-- axes -->
+          <line x1="260" y1="20" x2="260" y2="500" stroke="#141412" stroke-width="1" opacity=".35"/>
+          <line x1="20" y1="260" x2="500" y2="260" stroke="#141412" stroke-width="1" opacity=".35"/>
+          <!-- bearing ticks -->
+          <g stroke="#141412" stroke-width="1">
+            <line x1="260" y1="26" x2="260" y2="38"/><line x1="494" y1="260" x2="482" y2="260"/>
+            <line x1="260" y1="494" x2="260" y2="482"/><line x1="26" y1="260" x2="38" y2="260"/>
+            <line x1="425" y1="95" x2="417" y2="103"/><line x1="95" y1="425" x2="103" y2="417"/>
+            <line x1="425" y1="425" x2="417" y2="417"/><line x1="95" y1="95" x2="103" y2="103"/>
+          </g>
+          <!-- sweep -->
+          <g class="sweep">
+            <path d="M260 260 L260 32 A228 228 0 0 1 372 61 Z" fill="#E0301E" opacity=".12"/>
+            <line x1="260" y1="260" x2="260" y2="32" stroke="#E0301E" stroke-width="1.5"/>
+          </g>
+          <!-- core -->
+          <circle cx="260" cy="260" r="7" fill="#141412"/>
+          <text x="274" y="252" font-size="11" letter-spacing="1" fill="#141412">CORE.NET</text>
+          <!-- known assets -->
+          <g>
+            <circle cx="338" cy="186" r="5" fill="#141412"/>
+            <line x1="260" y1="260" x2="338" y2="186" stroke="#141412" stroke-width="1" opacity=".5"/>
+            <text x="348" y="182" font-size="10" letter-spacing="1" fill="#141412">API.GW-02</text>
+
+            <circle cx="186" cy="318" r="5" fill="#141412"/>
+            <line x1="260" y1="260" x2="186" y2="318" stroke="#141412" stroke-width="1" opacity=".5"/>
+            <text x="92" y="340" font-size="10" letter-spacing="1" fill="#141412">MAIL.EDGE</text>
+
+            <circle cx="310" cy="352" r="5" fill="#141412"/>
+            <line x1="260" y1="260" x2="310" y2="352" stroke="#141412" stroke-width="1" opacity=".5"/>
+            <text x="322" y="368" font-size="10" letter-spacing="1" fill="#141412">VPN-EU-1</text>
+          </g>
+          <!-- unknown / flagged assets -->
+          <g>
+            <line x1="260" y1="260" x2="404" y2="132" stroke="#E0301E" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle class="blip" cx="404" cy="132" r="6" fill="#E0301E"/>
+            <rect x="414" y="106" width="88" height="30" fill="#141412"/>
+            <text x="422" y="118" font-size="9" letter-spacing="1" fill="#F2EFE8">S3.PUBLIC</text>
+            <text x="422" y="130" font-size="9" letter-spacing="1" fill="#E0301E">UNMANAGED</text>
+
+            <line x1="260" y1="260" x2="118" y2="156" stroke="#E0301E" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle class="blip d2" cx="118" cy="156" r="6" fill="#E0301E"/>
+            <rect x="30" y="118" width="110" height="30" fill="#141412"/>
+            <text x="38" y="130" font-size="9" letter-spacing="1" fill="#F2EFE8">DEV.STAGING-OLD</text>
+            <text x="38" y="142" font-size="9" letter-spacing="1" fill="#E0301E">CVE-2025-1182</text>
+
+            <line x1="260" y1="260" x2="150" y2="408" stroke="#E0301E" stroke-width="1" stroke-dasharray="4 4"/>
+            <circle class="blip d3" cx="150" cy="408" r="6" fill="#E0301E"/>
+            <rect x="60" y="420" width="118" height="18" fill="#141412"/>
+            <text x="68" y="432" font-size="9" letter-spacing="1" fill="#F2EFE8">RDP.3389 / OPEN</text>
+          </g>
+          <!-- dial labels -->
+          <text x="246" y="18" font-size="10" letter-spacing="2" fill="#141412">000</text>
+          <text x="500" y="264" font-size="10" letter-spacing="2" fill="#141412" text-anchor="end">090</text>
+          <text x="246" y="514" font-size="10" letter-spacing="2" fill="#141412">180</text>
+          <text x="20" y="264" font-size="10" letter-spacing="2" fill="#141412">270</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= TICKER ======================= -->
+<div class="ticker" aria-hidden="true">
+  <div class="tickerline">
+    <span>NEW SUBDOMAIN: CDN-LEGACY.EXAMPLO.COM</span>
+    <span>PORT 9200 EXPOSED · ES CLUSTER · 14:02 UTC</span>
+    <span>CERT EXPIRES IN 6 DAYS · PAY.EXAMPLO.COM</span>
+    <span>SHADOW IT: 3 SAAS TENANTS ATTRIBUTED</span>
+    <span>CVE-2025-1182 MATCHED ON 2 HOSTS</span>
+    <span>TAKEOVER CANDIDATE: DANGLING CNAME</span>
+    <span>NEW SUBDOMAIN: CDN-LEGACY.EXAMPLO.COM</span>
+    <span>PORT 9200 EXPOSED · ES CLUSTER · 14:02 UTC</span>
+    <span>CERT EXPIRES IN 6 DAYS · PAY.EXAMPLO.COM</span>
+    <span>SHADOW IT: 3 SAAS TENANTS ATTRIBUTED</span>
+    <span>CVE-2025-1182 MATCHED ON 2 HOSTS</span>
+    <span>TAKEOVER CANDIDATE: DANGLING CNAME</span>
+  </div>
+</div>
+
+<!-- ======================= FEATURE 01 ======================= -->
+<section class="feature" id="discover">
+  <div class="sec-head">
+    <span class="index">01 / 03 · DISCOVERY</span>
+    <span class="mono right">FIG. 1 · ASSET GRAPH</span>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-copy">
+      <div class="feature-num" aria-hidden="true">01</div>
+      <h2>Find what you own. Including what you forgot.</h2>
+      <p class="lede">
+        Starting from a single domain, Meridian walks certificates, DNS, WHOIS,
+        BGP, and cloud tenancy records to reconstruct your real estate:
+        subsidiaries, acquisitions, staging boxes, and the S3 bucket from 2019.
+        Every asset arrives with evidence of why we believe it is yours.
+      </p>
+      <ul class="spec-list">
+        <li><span class="k">Seed input</span><span class="v">One domain</span></li>
+        <li><span class="k">Attribution</span><span class="v">Evidence-chained, confidence-scored</span></li>
+        <li><span class="k">Coverage</span><span class="v">Domains · IPs · Cloud · SaaS · Mobile</span></li>
+        <li><span class="k">Typical uplift</span><span class="v">+38% assets vs. internal CMDB</span></li>
+      </ul>
+    </div>
+    <div class="feature-viz" aria-hidden="true">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <!-- Instrument: attribution graph -->
+      <svg viewBox="0 0 640 420" fill="none" font-family="SF Mono,ui-monospace,Menlo,monospace">
+        <!-- edges -->
+        <g stroke="#141412" stroke-width="1">
+          <line x1="90" y1="210" x2="250" y2="100"/>
+          <line x1="90" y1="210" x2="250" y2="210"/>
+          <line x1="90" y1="210" x2="250" y2="320"/>
+          <line x1="250" y1="100" x2="420" y2="60"/>
+          <line x1="250" y1="100" x2="420" y2="140"/>
+          <line x1="250" y1="210" x2="420" y2="230"/>
+          <line x1="250" y1="320" x2="420" y2="320"/>
+          <line x1="420" y1="140" x2="560" y2="110" stroke-dasharray="4 4" stroke="#E0301E"/>
+          <line x1="420" y1="320" x2="560" y2="360" stroke-dasharray="4 4" stroke="#E0301E"/>
+        </g>
+        <!-- edge annotations -->
+        <text x="150" y="140" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">CERT SAN</text>
+        <text x="150" y="184" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">WHOIS ORG</text>
+        <text x="146" y="288" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">ASN 64500</text>
+        <text x="452" y="96" font-size="9" letter-spacing="1" fill="#E0301E">CNAME → ?</text>
+        <!-- root node -->
+        <rect x="34" y="188" width="112" height="44" fill="#141412"/>
+        <text x="48" y="207" font-size="10" letter-spacing="1" fill="#F2EFE8">EXAMPLO.COM</text>
+        <text x="48" y="221" font-size="9" letter-spacing="1" fill="#E0301E">SEED</text>
+        <!-- tier 2 -->
+        <g>
+          <rect x="196" y="80" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="208" y="97" font-size="9" letter-spacing="1" fill="#141412">EXAMPLO.IO</text>
+          <text x="208" y="111" font-size="9" fill="#141412" opacity=".6">CONF 0.98</text>
+          <rect x="196" y="190" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="208" y="207" font-size="9" letter-spacing="1" fill="#141412">ACME-SUB LTD</text>
+          <text x="208" y="221" font-size="9" fill="#141412" opacity=".6">CONF 0.95</text>
+          <rect x="196" y="300" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="208" y="317" font-size="9" letter-spacing="1" fill="#141412">AS 64500</text>
+          <text x="208" y="331" font-size="9" fill="#141412" opacity=".6">212 HOSTS</text>
+        </g>
+        <!-- tier 3 -->
+        <g>
+          <rect x="366" y="40" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="378" y="57" font-size="9" letter-spacing="1" fill="#141412">API.EXAMPLO.IO</text>
+          <text x="378" y="71" font-size="9" fill="#141412" opacity=".6">TLS 1.3 · 443</text>
+          <rect x="366" y="120" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="378" y="137" font-size="9" letter-spacing="1" fill="#141412">CDN-LEGACY</text>
+          <text x="378" y="151" font-size="9" fill="#141412" opacity=".6">LAST SEEN 02:14</text>
+          <rect x="366" y="210" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="378" y="227" font-size="9" letter-spacing="1" fill="#141412">PAY.EXAMPLO.COM</text>
+          <text x="378" y="241" font-size="9" fill="#141412" opacity=".6">PCI SCOPE</text>
+          <rect x="366" y="300" width="108" height="40" fill="#F2EFE8" stroke="#141412"/>
+          <text x="378" y="317" font-size="9" letter-spacing="1" fill="#141412">10.PUB/24 BLOCK</text>
+          <text x="378" y="331" font-size="9" fill="#141412" opacity=".6">SCANNED 100%</text>
+        </g>
+        <!-- discovered unknowns -->
+        <rect x="520" y="88" width="104" height="44" fill="#E0301E"/>
+        <text x="530" y="106" font-size="9" letter-spacing="1" fill="#F2EFE8">DANGLING CNAME</text>
+        <text x="530" y="120" font-size="9" letter-spacing="1" fill="#F2EFE8">TAKEOVER RISK</text>
+        <rect x="520" y="338" width="104" height="44" fill="#E0301E"/>
+        <text x="530" y="356" font-size="9" letter-spacing="1" fill="#F2EFE8">S3.PUBLIC-DUMP</text>
+        <text x="530" y="370" font-size="9" letter-spacing="1" fill="#F2EFE8">NOT IN CMDB</text>
+        <!-- scale bar -->
+        <g stroke="#141412" stroke-width="1">
+          <line x1="34" y1="396" x2="154" y2="396"/>
+          <line x1="34" y1="391" x2="34" y2="401"/><line x1="94" y1="393" x2="94" y2="399"/><line x1="154" y1="391" x2="154" y2="401"/>
+        </g>
+        <text x="34" y="414" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">1 HOP = 1 EVIDENCE LINK</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FEATURE 02 ======================= -->
+<section class="feature flip" id="rank">
+  <div class="sec-head">
+    <span class="index">02 / 03 · PRIORITIZATION</span>
+    <span class="mono right">FIG. 2 · EXPOSURE LADDER</span>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-viz" aria-hidden="true">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <!-- Instrument: ranked exposure bars -->
+      <svg viewBox="0 0 640 420" fill="none" font-family="SF Mono,ui-monospace,Menlo,monospace">
+        <!-- axis -->
+        <line x1="150" y1="30" x2="150" y2="380" stroke="#141412" stroke-width="1"/>
+        <line x1="150" y1="380" x2="620" y2="380" stroke="#141412" stroke-width="1"/>
+        <g stroke="#141412" stroke-width="1" opacity=".25">
+          <line x1="268" y1="30" x2="268" y2="380"/>
+          <line x1="386" y1="30" x2="386" y2="380"/>
+          <line x1="504" y1="30" x2="504" y2="380"/>
+        </g>
+        <text x="150" y="400" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">0</text>
+        <text x="262" y="400" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">25</text>
+        <text x="380" y="400" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">50</text>
+        <text x="498" y="400" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">75</text>
+        <text x="606" y="400" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">100</text>
+        <text x="150" y="20" font-size="9" letter-spacing="2" fill="#141412" opacity=".65">EXPOSURE SCORE = REACHABILITY × IMPACT × EXPLOIT MATURITY</text>
+        <!-- bars -->
+        <g>
+          <rect x="151" y="44"  width="440" height="30" fill="#E0301E"/>
+          <text x="156" y="63"  font-size="10" letter-spacing="1" fill="#F2EFE8">94 · KEV MATCH</text>
+          <text x="10" y="63"  font-size="9" letter-spacing="1" fill="#141412">VPN-EU-1</text>
+
+          <rect x="151" y="96"  width="384" height="30" fill="#E0301E" opacity=".85"/>
+          <text x="156" y="115" font-size="10" letter-spacing="1" fill="#F2EFE8">82 · CREDS FOR SALE</text>
+          <text x="10" y="115" font-size="9" letter-spacing="1" fill="#141412">RDP.3389</text>
+
+          <rect x="151" y="148" width="300" height="30" fill="#141412"/>
+          <text x="156" y="167" font-size="10" letter-spacing="1" fill="#F2EFE8">64 · PUBLIC BUCKET</text>
+          <text x="10" y="167" font-size="9" letter-spacing="1" fill="#141412">S3.DUMP</text>
+
+          <rect x="151" y="200" width="230" height="30" fill="#141412" opacity=".8"/>
+          <text x="156" y="219" font-size="10" letter-spacing="1" fill="#F2EFE8">49 · CERT EXPIRY</text>
+          <text x="10" y="219" font-size="9" letter-spacing="1" fill="#141412">PAY.GW</text>
+
+          <rect x="151" y="252" width="150" height="30" fill="#141412" opacity=".55"/>
+          <text x="156" y="271" font-size="10" letter-spacing="1" fill="#F2EFE8">31 · BANNER LEAK</text>
+          <text x="10" y="271" font-size="9" letter-spacing="1" fill="#141412">MAIL.EDGE</text>
+
+          <rect x="151" y="304" width="86" height="30" fill="#141412" opacity=".35"/>
+          <text x="245" y="323" font-size="10" letter-spacing="1" fill="#141412">17 · INFO</text>
+          <text x="10" y="323" font-size="9" letter-spacing="1" fill="#141412">CDN-04</text>
+        </g>
+        <!-- cutline -->
+        <line x1="420" y1="30" x2="420" y2="380" stroke="#E0301E" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <rect x="428" y="336" width="160" height="20" fill="#E0301E"/>
+        <text x="436" y="350" font-size="9" letter-spacing="1" fill="#F2EFE8">FIX ABOVE THIS LINE FIRST</text>
+      </svg>
+    </div>
+    <div class="feature-copy">
+      <div class="feature-num" aria-hidden="true">02</div>
+      <h2>Rank by what an attacker does next.</h2>
+      <p class="lede">
+        CVSS treats a lab like a battlefield. Meridian does not. Each finding is scored
+        on reachability from the open internet, known exploitation in the wild, and the
+        blast radius of the asset behind it. Your Monday morning queue drops from
+        4,000 alerts to the 12 that matter.
+      </p>
+      <ul class="spec-list">
+        <li><span class="k">Signal inputs</span><span class="v">KEV · EPSS · Darkweb chatter · Reachability</span></li>
+        <li><span class="k">Noise cut</span><span class="v">97% of raw findings suppressed</span></li>
+        <li><span class="k">Routing</span><span class="v">Jira, ServiceNow, Slack, webhook</span></li>
+        <li><span class="k">Proof</span><span class="v">Replayable evidence per finding</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FEATURE 03 ======================= -->
+<section class="feature" id="watch">
+  <div class="sec-head">
+    <span class="index">03 / 03 · CONTINUOUS MONITORING</span>
+    <span class="mono right">FIG. 3 · DRIFT LOG</span>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-copy">
+      <div class="feature-num" aria-hidden="true">03</div>
+      <h2>Your perimeter changed while you read this.</h2>
+      <p class="lede">
+        Marketing shipped a microsite. An engineer opened a port to debug. A cert
+        quietly expired. Meridian re-observes your estate around the clock and diffs
+        every change against yesterday, so you learn about drift from a notification,
+        not a breach report.
+      </p>
+      <ul class="spec-list">
+        <li><span class="k">Re-scan cadence</span><span class="v">Continuous, full sweep every 24 h</span></li>
+        <li><span class="k">Change diff</span><span class="v">Ports · Services · DNS · Certs · Headers</span></li>
+        <li><span class="k">Mean detection</span><span class="v">New exposure flagged in &lt; 4 h</span></li>
+        <li><span class="k">History</span><span class="v">13-month timeline per asset</span></li>
+      </ul>
+    </div>
+    <div class="feature-viz" aria-hidden="true">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <!-- Instrument: drift timeline -->
+      <svg viewBox="0 0 640 420" fill="none" font-family="SF Mono,ui-monospace,Menlo,monospace">
+        <!-- time axis -->
+        <line x1="40" y1="60" x2="40" y2="390" stroke="#141412" stroke-width="1"/>
+        <g stroke="#141412" stroke-width="1">
+          <line x1="34" y1="90" x2="46" y2="90"/><line x1="34" y1="150" x2="46" y2="150"/>
+          <line x1="34" y1="210" x2="46" y2="210"/><line x1="34" y1="270" x2="46" y2="270"/>
+          <line x1="34" y1="330" x2="46" y2="330"/>
+        </g>
+        <text x="40" y="44" font-size="9" letter-spacing="2" fill="#141412" opacity=".65">OBSERVATION LOG · UTC</text>
+        <!-- entries -->
+        <g>
+          <text x="60" y="86" font-size="9" fill="#141412" opacity=".6">02:14</text>
+          <circle cx="112" cy="83" r="4" fill="#141412"/>
+          <text x="128" y="86" font-size="10" letter-spacing="1" fill="#141412">DNS Δ · NEW CNAME promo.examplo.com</text>
+          <text x="128" y="100" font-size="9" fill="#141412" opacity=".6">ATTRIBUTED · WATCHING</text>
+
+          <text x="60" y="146" font-size="9" fill="#141412" opacity=".6">04:51</text>
+          <circle cx="112" cy="143" r="4" fill="#141412"/>
+          <text x="128" y="146" font-size="10" letter-spacing="1" fill="#141412">TLS Δ · CERT RENEWED pay.examplo.com</text>
+          <text x="128" y="160" font-size="9" fill="#141412" opacity=".6">OK · NO ACTION</text>
+
+          <text x="60" y="206" font-size="9" fill="#141412" opacity=".6">09:27</text>
+          <circle cx="112" cy="203" r="5" fill="#E0301E" class="blip"/>
+          <rect x="124" y="190" width="332" height="40" fill="#141412"/>
+          <text x="134" y="206" font-size="10" letter-spacing="1" fill="#F2EFE8">PORT Δ · 5432/TCP OPENED db-tmp.examplo.io</text>
+          <text x="134" y="221" font-size="9" letter-spacing="1" fill="#E0301E">ALERT SENT → #SEC-ONCALL · 09:31</text>
+
+          <text x="60" y="266" font-size="9" fill="#141412" opacity=".6">09:58</text>
+          <circle cx="112" cy="263" r="4" fill="#141412"/>
+          <text x="128" y="266" font-size="10" letter-spacing="1" fill="#141412">PORT Δ · 5432/TCP CLOSED db-tmp.examplo.io</text>
+          <text x="128" y="280" font-size="9" fill="#141412" opacity=".6">RESOLVED IN 31 MIN · TICKET SEC-2214</text>
+
+          <text x="60" y="326" font-size="9" fill="#141412" opacity=".6">14:02</text>
+          <circle cx="112" cy="323" r="4" fill="#141412"/>
+          <text x="128" y="326" font-size="10" letter-spacing="1" fill="#141412">HTTP Δ · HEADER server: EXPOSED VERSION</text>
+          <text x="128" y="340" font-size="9" fill="#141412" opacity=".6">LOW · QUEUED</text>
+        </g>
+        <!-- footer rule -->
+        <line x1="40" y1="390" x2="600" y2="390" stroke="#141412" stroke-width="1" opacity=".35"/>
+        <text x="40" y="410" font-size="9" letter-spacing="1" fill="#141412" opacity=".65">Δ = OBSERVED CHANGE VS. PRIOR SWEEP</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SOCIAL PROOF ======================= -->
+<section class="proof" id="proof">
+  <div class="sec-head">
+    <span class="index">04 · FIELD RESULTS</span>
+    <span class="mono right">MEASURED ACROSS ACTIVE DEPLOYMENTS</span>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="num">38<sup>%</sup></span><span class="lbl">More assets found vs. internal inventories</span></div>
+    <div class="stat"><span class="num">&lt;4<sup>h</sup></span><span class="lbl">Median time to flag a new exposure</span></div>
+    <div class="stat"><span class="num">97<sup>%</sup></span><span class="lbl">Raw findings suppressed as noise</span></div>
+    <div class="stat"><span class="num">214</span><span class="lbl">Security teams mapping with Meridian</span></div>
+  </div>
+  <div class="quote-row">
+    <figure class="quote">
+      <blockquote>
+        &ldquo;Meridian found a forgotten acquisition subnet in week one.
+        Our pen testers had missed it for <em>three years.</em>&rdquo;
+      </blockquote>
+      <figcaption>
+        <span class="avatar" aria-hidden="true">HK</span>
+        <span class="who">
+          <strong>Hanne Kristiansen</strong><br>
+          <span class="mono">CISO · NORDVIK LOGISTICS GROUP</span>
+        </span>
+      </figcaption>
+    </figure>
+    <div class="logos" aria-label="Customers">
+      <span class="logo"><b>NORDVIK</b> LOGISTICS</span>
+      <span class="logo"><b>HELIX</b> PAYMENTS</span>
+      <span class="logo"><b>KESTREL</b> ENERGY</span>
+      <span class="logo"><b>ARQUIVO</b> BANK</span>
+      <span class="logo"><b>TESSELLATE</b> HEALTH</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= CTA ======================= -->
+<section class="cta" id="start">
+  <div class="inner">
+    <span class="mono">05 · BEGIN SURVEY · NO DEPLOYMENT REQUIRED</span>
+    <h2>See your surface the way attackers already do.</h2>
+    <div class="cta-actions">
+      <a class="btn" href="#start">Start free scan <span class="arr">&rarr;</span></a>
+      <a class="btn ghost" href="#start">Book a live walkthrough</a>
+    </div>
+    <p class="fine">One domain in. Full external inventory out, within 48 hours. No credit card.</p>
+  </div>
+</section>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+  <div class="foot">
+    <span>MERIDIAN ATTACK SURFACE MANAGEMENT</span>
+    <span>
+      <a href="#discover">Method</a> &nbsp;·&nbsp;
+      <a href="#proof">Customers</a> &nbsp;·&nbsp;
+      <a href="#start">Trial</a>
+    </span>
+    <span>SOC 2 TYPE II · GDPR · © 2026</span>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>

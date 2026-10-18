@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aegis SOC Console</title>
+<style>
+  :root {
+    color-scheme: dark;
+    /* surfaces & ink (validated dark set) */
+    --page:          #0d0d0d;
+    --surface-1:     #1a1a19;
+    --surface-2:     #222221;
+    --text-primary:  #f0efec;
+    --text-secondary:#c3c2b7;
+    --text-muted:    #898781;
+    --grid:          #2c2c2a;
+    --baseline:      #383835;
+    --border:        rgba(255,255,255,0.10);
+    /* categorical (dark steps) */
+    --series-1:      #3987e5;  /* blue  */
+    --series-2:      #d95926;  /* orange */
+    --series-3:      #199e70;  /* aqua  */
+    /* status / severity (fixed) */
+    --sev-critical:  #d03b3b;
+    --sev-high:      #ec835a;
+    --sev-medium:    #fab219;
+    --sev-low:       #3987e5;  /* informational blue, not "good" green */
+    --ok:            #0ca30c;
+    --focus:         #3987e5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 0 16px 32px;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 2px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 16px; letter-spacing: .2px; }
+  .brand svg { display: block; }
+  .env {
+    font-size: 11px; font-weight: 600; letter-spacing: .4px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 2px 9px;
+  }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+  header .spacer { flex: 1; }
+  .meta { font-size: 12px; color: var(--text-muted); text-align: right; line-height: 1.5; }
+  .meta strong { color: var(--text-secondary); font-weight: 600; }
+
+  /* ---------- layout ---------- */
+  .kpis {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    margin: 16px 0 12px;
+  }
+  .main {
+    display: grid; gap: 12px;
+    grid-template-columns: minmax(0, 2.1fr) minmax(300px, 1fr);
+    grid-template-areas:
+      "trend   trend"
+      "clients clients"
+      "queue   detail";
+  }
+  #panel-trend   { grid-area: trend; }
+  #panel-clients { grid-area: clients; }
+  #panel-queue   { grid-area: queue; }
+  #panel-detail  { grid-area: detail; }
+
+  .panel {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px 16px;
+    min-width: 0;
+  }
+  .panel h2 {
+    margin: 0; font-size: 13px; font-weight: 650; letter-spacing: .2px;
+    color: var(--text-primary);
+  }
+  .panel .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .panel-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .panel-head .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+  /* ---------- KPI tiles ---------- */
+  .tile {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px 11px;
+    min-width: 0;
+  }
+  .tile .label { font-size: 12px; color: var(--text-muted); }
+  .tile .value { font-size: 26px; font-weight: 650; line-height: 1.15; margin-top: 2px; }
+  .tile .delta { font-size: 12px; margin-top: 3px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+  .tile .delta.up-bad   { color: var(--sev-high); }
+  .tile .delta.down-good{ color: var(--ok); }
+  .tile .accent { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 7px; vertical-align: 1px; }
+
+  /* ---------- severity badges ---------- */
+  .sev {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 650; letter-spacing: .4px;
+    padding: 2px 8px 2px 7px; border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .sev::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--c, var(--text-muted)); }
+  .sev-critical { --c: var(--sev-critical); background: rgba(208,59,59,.13); }
+  .sev-high     { --c: var(--sev-high);     background: rgba(236,131,90,.11); }
+  .sev-medium   { --c: var(--sev-medium);   background: rgba(250,178,25,.10); }
+  .sev-low      { --c: var(--sev-low);      background: rgba(57,135,229,.11); }
+
+  .status-chip { font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+
+  /* ---------- filters ---------- */
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font: inherit; font-size: 12px; font-weight: 550;
+    color: var(--text-secondary);
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px 11px; cursor: pointer;
+  }
+  .chip:hover { background: var(--surface-2); }
+  .chip[aria-pressed="true"] {
+    color: var(--text-primary); background: var(--surface-2);
+    border-color: var(--text-muted);
+  }
+  .chip .n { color: var(--text-muted); margin-left: 4px; }
+  .search {
+    font: inherit; font-size: 12.5px; color: var(--text-primary);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px; width: 190px;
+  }
+  .search::placeholder { color: var(--text-muted); }
+  .chip:focus-visible, .search:focus-visible, .row:focus-visible, .cell:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--focus); outline-offset: 1px;
+  }
+
+  /* ---------- trend chart ---------- */
+  .chart-wrap { position: relative; }
+  .chart-wrap svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .swatch { width: 10px; height: 10px; border-radius: 2px; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 5;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; color: var(--text-secondary);
+    box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    min-width: 128px; display: none;
+  }
+  .tooltip .t-title { color: var(--text-primary); font-weight: 600; margin-bottom: 4px; }
+  .tooltip .t-row { display: flex; justify-content: space-between; gap: 14px; align-items: center; }
+  .tooltip .t-row .k { display: inline-flex; align-items: center; gap: 6px; }
+  .tooltip .t-row .sw { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .tooltip .t-row .v { color: var(--text-primary); }
+
+  /* ---------- client grid ---------- */
+  .client-grid {
+    display: grid; gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  }
+  .cell {
+    text-align: left; font: inherit; cursor: pointer;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--sevc, var(--baseline));
+    border-radius: 8px; padding: 7px 9px 6px;
+    color: var(--text-primary); min-width: 0;
+  }
+  .cell:hover { border-color: var(--text-muted); border-left-color: var(--sevc, var(--baseline)); }
+  .cell[aria-pressed="true"] { outline: 2px solid var(--focus); outline-offset: 0; }
+  .cell .cname { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cell .cmeta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; justify-content: space-between; gap: 6px; }
+  .cell .cmeta .worst { color: var(--text-secondary); font-weight: 600; }
+
+  /* ---------- queue table ---------- */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tbl th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .5px;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 6px 10px; border-bottom: 1px solid var(--baseline);
+    white-space: nowrap;
+  }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  .tbl tr.row { cursor: pointer; }
+  .tbl tr.row:hover td { background: var(--surface-2); }
+  .tbl tr.row[aria-selected="true"] td { background: var(--surface-2); }
+  .tbl tr.row[aria-selected="true"] td:first-child { box-shadow: inset 3px 0 0 var(--focus); }
+  .a-title { font-weight: 600; color: var(--text-primary); }
+  .a-sub { color: var(--text-muted); font-size: 11.5px; margin-top: 1px; }
+  .t-age { color: var(--text-secondary); white-space: nowrap; }
+  .t-age.breach { color: var(--sev-high); font-weight: 600; }
+  .empty { padding: 26px 10px; color: var(--text-muted); text-align: center; }
+  .queue-scroll { max-height: 560px; overflow: auto; margin: 0 -16px -16px; padding: 0 16px 8px; }
+
+  /* ---------- detail panel ---------- */
+  #panel-detail { position: sticky; top: 12px; align-self: start; }
+  .d-title { font-size: 15px; font-weight: 650; margin: 8px 0 2px; }
+  .d-id { font-size: 11.5px; color: var(--text-muted); }
+  .d-desc { font-size: 12.5px; color: var(--text-secondary); margin: 8px 0 0; }
+  .d-section { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--grid); }
+  .d-section h3 { margin: 0 0 8px; font-size: 11px; font-weight: 650; letter-spacing: .5px; text-transform: uppercase; color: var(--text-muted); }
+  .kv { display: grid; grid-template-columns: 110px 1fr; row-gap: 5px; column-gap: 10px; font-size: 12.5px; }
+  .kv dt { color: var(--text-muted); margin: 0; }
+  .kv dd { color: var(--text-primary); margin: 0; overflow-wrap: anywhere; }
+  .tagrow { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .tag { font-size: 11px; color: var(--text-secondary); background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 2px 7px; }
+  .timeline { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+  .timeline li { display: flex; gap: 10px; padding: 4px 0; }
+  .timeline .tt { color: var(--text-muted); white-space: nowrap; width: 52px; }
+  .timeline .tv { color: var(--text-secondary); }
+  .actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 7px 13px;
+    border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-primary);
+  }
+  .btn:hover { border-color: var(--text-muted); }
+  .btn.primary { background: #1c5cab; border-color: #1c5cab; }
+  .btn.primary:hover { background: #256abf; }
+  .mini-note { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+
+  @media (max-width: 980px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .main { grid-template-columns: 1fr; grid-template-areas: "trend" "clients" "queue" "detail"; }
+    #panel-detail { position: static; }
+    .search { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+      <path d="M11 1.5 19 4.8v5.4c0 4.8-3.4 8.6-8 10.3-4.6-1.7-8-5.5-8-10.3V4.8L11 1.5z"
+            fill="none" stroke="#3987e5" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M7.2 11.2l2.6 2.6 5-5.2" fill="none" stroke="#f0efec" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Aegis SOC Console
+  </div>
+  <span class="env">MSSP &middot; 40 CLIENT ORGS</span>
+  <span class="live"><span class="dot"></span>Ingest live &middot; 6 sources</span>
+  <div class="spacer"></div>
+  <div class="meta">
+    <div><strong>Shift B</strong> &middot; analyst on triage: D. Rao</div>
+    <div class="num" id="clock">—</div>
+  </div>
+</header>
+
+<section class="kpis" aria-label="Key metrics">
+  <div class="tile">
+    <div class="label">Open alerts</div>
+    <div class="value num" id="kpi-open">—</div>
+    <div class="delta up-bad num">&#9650; 12% vs prior 24 h</div>
+  </div>
+  <div class="tile">
+    <div class="label"><span class="accent" style="background:var(--sev-critical)"></span>Critical open</div>
+    <div class="value num" id="kpi-critical">—</div>
+    <div class="delta num" id="kpi-critical-sub">—</div>
+  </div>
+  <div class="tile">
+    <div class="label">Median time to acknowledge</div>
+    <div class="value num">4 m 12 s</div>
+    <div class="delta down-good num">&#9660; 38 s vs prior shift</div>
+  </div>
+  <div class="tile">
+    <div class="label">SLA breaches (24 h)</div>
+    <div class="value num" id="kpi-sla">—</div>
+    <div class="delta num">target: 0 &middot; ack SLA 15 m</div>
+  </div>
+  <div class="tile">
+    <div class="label">Clients with critical activity</div>
+    <div class="value num" id="kpi-clients">—</div>
+    <div class="delta num">of 40 monitored orgs</div>
+  </div>
+</section>
+
+<div class="main">
+
+  <section class="panel" id="panel-trend" aria-label="Alert volume trend">
+    <div class="panel-head">
+      <div>
+        <h2>Alert volume &middot; last 24 hours</h2>
+        <div class="sub">Hourly intake by severity, all clients &middot; UTC</div>
+      </div>
+      <div class="right legend" id="trend-legend"></div>
+    </div>
+    <div class="chart-wrap" id="trend-wrap">
+      <svg id="trend-svg" viewBox="0 0 960 230" role="img" aria-label="Stacked hourly bar chart of alert volume by severity over the last 24 hours"></svg>
+      <div class="tooltip" id="trend-tip"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-clients" aria-label="Client organisations">
+    <div class="panel-head">
+      <div>
+        <h2>Client estate &middot; 40 organisations</h2>
+        <div class="sub">Open alerts and worst live severity per client &middot; click a client to filter the queue</div>
+      </div>
+      <div class="right">
+        <button class="chip" id="clear-client" hidden>Clear client filter &times;</button>
+      </div>
+    </div>
+    <div class="client-grid" id="client-grid"></div>
+  </section>
+
+  <section class="panel" id="panel-queue" aria-label="Alert queue">
+    <div class="panel-head">
+      <div>
+        <h2>Triage queue</h2>
+        <div class="sub" id="queue-sub">—</div>
+      </div>
+      <div class="right">
+        <input class="search" id="q-search" type="search" placeholder="Search rule, client, asset&hellip;" aria-label="Search alerts">
+      </div>
+    </div>
+    <div class="chips" id="sev-chips" role="group" aria-label="Filter by severity" style="margin-bottom:10px"></div>
+    <div class="queue-scroll">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Severity</th><th>Alert</th><th>Client</th><th>Asset</th><th>Status</th><th>Age</th>
+          </tr>
+        </thead>
+        <tbody id="queue-body"></tbody>
+      </table>
+      <div class="empty" id="queue-empty" hidden>No alerts match the current filters.</div>
+    </div>
+  </section>
+
+  <aside class="panel" id="panel-detail" aria-label="Alert detail and asset context">
+    <div class="panel-head" style="margin-bottom:0">
+      <h2>Alert detail</h2>
+    </div>
+    <div id="detail-body"><!-- filled by JS --></div>
+  </aside>
+
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- palette / severity model ---------------- */
+const SEV = {
+  critical: { label: "Critical", color: "#d03b3b", icon: "▲" },
+  high:     { label: "High",     color: "#ec835a", icon: "▲" },
+  medium:   { label: "Medium",   color: "#fab219", icon: "■" },
+  low:      { label: "Low",      color: "#3987e5", icon: "●" }
+};
+const SEV_ORDER = ["critical", "high", "medium", "low"];
+const SEV_RANK = { critical: 0, high: 1, medium: 2, low: 3 };
+
+/* deterministic PRNG so the placeholder data is stable */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(20261018);
+const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+const ri = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));
+
+/* ---------------- 40 fictional client orgs ---------------- */
+const CLIENT_NAMES = [
+  "Aldervane Bank","Nortech Systems","Bluecrest Health","Veltrix Logistics","Marrow & Finch",
+  "Ostara Energy","Quillon Retail","Hexamind Labs","Peakline Media","Surecap Insurance",
+  "Tarrowgate Univ.","Ironvale Mining","Cobalt Freight","Lumera Pharma","Westfold Hotels",
+  "Zephyr Airlines","Granlund Foods","Virelia Telecom","Oakmere Council","Strident Legal",
+  "Fennor Robotics","Calyx Biotech","Rivermoor Port","Hollis & Grey","Novastral Cloud",
+  "Pinebrook Schools","Vantor Defense","Quayside Marine","Elmsworth Clinic","Drayton Motors",
+  "Solstice Grid","Kestrel Capital","Marnow Textiles","Ubikon Gaming","Tallis Broadcasting",
+  "Harrowfield NHS-T","Crestline Rail","Omberly Fashion","Nyx Analytics","Bramblewood Co-op"
+];
+const INDUSTRIES = ["Finance","Tech","Health","Logistics","Energy","Retail","Media","Education","Manufacturing","Public sector"];
+
+const clients = CLIENT_NAMES.map((name, i) => ({
+  id: "c" + i,
+  name,
+  code: name.split(/[\s&.]+/).map(w => w[0]).join("").slice(0, 3).toUpperCase(),
+  industry: INDUSTRIES[i % INDUSTRIES.length],
+  assets: ri(140, 4200),
+  agentCoverage: ri(71, 99)
+}));
+
+/* ---------------- alert catalogue ---------------- */
+const RULES = [
+  { t: "Ransomware precursor: mass file rename", src: "EDR",   tac: "Impact",               sev: "critical", d: "Endpoint process renamed 3,000+ files with a new extension in under 60 s; shadow-copy deletion attempted via vssadmin." },
+  { t: "Credential dumping via LSASS access",    src: "EDR",   tac: "Credential Access",    sev: "critical", d: "Non-system process opened a handle to lsass.exe with PROCESS_VM_READ; memory region consistent with MiniDump." },
+  { t: "Outbound C2 beacon to known infra",      src: "NDR",   tac: "Command & Control",    sev: "critical", d: "Periodic 60 s HTTPS beacons to an address on the active C2 blocklist; JA3 matches a known malware family." },
+  { t: "Impossible travel sign-in",              src: "IdP",   tac: "Initial Access",       sev: "high",     d: "Interactive sign-in from two countries 40 minutes apart; second session passed MFA via stale token." },
+  { t: "Suspicious OAuth consent grant",         src: "Cloud", tac: "Persistence",          sev: "high",     d: "New third-party app granted offline mail.read scope across 14 mailboxes by a non-admin user." },
+  { t: "Privileged group membership change",     src: "SIEM",  tac: "Privilege Escalation", sev: "high",     d: "Account added to Domain Admins outside the approved change window; no linked change ticket." },
+  { t: "EDR agent tamper attempt",               src: "EDR",   tac: "Defense Evasion",      sev: "high",     d: "Sensor service stop requested by an unsigned binary running from a user-writable path." },
+  { t: "Malware quarantined on endpoint",        src: "EDR",   tac: "Execution",            sev: "medium",   d: "Known commodity stealer blocked on write; no execution observed. Hash matched 11 prior detections this month." },
+  { t: "Phishing URL clicked",                   src: "Email", tac: "Initial Access",       sev: "medium",   d: "User clicked a credential-harvesting link post-delivery; page retrieved but no credentials submitted per proxy logs." },
+  { t: "Anomalous data egress volume",           src: "DLP",   tac: "Exfiltration",         sev: "medium",   d: "Workstation uploaded 4.2 GB to a personal cloud-storage domain, 9x the user's 30-day baseline." },
+  { t: "Internal port scan detected",            src: "NDR",   tac: "Discovery",            sev: "medium",   d: "Single host probed 2,400 ports across 60 internal addresses in 5 minutes." },
+  { t: "Brute-force attempts on VPN",            src: "SIEM",  tac: "Credential Access",    sev: "low",      d: "214 failed logins against 9 accounts from one address over 2 h; no success. Address added to watchlist." },
+  { t: "Expired TLS certificate on edge",        src: "ASM",   tac: "Attack Surface",       sev: "low",      d: "Public endpoint serving an expired certificate for 3 days; downgrades client trust and masks MITM." },
+  { t: "New admin console exposed",              src: "ASM",   tac: "Attack Surface",       sev: "low",      d: "Management interface newly reachable from the internet on a client IP range; default banner detected." }
+];
+const STATUSES = ["New", "Acknowledged", "Investigating"];
+const HOSTPRE = ["ws","srv","db","dc","vpn","mail","app","fw","nas","lap"];
+const OS_LIST = ["Windows 11 23H2","Windows Server 2019","Ubuntu 22.04","RHEL 9.3","macOS 14.6"];
+const OWNERS = ["Finance Ops","IT Platform","HR Shared Svcs","Engineering","Field Sales","Exec Support","Plant Ops","Service Desk"];
+
+/* weighted severity so the queue looks like a real intake */
+function drawSeverity() {
+  const r = rnd();
+  if (r < 0.10) return "critical";
+  if (r < 0.32) return "high";
+  if (r < 0.70) return "medium";
+  return "low";
+}
+
+const ACK_SLA_MIN = { critical: 15, high: 30, medium: 120, low: 480 };
+
+const alerts = [];
+for (let i = 0; i < 64; i++) {
+  const sev = drawSeverity();
+  const pool = RULES.filter(r => r.sev === sev);
+  const rule = pool[Math.floor(rnd() * pool.length)];
+  const client = clients[ri(0, 39)];
+  const host = pick(HOSTPRE) + "-" + client.code.toLowerCase() + "-" + String(ri(1, 98)).padStart(2, "0");
+  const ageMin = sev === "critical" ? ri(2, 95) : sev === "high" ? ri(4, 240) : ri(10, 1380);
+  const status = ageMin < 8 ? "New" : pick(STATUSES);
+  alerts.push({
+    id: "AL-" + (74210 + i),
+    sev, rule, client,
+    status,
+    ageMin,
+    breach: status === "New" && ageMin > ACK_SLA_MIN[sev],
+    asset: {
+      host,
+      ip: "10." + ri(2, 61) + "." + ri(0, 254) + "." + ri(2, 254),
+      os: pick(OS_LIST),
+      owner: pick(OWNERS),
+      crit: pick(["Tier 0 - crown jewel", "Tier 1 - business critical", "Tier 2 - standard", "Tier 2 - standard"]),
+      exposure: pick(["Internal only", "Internet-facing", "Internal only", "Partner VPN"]),
+      user: "u" + ri(1000, 9899),
+      tags: [pick(["PCI scope","SOX scope","PII store","OT-adjacent","Standard"]), pick(["EDR: healthy","EDR: degraded","EDR: healthy"]), pick(["Patched: current","Patch lag: 31d","Patched: current"])]
+    },
+    related: ri(0, 6)
+  });
+}
+alerts.sort((a, b) => (SEV_RANK[a.sev] - SEV_RANK[b.sev]) || (a.ageMin - b.ageMin));
+
+/* per-client aggregates */
+const byClient = new Map(clients.map(c => [c.id, { open: 0, worst: null }]));
+for (const a of alerts) {
+  const g = byClient.get(a.client.id);
+  g.open++;
+  if (g.worst === null || SEV_RANK[a.sev] < SEV_RANK[g.worst]) g.worst = a.sev;
+}
+
+/* 24h hourly trend, stacked by severity (synthetic, stable) */
+const trend = [];
+for (let h = 0; h < 24; h++) {
+  const nowH = 17; // dashboard "now" = 17:00 UTC
+  const hour = (nowH - 23 + h + 24) % 24;
+  const day = 0.55 + 0.45 * Math.sin(((hour - 3) / 24) * Math.PI * 2); // overnight lull
+  const burst = (h === 19 || h === 20) ? 2.1 : 1;                      // recent spike
+  trend.push({
+    hour,
+    low:      Math.round((10 + rnd() * 14) * day),
+    medium:   Math.round((8 + rnd() * 12) * day * burst),
+    high:     Math.round((3 + rnd() * 6) * day * burst),
+    critical: Math.round((rnd() * 2.6) * burst + (h >= 19 ? 2 : 0))
+  });
+}
+
+/* ---------------- KPI fill ---------------- */
+const openAlerts = alerts.length + 1220; // queue page + backlog, placeholder
+const critOpen = alerts.filter(a => a.sev === "critical").length;
+const slaBreaches = alerts.filter(a => a.breach).length;
+const clientsWithCrit = new Set(alerts.filter(a => a.sev === "critical").map(a => a.client.id)).size;
+document.getElementById("kpi-open").textContent = openAlerts.toLocaleString("en-GB");
+document.getElementById("kpi-critical").textContent = critOpen;
+document.getElementById("kpi-critical-sub").textContent = alerts.filter(a => a.sev === "critical" && a.status === "New").length + " unacknowledged";
+document.getElementById("kpi-sla").textContent = slaBreaches;
+document.getElementById("kpi-clients").textContent = clientsWithCrit;
+
+/* ---------------- trend chart (stacked bars, SVG) ---------------- */
+(function renderTrend() {
+  const svg = document.getElementById("trend-svg");
+  const W = 960, H = 230, padL = 36, padR = 8, padT = 10, padB = 24;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const n = trend.length;
+  const totals = trend.map(d => d.low + d.medium + d.high + d.critical);
+  const maxT = Math.max(...totals);
+  const yMax = Math.ceil(maxT / 10) * 10;
+  const bw = iw / n;
+  const barW = Math.floor(bw - 6);
+  const y = v => padT + ih - (v / yMax) * ih;
+  const ns = "http://www.w3.org/2000/svg";
+  const el = (t, at) => { const e = document.createElementNS(ns, t); for (const k in at) e.setAttribute(k, at[k]); return e; };
+
+  // gridlines + y labels
+  for (let g = 0; g <= 4; g++) {
+    const v = (yMax / 4) * g, gy = y(v);
+    svg.appendChild(el("line", { x1: padL, x2: W - padR, y1: gy, y2: gy, stroke: g === 0 ? "#383835" : "#2c2c2a", "stroke-width": 1 }));
+    if (g > 0) {
+      const t = el("text", { x: padL - 7, y: gy + 4, "text-anchor": "end", fill: "#898781", "font-size": 11, "font-family": "system-ui, sans-serif" });
+      t.textContent = v; svg.appendChild(t);
+    }
+  }
+  // stacked bars: low -> medium -> high -> critical, 2px surface gaps
+  const stackUp = ["low", "medium", "high", "critical"];
+  trend.forEach((d, i) => {
+    const x = padL + i * bw + (bw - barW) / 2;
+    let base = y(0);
+    const top = stackUp.filter(s => d[s] > 0);
+    top.forEach((s, si) => {
+      const hpx = Math.max((d[s] / yMax) * ih - (si < top.length - 1 ? 2 : 0), 1.5);
+      const ry = base - (d[s] / yMax) * ih;
+      const isTop = si === top.length - 1;
+      if (isTop && hpx > 4) {
+        const r = 3;
+        const p = `M ${x} ${ry + hpx} L ${x} ${ry + r} Q ${x} ${ry} ${x + r} ${ry} L ${x + barW - r} ${ry} Q ${x + barW} ${ry} ${x + barW} ${ry + r} L ${x + barW} ${ry + hpx} Z`;
+        svg.appendChild(el("path", { d: p, fill: SEV[s].color }));
+      } else {
+        svg.appendChild(el("rect", { x, y: ry, width: barW, height: hpx, fill: SEV[s].color }));
+      }
+      base = ry; // next segment stacks from the true value; the 2px gap is carved from this segment's height
+    });
+    // x labels every 4 hours
+    if (i % 4 === 0 || i === n - 1) {
+      const t = el("text", { x: x + barW / 2, y: H - 7, "text-anchor": "middle", fill: "#898781", "font-size": 11, "font-family": "system-ui, sans-serif" });
+      t.textContent = String(d.hour).padStart(2, "0") + ":00"; svg.appendChild(t);
+    }
+    // invisible hover target per hour
+    const hit = el("rect", { x: padL + i * bw, y: padT, width: bw, height: ih, fill: "transparent" });
+    hit.dataset.i = i;
+    svg.appendChild(hit);
+  });
+
+  // crosshair
+  const cross = el("line", { y1: padT, y2: padT + ih, stroke: "#52514e", "stroke-width": 1, "stroke-dasharray": "3 3", visibility: "hidden" });
+  svg.appendChild(cross);
+
+  // legend
+  const leg = document.getElementById("trend-legend");
+  SEV_ORDER.forEach(s => {
+    const k = document.createElement("span");
+    k.className = "key";
+    k.innerHTML = `<span class="swatch" style="background:${SEV[s].color}"></span>${SEV[s].label}`;
+    leg.appendChild(k);
+  });
+
+  // tooltip
+  const wrap = document.getElementById("trend-wrap");
+  const tip = document.getElementById("trend-tip");
+  svg.addEventListener("mousemove", (ev) => {
+    const t = ev.target;
+    if (!(t.dataset && t.dataset.i !== undefined)) return;
+    const i = +t.dataset.i;
+    const d = trend[i];
+    const cx = padL + i * bw + bw / 2;
+    cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
+    cross.setAttribute("visibility", "visible");
+    tip.innerHTML = `<div class="t-title num">${String(d.hour).padStart(2, "0")}:00 &ndash; ${String((d.hour + 1) % 24).padStart(2, "0")}:00 UTC</div>` +
+      SEV_ORDER.map(s => `<div class="t-row"><span class="k"><span class="sw" style="background:${SEV[s].color}"></span>${SEV[s].label}</span><span class="v num">${d[s]}</span></div>`).join("") +
+      `<div class="t-row" style="margin-top:4px;border-top:1px solid var(--grid);padding-top:4px"><span class="k">Total</span><span class="v num">${totals[i]}</span></div>`;
+    tip.style.display = "block";
+    const wr = wrap.getBoundingClientRect();
+    const sr = svg.getBoundingClientRect();
+    const px = sr.left - wr.left + (cx / W) * sr.width;
+    const tw = tip.offsetWidth;
+    tip.style.left = Math.min(Math.max(px + 12, 4), wr.width - tw - 4) + (px + 12 + tw > wr.width ? -tw - 24 : 0) + "px";
+    tip.style.top = "16px";
+  });
+  svg.addEventListener("mouseleave", () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); });
+})();
+
+/* ---------------- state + filters ---------------- */
+const state = { sev: "all", client: null, q: "", selected: alerts[0] ? alerts[0].id : null };
+
+function fmtAge(min) {
+  if (min < 60) return min + " m";
+  if (min < 1440) return Math.floor(min / 60) + " h " + String(min % 60).padStart(2, "0") + " m";
+  return Math.floor(min / 1440) + " d " + Math.floor((min % 1440) / 60) + " h";
+}
+
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  return alerts.filter(a =>
+    (state.sev === "all" || a.sev === state.sev) &&
+    (!state.client || a.client.id === state.client) &&
+    (!q || (a.rule.t + " " + a.client.name + " " + a.asset.host + " " + a.id).toLowerCase().includes(q))
+  );
+}
+
+/* severity chips */
+function renderChips() {
+  const box = document.getElementById("sev-chips");
+  box.innerHTML = "";
+  const counts = { all: alerts.length };
+  SEV_ORDER.forEach(s => counts[s] = alerts.filter(a => a.sev === s).length);
+  ["all", ...SEV_ORDER].forEach(s => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.setAttribute("aria-pressed", String(state.sev === s));
+    b.innerHTML = (s === "all" ? "All" : SEV[s].label) + `<span class="n num">${counts[s]}</span>`;
+    b.onclick = () => { state.sev = s; renderChips(); renderQueue(); };
+    box.appendChild(b);
+  });
+}
+
+/* client grid */
+function renderClients() {
+  const grid = document.getElementById("client-grid");
+  grid.innerHTML = "";
+  const ordered = [...clients].sort((a, b) => {
+    const ga = byClient.get(a.id), gb = byClient.get(b.id);
+    const ra = ga.worst ? SEV_RANK[ga.worst] : 9, rb = gb.worst ? SEV_RANK[gb.worst] : 9;
+    return ra - rb || gb.open - ga.open || a.name.localeCompare(b.name);
+  });
+  ordered.forEach(c => {
+    const g = byClient.get(c.id);
+    const b = document.createElement("button");
+    b.className = "cell";
+    b.setAttribute("aria-pressed", String(state.client === c.id));
+    if (g.worst) b.style.setProperty("--sevc", SEV[g.worst].color);
+    b.title = `${c.name} - ${c.industry}, ${c.assets.toLocaleString("en-GB")} assets`;
+    b.innerHTML = `<div class="cname">${c.name}</div>
+      <div class="cmeta"><span class="num">${g.open} open</span><span class="worst">${g.worst ? SEV[g.worst].label : "Quiet"}</span></div>`;
+    b.onclick = () => {
+      state.client = state.client === c.id ? null : c.id;
+      renderClients(); renderQueue();
+      document.getElementById("clear-client").hidden = !state.client;
+    };
+    grid.appendChild(b);
+  });
+}
+document.getElementById("clear-client").onclick = () => {
+  state.client = null; renderClients(); renderQueue();
+  document.getElementById("clear-client").hidden = true;
+};
+
+/* queue table */
+function renderQueue() {
+  const rows = filtered();
+  const body = document.getElementById("queue-body");
+  body.innerHTML = "";
+  document.getElementById("queue-empty").hidden = rows.length > 0;
+  const cl = state.client ? clients.find(c => c.id === state.client).name : "all clients";
+  document.getElementById("queue-sub").textContent =
+    `${rows.length} of ${alerts.length} queued alerts shown - ${cl}, sorted by severity then age`;
+  if (rows.length && !rows.some(r => r.id === state.selected)) state.selected = rows[0].id;
+  rows.forEach(a => {
+    const tr = document.createElement("tr");
+    tr.className = "row";
+    tr.tabIndex = 0;
+    tr.setAttribute("aria-selected", String(a.id === state.selected));
+    tr.innerHTML = `
+      <td><span class="sev sev-${a.sev}">${SEV[a.sev].label}</span></td>
+      <td><div class="a-title">${a.rule.t}</div><div class="a-sub">${a.id} &middot; ${a.rule.src} &middot; ${a.rule.tac}</div></td>
+      <td>${a.client.name}</td>
+      <td><span class="num">${a.asset.host}</span></td>
+      <td><span class="status-chip">${a.status}</span></td>
+      <td class="t-age num ${a.breach ? "breach" : ""}">${fmtAge(a.ageMin)}${a.breach ? " &middot; SLA" : ""}</td>`;
+    const sel = () => { state.selected = a.id; renderQueue(); renderDetail(); };
+    tr.onclick = sel;
+    tr.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sel(); } };
+    body.appendChild(tr);
+  });
+  renderDetail();
+}
+
+/* detail panel */
+function renderDetail() {
+  const box = document.getElementById("detail-body");
+  const a = alerts.find(x => x.id === state.selected);
+  if (!a) { box.innerHTML = `<div class="empty">Select an alert to see asset context.</div>`; return; }
+  const g = byClient.get(a.client.id);
+  box.innerHTML = `
+    <div style="margin-top:10px"><span class="sev sev-${a.sev}">${SEV[a.sev].label}</span>
+      <span class="status-chip" style="margin-left:6px">${a.status}</span>
+      ${a.breach ? '<span class="status-chip" style="margin-left:6px;color:var(--sev-high);border-color:var(--sev-high)">Ack SLA breached</span>' : ""}</div>
+    <div class="d-title">${a.rule.t}</div>
+    <div class="d-id num">${a.id} &middot; first seen ${fmtAge(a.ageMin)} ago &middot; source: ${a.rule.src} &middot; MITRE: ${a.rule.tac}</div>
+    <p class="d-desc">${a.rule.d}</p>
+
+    <div class="d-section">
+      <h3>Asset context</h3>
+      <dl class="kv">
+        <dt>Hostname</dt><dd class="num">${a.asset.host}</dd>
+        <dt>IP address</dt><dd class="num">${a.asset.ip}</dd>
+        <dt>OS</dt><dd>${a.asset.os}</dd>
+        <dt>Business owner</dt><dd>${a.asset.owner}</dd>
+        <dt>Criticality</dt><dd>${a.asset.crit}</dd>
+        <dt>Exposure</dt><dd>${a.asset.exposure}</dd>
+        <dt>Last user</dt><dd class="num">${a.asset.user}</dd>
+      </dl>
+      <div class="tagrow">${a.asset.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+    </div>
+
+    <div class="d-section">
+      <h3>Client context</h3>
+      <dl class="kv">
+        <dt>Organisation</dt><dd>${a.client.name}</dd>
+        <dt>Industry</dt><dd>${a.client.industry}</dd>
+        <dt>Monitored assets</dt><dd class="num">${a.client.assets.toLocaleString("en-GB")}</dd>
+        <dt>Agent coverage</dt><dd class="num">${a.client.agentCoverage}%</dd>
+        <dt>Open alerts</dt><dd class="num">${g.open} in queue &middot; worst: ${SEV[g.worst].label}</dd>
+        <dt>Related (72 h)</dt><dd class="num">${a.related} correlated alerts</dd>
+      </dl>
+    </div>
+
+    <div class="d-section">
+      <h3>Timeline</h3>
+      <ul class="timeline">
+        <li><span class="tt num">T+0 s</span><span class="tv">Detection fired on ${a.asset.host} (${a.rule.src})</span></li>
+        <li><span class="tt num">T+4 s</span><span class="tv">Enrichment: asset, identity and threat-intel joined</span></li>
+        <li><span class="tt num">T+9 s</span><span class="tv">Correlated with ${a.related} prior signals for this client</span></li>
+        <li><span class="tt num">T+12 s</span><span class="tv">Routed to triage queue at ${SEV[a.sev].label} severity</span></li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" onclick="actOn('${a.id}','Acknowledged')">Acknowledge</button>
+      <button class="btn" onclick="actOn('${a.id}','Investigating')">Investigate</button>
+      <button class="btn">Escalate to IR</button>
+    </div>
+    <div class="mini-note">Demo build - actions update local state only; placeholder data, no live feeds.</div>`;
+}
+
+function actOn(id, status) {
+  const a = alerts.find(x => x.id === id);
+  if (a) { a.status = status; a.breach = false; renderQueue(); }
+}
+
+/* search */
+document.getElementById("q-search").addEventListener("input", (e) => {
+  state.q = e.target.value; renderQueue();
+});
+
+/* clock */
+function tick() {
+  const d = new Date();
+  document.getElementById("clock").textContent =
+    d.toISOString().slice(0, 10) + "  " + d.toUTCString().slice(17, 25) + " UTC";
+}
+tick(); setInterval(tick, 1000);
+
+/* initial render */
+renderChips();
+renderClients();
+renderQueue();
+</script>
+</body>
+</html>

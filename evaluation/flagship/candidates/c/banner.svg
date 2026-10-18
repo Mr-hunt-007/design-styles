@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
+  <title id="t">design-styles: design intelligence for AI coding agents</title>
+  <desc id="d">A field of 64 small geometric marks, one per style in the catalogue, drawn on a single construction grammar above and below a calm central band carrying the project name and value proposition.</desc>
+
+  <!-- ground: paper, with slightly deeper paper zoning the two mark strips -->
+  <rect width="1280" height="640" fill="#F5F2EA"/>
+  <rect x="0" y="0" width="1280" height="160" fill="#ECE8DD"/>
+  <rect x="0" y="480" width="1280" height="160" fill="#ECE8DD"/>
+  <line x1="0" y1="160.5" x2="1280" y2="160.5" stroke="#16181C" stroke-opacity="0.22" stroke-width="1"/>
+  <line x1="0" y1="479.5" x2="1280" y2="479.5" stroke="#16181C" stroke-opacity="0.22" stroke-width="1"/>
+
+  <!-- the catalogue field: 64 marks, 80px cells, 48px live area, stroke 3 -->
+  <g id="field-top" fill="none" stroke="#4A4F57" stroke-width="3" stroke-linecap="butt" stroke-linejoin="miter">
+    <!-- row: marks 1-16 of 64 -->
+    <g transform="translate(53.5 16)"><circle cx="24" cy="24" r="21"/></g>
+    <g transform="translate(128.5 16)"><rect x="6" y="6" width="36" height="36"/><line x1="6" y1="6" x2="42" y2="42"/><line x1="42" y1="6" x2="6" y2="42"/></g>
+    <g transform="translate(203.5 16)"><polygon points="10,6 10,42 42,24"/></g>
+    <g transform="translate(278.5 16)"><circle cx="24" cy="24" r="13"/><line x1="24" y1="3" x2="24" y2="9"/><line x1="24" y1="39" x2="24" y2="45"/><line x1="3" y1="24" x2="9" y2="24"/><line x1="39" y1="24" x2="45" y2="24"/></g>
+    <g transform="translate(353.5 16)"><rect x="6" y="6" width="36" height="36"/><line x1="6" y1="6" x2="42" y2="42"/></g>
+    <g transform="translate(428.5 16)"><path d="M6 16 L32 42"/><path d="M16 6 L42 32"/></g>
+    <g transform="translate(503.5 16)"><circle cx="24" cy="24" r="21" stroke-dasharray="5.5 5.5"/></g>
+    <g transform="translate(578.5 16)"><polygon points="24,3 45,24 24,45 3,24"/><rect x="13.5" y="13.5" width="21" height="21"/></g>
+    <g transform="translate(653.5 16)"><line x1="7" y1="7" x2="41" y2="41"/></g>
+    <g transform="translate(728.5 16)"><polygon points="24,9 39,24 24,39 9,24" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(803.5 16)"><polygon points="24,3 45,24 24,45 3,24"/></g>
+    <g transform="translate(878.5 16)"><path d="M4 32 L14 16 L24 32 L34 16 L44 32"/></g>
+    <g transform="translate(953.5 16)"><polygon points="24,10 38,36 10,36" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(1028.5 16)"><rect x="6" y="6" width="36" height="36"/><rect x="18" y="18" width="12" height="12"/></g>
+    <g transform="translate(1103.5 16)"><path d="M6 26 L24 10 L42 26"/><path d="M6 42 L24 26 L42 42"/></g>
+    <g transform="translate(1178.5 16)"><circle cx="24" cy="24" r="11" fill="#4A4F57" stroke="none"/></g>
+    <!-- row: marks 17-32 of 64 -->
+    <g transform="translate(53.5 96)"><rect x="6" y="6" width="36" height="36"/></g>
+    <g transform="translate(128.5 96)"><path d="M6 15 L24 33 L42 15"/></g>
+    <g transform="translate(203.5 96)"><rect x="14" y="14" width="20" height="20" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(278.5 96)"><circle cx="24" cy="24" r="21"/><rect x="9.2" y="9.2" width="29.6" height="29.6"/></g>
+    <g transform="translate(353.5 96)"><path d="M6 33 L24 15 L42 33"/></g>
+    <g transform="translate(428.5 96)"><rect x="6" y="6" width="36" height="36"/><circle cx="24" cy="24" r="18"/></g>
+    <g transform="translate(503.5 96)"><circle cx="17" cy="24" r="14"/><circle cx="31" cy="24" r="14"/></g>
+    <g transform="translate(578.5 96)"><polygon points="7,7 41,7 24,24"/><polygon points="7,41 41,41 24,24"/></g>
+    <g transform="translate(653.5 96)"><circle cx="24" cy="24" r="21"/><polygon points="24,3 42.2,34.5 5.8,34.5"/></g>
+    <g transform="translate(728.5 96)"><circle cx="13.5" cy="24" r="10.5"/><circle cx="34.5" cy="24" r="10.5"/></g>
+    <g transform="translate(803.5 96)"><polygon points="24,4 43,41 5,41"/><circle cx="24" cy="29" r="4" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(878.5 96)"><path d="M21 27 V21 H27 V33 H15 V9 H39 V39 H9"/></g>
+    <g transform="translate(953.5 96)"><circle cx="16" cy="16" r="12"/><circle cx="32" cy="32" r="12"/></g>
+    <g transform="translate(1028.5 96)"><polygon points="24,44 5,7 43,7"/></g>
+    <g transform="translate(1103.5 96)"><path d="M15 4 C36 4 12 44 33 44"/></g>
+    <g transform="translate(1178.5 96)"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="24" r="14"/><circle cx="24" cy="24" r="7"/></g>
+  </g>
+  <g id="field-bottom" fill="none" stroke="#4A4F57" stroke-width="3" stroke-linecap="butt" stroke-linejoin="miter">
+    <!-- row: marks 33-48 of 64 -->
+    <g transform="translate(53.5 496)"><polygon points="24,4 43,41 5,41"/></g>
+    <g transform="translate(128.5 496)"><path d="M10 42 L10 22 A14 14 0 0 1 38 22 L38 42"/></g>
+    <g transform="translate(203.5 496)"><circle cx="24" cy="24" r="21"/><line x1="9.5" y1="9.5" x2="38.5" y2="38.5"/></g>
+    <g transform="translate(278.5 496)"><path d="M6 16 V6 H16"/><path d="M32 42 H42 V32"/></g>
+    <g transform="translate(353.5 496)"><path d="M6 31 A18 18 0 0 1 42 31"/><line x1="6" y1="31" x2="42" y2="31"/></g>
+    <g transform="translate(428.5 496)"><circle cx="24" cy="24" r="21"/><line x1="24" y1="3" x2="24" y2="45"/></g>
+    <g transform="translate(503.5 496)"><path d="M6 42 V30 H18 V18 H30 V6 H42"/></g>
+    <g transform="translate(578.5 496)"><circle cx="12" cy="12" r="4" fill="#4A4F57" stroke="none"/><circle cx="36" cy="12" r="4" fill="#4A4F57" stroke="none"/><circle cx="12" cy="36" r="4" fill="#4A4F57" stroke="none"/><circle cx="36" cy="36" r="4" fill="#4A4F57" stroke="none"/><circle cx="24" cy="24" r="4" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(653.5 496)"><circle cx="24" cy="24" r="21"/><line x1="3" y1="24" x2="45" y2="24"/></g>
+    <g transform="translate(728.5 496)"><line x1="24" y1="6" x2="24" y2="42"/><line x1="6" y1="24" x2="42" y2="24"/><line x1="11.3" y1="11.3" x2="36.7" y2="36.7"/><line x1="36.7" y1="11.3" x2="11.3" y2="36.7"/></g>
+    <g transform="translate(803.5 496)"><circle cx="12" cy="12" r="4" fill="#4A4F57" stroke="none"/><circle cx="36" cy="12" r="4" fill="#4A4F57" stroke="none"/><circle cx="12" cy="36" r="4" fill="#4A4F57" stroke="none"/><circle cx="36" cy="36" r="4" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(878.5 496)"><path d="M24 3 A21 21 0 0 0 3 24"/><path d="M45 24 A21 21 0 0 1 24 45"/></g>
+    <g transform="translate(953.5 496)"><line x1="8" y1="8" x2="40" y2="40"/><line x1="40" y1="8" x2="8" y2="40"/></g>
+    <g transform="translate(1028.5 496)"><circle cx="12" cy="12" r="3" fill="#4A4F57" stroke="none"/><circle cx="24" cy="12" r="3" fill="#4A4F57" stroke="none"/><circle cx="36" cy="12" r="3" fill="#4A4F57" stroke="none"/><circle cx="12" cy="24" r="3" fill="#4A4F57" stroke="none"/><circle cx="24" cy="24" r="3" fill="#4A4F57" stroke="none"/><circle cx="36" cy="24" r="3" fill="#4A4F57" stroke="none"/><circle cx="12" cy="36" r="3" fill="#4A4F57" stroke="none"/><circle cx="24" cy="36" r="3" fill="#4A4F57" stroke="none"/><circle cx="36" cy="36" r="3" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(1103.5 496)"><path d="M24 3 A21 21 0 0 0 3 24"/></g>
+    <g transform="translate(1178.5 496)"><line x1="24" y1="4.5" x2="24" y2="43.5"/><line x1="4.5" y1="24" x2="43.5" y2="24"/></g>
+    <!-- row: marks 49-64 of 64 -->
+    <g transform="translate(53.5 576)"><circle cx="10" cy="38" r="4" fill="#4A4F57" stroke="none"/><circle cx="24" cy="24" r="4" fill="#4A4F57" stroke="none"/><circle cx="38" cy="10" r="4" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(128.5 576)"><path d="M3 24 A21 21 0 0 0 45 24"/></g>
+    <g transform="translate(203.5 576)"><line x1="17" y1="6" x2="17" y2="42"/><line x1="31" y1="6" x2="31" y2="42"/><line x1="6" y1="17" x2="42" y2="17"/><line x1="6" y1="31" x2="42" y2="31"/></g>
+    <g transform="translate(278.5 576)"><line x1="6" y1="31" x2="42" y2="31"/><circle cx="24" cy="15" r="4.5" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(353.5 576)"><path d="M3 24 A21 21 0 0 1 45 24"/></g>
+    <g transform="translate(428.5 576)"><line x1="6" y1="12" x2="42" y2="12"/><line x1="6" y1="24" x2="42" y2="24"/><line x1="6" y1="36" x2="42" y2="36"/></g>
+    <g transform="translate(503.5 576)"><line x1="9" y1="42" x2="9" y2="24"/><line x1="19" y1="42" x2="19" y2="10"/><line x1="29" y1="42" x2="29" y2="30"/><line x1="39" y1="42" x2="39" y2="16"/></g>
+    <g transform="translate(578.5 576)"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="24" r="4.5" fill="#4A4F57" stroke="none"/></g>
+    <g transform="translate(653.5 576)"><line x1="17" y1="6" x2="17" y2="42"/><line x1="31" y1="6" x2="31" y2="42"/></g>
+    <g transform="translate(728.5 576)"><path d="M3 17 C10 7 17 7 24 17 C31 27 38 27 45 17"/><path d="M3 31 C10 21 17 21 24 31 C31 41 38 41 45 31"/></g>
+    <g transform="translate(803.5 576)"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="24" r="10"/></g>
+    <g transform="translate(878.5 576)"><rect x="6" y="6" width="36" height="36"/><polygon points="24,6 42,24 24,42 6,24"/></g>
+    <g transform="translate(953.5 576)"><path d="M3 24 C10 10 17 10 24 24 C31 38 38 38 45 24"/></g>
+    <g transform="translate(1028.5 576)"><circle cx="24" cy="24" r="12"/></g>
+    <g transform="translate(1103.5 576)"><rect x="8" y="8" width="13" height="13"/><rect x="27" y="8" width="13" height="13"/><rect x="8" y="27" width="13" height="13"/><rect x="27" y="27" width="13" height="13"/></g>
+    <g transform="translate(1178.5 576)"><polygon points="6,6 6,42 42,42"/></g>
+  </g>
+
+  <!-- the clearing: name and proposition -->
+  <g id="clearing">
+    <!-- accent bar: one character cell of the name's mono grid (0.6023 x 124) -->
+    <rect x="64" y="228" width="75" height="6" fill="#C2441D"/>
+    <text x="1216" y="238" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="15" letter-spacing="1.5" fill="#565B63">64 STYLES &#183; PRINCIPLES, NEVER PRESETS</text>
+    <text x="64" y="349" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="124" font-weight="700" fill="#16181C">design-styles</text>
+    <text x="64" y="404" font-family="ui-sans-serif, -apple-system, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="31" fill="#272B30">Design intelligence for AI coding agents: reason first, render to verify.</text>
+  </g>
+</svg>

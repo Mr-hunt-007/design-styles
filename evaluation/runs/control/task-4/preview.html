@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon Family</title>
+<style>
+  :root{
+    --bg:#eef0f3; --ink:#0f172a; --muted:#64748b;
+    --panel-light-bg:#ffffff; --panel-light-ink:#1e293b; --panel-light-muted:#94a3b8; --panel-light-border:#e2e8f0;
+    --panel-dark-bg:#0d1220; --panel-dark-ink:#dbe3f0; --panel-dark-muted:#55617a; --panel-dark-border:#222c42;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#151922; --ink:#e2e8f0; --muted:#8b96a8; }
+  }
+  :root[data-theme="dark"]{ --bg:#151922; --ink:#e2e8f0; --muted:#8b96a8; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding:56px 16px 72px;
+  }
+  .wrap{max-width:1000px; margin:0 auto}
+  h1{font-size:21px; font-weight:650; letter-spacing:-0.01em; margin:0 0 4px}
+  .sub{color:var(--muted); margin:0 0 32px; font-size:13.5px}
+  .panel{
+    border-radius:14px; padding:26px 28px 22px; margin-bottom:24px;
+    border:1px solid var(--pb); background:var(--pbg); color:var(--pink);
+    overflow-x:auto;
+  }
+  .panel.light{ --pbg:var(--panel-light-bg); --pink:var(--panel-light-ink); --pmut:var(--panel-light-muted); --pb:var(--panel-light-border); }
+  .panel.dark { --pbg:var(--panel-dark-bg);  --pink:var(--panel-dark-ink);  --pmut:var(--panel-dark-muted);  --pb:var(--panel-dark-border); }
+  .panel h2{
+    font-size:11px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase;
+    color:var(--pmut); margin:0 0 18px;
+  }
+  .grid{
+    display:grid; grid-template-columns:56px repeat(6, minmax(72px,1fr));
+    row-gap:22px; column-gap:8px; align-items:center; justify-items:center;
+    min-width:560px;
+  }
+  .grid .name{
+    font-size:11px; color:var(--pmut); letter-spacing:0.02em; justify-self:center;
+  }
+  .grid .size{
+    font-size:11px; color:var(--pmut); justify-self:start; font-variant-numeric:tabular-nums;
+  }
+  .grid .corner{justify-self:start}
+  svg.icon{display:block; color:var(--pink)}
+  .inline-demo{
+    margin-top:26px; padding-top:18px; border-top:1px solid var(--pb);
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    font-size:13px; color:var(--pink);
+  }
+  .inline-demo .chip{display:inline-flex; align-items:center; gap:7px}
+  .inline-demo svg.icon{width:16px; height:16px}
+  .inline-demo .lbl{color:var(--pmut); font-size:11px; letter-spacing:0.06em; text-transform:uppercase; margin-right:4px}
+</style>
+</head>
+<body>
+
+<!-- Sprite: a copy of icons.svg, inlined so the page works over file:// where
+     external <use> references are unreliable. icons.svg is the canonical source. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 8V5a2 2 0 0 1 2-2h3"/>
+    <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+    <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
+    <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
+    <path d="M7 12h10"/>
+  </symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.27 4.4 3.1 17.5a2 2 0 0 0 1.73 3h14.34a2 2 0 0 0 1.73-3L13.73 4.4a2 2 0 0 0-3.46 0Z"/>
+    <path d="M12 9.5v4"/>
+    <path d="M12 16.5h.01"/>
+  </symbol>
+  <symbol id="icon-report" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
+    <path d="M14 3v3a2 2 0 0 0 2 2h3"/>
+    <path d="M9 17v-2"/>
+    <path d="M12 17v-5"/>
+    <path d="M15 17v-3.5"/>
+  </symbol>
+  <symbol id="icon-asset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20.1 8.4a1.8 1.8 0 0 0-.9-1.56l-6.3-3.6a1.8 1.8 0 0 0-1.8 0l-6.3 3.6a1.8 1.8 0 0 0-.9 1.56v7.2a1.8 1.8 0 0 0 .9 1.56l6.3 3.6a1.8 1.8 0 0 0 1.8 0l6.3-3.6a1.8 1.8 0 0 0 .9-1.56Z"/>
+    <path d="m4.17 7.5 7.83 4.5 7.83-4.5"/>
+    <path d="M12 20.9V12"/>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.5 6h6.25"/>
+    <circle cx="14" cy="6" r="2"/>
+    <path d="M18.25 6h2.25"/>
+    <circle cx="6.5" cy="12" r="2"/>
+    <path d="M10.75 12h9.75"/>
+    <path d="M3.5 18h9.75"/>
+    <circle cx="17.5" cy="18" r="2"/>
+  </symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="7.5" r="3.75"/>
+    <path d="M19 20.5v-1a4.5 4.5 0 0 0-4.5-4.5h-5A4.5 4.5 0 0 0 5 19.5v1"/>
+  </symbol>
+</svg>
+
+<div class="wrap">
+  <h1>Interface icon family</h1>
+  <p class="sub">24&times;24 grid &middot; 1.75px stroke &middot; round caps and joins &middot; 2px corner radius &middot; scan, alert, report, asset, settings, user</p>
+
+  <section class="panel light">
+    <h2>On light</h2>
+    <div class="grid" id="grid-light"></div>
+    <div class="inline-demo" id="inline-light"></div>
+  </section>
+
+  <section class="panel dark">
+    <h2>On dark</h2>
+    <div class="grid" id="grid-dark"></div>
+    <div class="inline-demo" id="inline-dark"></div>
+  </section>
+</div>
+
+<script>
+  const ICONS = ["scan","alert","report","asset","settings","user"];
+  const SIZES = [16, 24, 48];
+  const svgUse = (name, size) =>
+    `<svg class="icon" width="${size}" height="${size}" aria-label="${name}"><use href="#icon-${name}"/></svg>`;
+
+  function buildGrid(el){
+    let html = `<div class="corner"></div>`;
+    html += ICONS.map(n => `<div class="name">${n}</div>`).join("");
+    for (const s of SIZES){
+      html += `<div class="size">${s}px</div>`;
+      html += ICONS.map(n => svgUse(n, s)).join("");
+    }
+    el.innerHTML = html;
+  }
+  function buildInline(el){
+    el.innerHTML = `<span class="lbl">16px in context</span>` + ICONS.map(n =>
+      `<span class="chip">${svgUse(n,16)}${n[0].toUpperCase()+n.slice(1)}</span>`).join("");
+  }
+  buildGrid(document.getElementById("grid-light"));
+  buildGrid(document.getElementById("grid-dark"));
+  buildInline(document.getElementById("inline-light"));
+  buildInline(document.getElementById("inline-dark"));
+</script>
+</body>
+</html>

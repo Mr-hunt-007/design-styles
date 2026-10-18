@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon Family Preview</title>
+<style>
+  :root {
+    --bg: #eef0f3;
+    --panel-light: #ffffff;
+    --panel-dark: #0e1116;
+    --ink-light: #1a2029;
+    --ink-dark: #e8ebf0;
+    --label-light: #6b7280;
+    --label-dark: #8b93a1;
+    --border-light: #e2e5ea;
+    --border-dark: #232a34;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 16px 64px;
+    background: var(--bg);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink-light);
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .sub { color: var(--label-light); margin: 0 0 28px; }
+  .panel {
+    border-radius: 12px;
+    padding: 28px 28px 20px;
+    margin-bottom: 24px;
+  }
+  .panel.light { background: var(--panel-light); color: var(--ink-light); border: 1px solid var(--border-light); }
+  .panel.dark  { background: var(--panel-dark);  color: var(--ink-dark);  border: 1px solid var(--border-dark); }
+  .panel h2 {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin: 0 0 20px;
+  }
+  .panel.light h2 { color: var(--label-light); }
+  .panel.dark  h2 { color: var(--label-dark); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: center; padding: 10px 6px; }
+  th {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+  }
+  .panel.light th { color: var(--label-light); }
+  .panel.dark  th { color: var(--label-dark); }
+  th.size { text-align: right; padding-right: 18px; width: 64px; font-variant-numeric: tabular-nums; }
+  td svg { display: block; margin: 0 auto; }
+  @media (max-width: 560px) {
+    .panel { padding: 18px 10px 12px; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Symbol sheet, inlined from icons.svg.
+     (Inlined rather than referenced because Chrome does not resolve
+     external <use> targets over file://.) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="icon-scan" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9V6a2 2 0 0 1 2-2h3"/>
+      <path d="M15 4h3a2 2 0 0 1 2 2v3"/>
+      <path d="M20 15v3a2 2 0 0 1-2 2h-3"/>
+      <path d="M9 20H6a2 2 0 0 1-2-2v-3"/>
+      <path d="M7 12h10"/>
+    </symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.59 6.85A1.6 1.6 0 0 1 13.41 6.85L19.05 17.45A1.6 1.6 0 0 1 17.64 19.8L6.36 19.8A1.6 1.6 0 0 1 4.95 17.45Z"/>
+      <path d="M12 9.6v3.6"/>
+      <path d="M12 16.8h.01"/>
+    </symbol>
+    <symbol id="icon-report" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/>
+      <path d="M14 3v3a2 2 0 0 0 2 2h3"/>
+      <path d="M8.5 17v-2.5"/>
+      <path d="M12 17v-6"/>
+      <path d="M15.5 17v-4"/>
+    </symbol>
+    <symbol id="icon-asset" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l8 4.6v8.8L12 21l-8-4.6V7.6L12 3Z"/>
+      <path d="M4 7.6l8 4.6 8-4.6"/>
+      <path d="M12 12.2V21"/>
+    </symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.68 5.53 10.98 3.06 13.02 3.06 13.32 5.53 15.64 6.5 17.6 4.96 19.04 6.4 17.5 8.36 18.47 10.68 20.94 10.98 20.94 13.02 18.47 13.32 17.5 15.64 19.04 17.6 17.6 19.04 15.64 17.5 13.32 18.47 13.02 20.94 10.98 20.94 10.68 18.47 8.36 17.5 6.4 19.04 4.96 17.6 6.5 15.64 5.53 13.32 3.06 13.02 3.06 10.98 5.53 10.68 6.5 8.36 4.96 6.4 6.4 4.96 8.36 6.5Z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="7" r="4"/>
+      <path d="M4.6 20.5c0-3.8 3.3-6 7.4-6s7.4 2.2 7.4 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <h1>Interface icon family</h1>
+  <p class="sub">24&times;24 grid &middot; 2px round stroke &middot; currentColor &middot; shown at 16, 24 and 48px</p>
+  <div id="panels"></div>
+</div>
+
+<script>
+  const icons = ["scan", "alert", "report", "asset", "settings", "user"];
+  const sizes = [16, 24, 48];
+  const themes = [["light", "On light"], ["dark", "On dark"]];
+
+  function svgFor(name, size) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" role="img" aria-label="${name}">` +
+           `<use href="#icon-${name}"/></svg>`;
+  }
+
+  document.getElementById("panels").innerHTML = themes.map(([cls, label]) => `
+    <section class="panel ${cls}">
+      <h2>${label}</h2>
+      <table>
+        <tr><th class="size"></th>${icons.map(i => `<th>${i}</th>`).join("")}</tr>
+        ${sizes.map(s => `
+          <tr>
+            <th class="size">${s}px</th>
+            ${icons.map(i => `<td>${svgFor(i, s)}</td>`).join("")}
+          </tr>`).join("")}
+      </table>
+    </section>`).join("");
+</script>
+
+</body>
+</html>

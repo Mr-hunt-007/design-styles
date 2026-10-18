@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-labelledby="ds-title ds-desc">
+  <title id="ds-title">design-styles: design intelligence for AI coding agents</title>
+  <desc id="ds-desc">Technical line drawing of the project's render-and-verify loop: four stations (make, render, inspect, fix) on a closed clockwise circuit. A single vermilion accent marks the fault found in the render and its correction.</desc>
+
+  <defs>
+    <!-- graph-paper grid: one small pattern, not hundreds of lines -->
+    <pattern id="ds-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#1F221E" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+    <!-- clockwise flow arrowhead, drawn pointing +x, rotated per placement -->
+    <path id="ds-arrow" d="M-8 -6 L10 0 L-8 6 Z" fill="#1F221E"/>
+  </defs>
+
+  <style>
+    text { font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace; fill: #1F221E; }
+    .name { font-size: 84px; font-weight: 700; }
+    .prop { font-size: 34px; font-weight: 500; }
+    .body { font-size: 17px; fill-opacity: 0.78; }
+    .lbl  { font-size: 16px; font-weight: 700; letter-spacing: 2px; text-anchor: middle; }
+    .cap  { font-size: 12.5px; fill-opacity: 0.72; letter-spacing: 0.5px; text-anchor: middle; }
+    .fig  { font-size: 15px; letter-spacing: 1.5px; }
+    .note { font-size: 13px; fill-opacity: 0.8; }
+    .wHeavy { fill: none; stroke: #1F221E; stroke-width: 2.5; }
+    .wMed   { fill: none; stroke: #1F221E; stroke-width: 1.8; }
+    .wLight { fill: none; stroke: #1F221E; stroke-width: 1.2; stroke-opacity: 0.8; }
+    .accent { stroke: #C2401F; }
+  </style>
+
+  <!-- sheet -->
+  <rect width="1280" height="640" fill="#F4F1E9"/>
+  <rect width="1280" height="640" fill="url(#ds-grid)"/>
+  <rect x="36" y="36" width="1208" height="568" fill="none" stroke="#1F221E" stroke-width="1" stroke-opacity="0.5"/>
+
+  <!-- ===================== title block (left) ===================== -->
+  <text class="name" x="64" y="192">design-styles</text>
+  <text class="prop" x="64" y="252">Design intelligence</text>
+  <text class="prop" x="64" y="296">for AI coding agents.</text>
+  <text class="body" x="64" y="348">It reasons about the problem before styling,</text>
+  <text class="body" x="64" y="372">renders the result to verify it, and fixes</text>
+  <text class="body" x="64" y="396">what the render exposes.</text>
+
+  <!-- ===================== fig. 1: the loop ===================== -->
+  <g id="loop">
+    <!-- circuit -->
+    <circle cx="930" cy="296" r="164" class="wHeavy"/>
+    <!-- centre registration mark -->
+    <g stroke="#1F221E" stroke-width="1.2" stroke-opacity="0.5" fill="none">
+      <circle cx="930" cy="296" r="5"/>
+      <path d="M930 285 V274 M930 307 V318 M919 296 H908 M941 296 H952"/>
+    </g>
+    <!-- clockwise flow arrows at N E S W -->
+    <use href="#ds-arrow" xlink:href="#ds-arrow" transform="translate(930 132)"/>
+    <use href="#ds-arrow" xlink:href="#ds-arrow" transform="translate(1094 296) rotate(90)"/>
+    <use href="#ds-arrow" xlink:href="#ds-arrow" transform="translate(930 460) rotate(180)"/>
+    <use href="#ds-arrow" xlink:href="#ds-arrow" transform="translate(766 296) rotate(270)"/>
+
+    <!-- 01 MAKE (NW): bezier curve with anchors and one handle -->
+    <g transform="translate(814 180)">
+      <circle r="42" fill="#F4F1E9" stroke="#1F221E" stroke-width="2.5"/>
+      <path d="M-18 10 C-8 -16 10 -14 18 4" class="wMed"/>
+      <line x1="18" y1="4" x2="24" y2="17" class="wLight"/>
+      <circle cx="24" cy="17" r="2.5" fill="#F4F1E9" stroke="#1F221E" stroke-width="1.5"/>
+      <rect x="-21.5" y="6.5" width="7" height="7" fill="#F4F1E9" stroke="#1F221E" stroke-width="1.5"/>
+      <rect x="14.5" y="0.5" width="7" height="7" fill="#F4F1E9" stroke="#1F221E" stroke-width="1.5"/>
+    </g>
+    <text class="lbl" x="814" y="102">01 · MAKE</text>
+    <text class="cap" x="814" y="121">draw the artefact</text>
+
+    <!-- 02 RENDER (NE): rasterised canvas with crop ticks; the fault appears -->
+    <g transform="translate(1046 180)">
+      <circle r="42" fill="#F4F1E9" stroke="#1F221E" stroke-width="2.5"/>
+      <rect x="-17" y="-13" width="34" height="26" class="wMed"/>
+      <path d="M-17 -16 V-22 M-20 -13 H-26 M17 -16 V-22 M20 -13 H26 M-17 16 V22 M-20 13 H-26 M17 16 V22 M20 13 H26" class="wLight"/>
+      <circle cx="-7" cy="-1" r="4" fill="none" stroke="#1F221E" stroke-width="1.5"/>
+      <line x1="1" y1="7" x2="12" y2="-5" stroke="#1F221E" stroke-width="1.5"/>
+      <rect x="7" y="-9" width="3.5" height="3.5" fill="#C2401F"/>
+    </g>
+    <text class="lbl" x="1046" y="102">02 · RENDER</text>
+    <text class="cap" x="1046" y="121">rasterise it for real</text>
+
+    <!-- 03 INSPECT (SE): loupe over the fault -->
+    <g transform="translate(1046 412)">
+      <circle r="42" fill="#F4F1E9" stroke="#1F221E" stroke-width="2.5"/>
+      <circle cx="-4" cy="-4" r="13" class="wHeavy"/>
+      <line x1="5.5" y1="5.5" x2="15" y2="15" stroke="#1F221E" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="-4" cy="-4" r="3" fill="#C2401F"/>
+      <path d="M-4 -12 V-9 M-4 1 V4 M-12 -4 H-9 M1 -4 H4" class="wLight"/>
+    </g>
+    <text class="lbl" x="1046" y="480">03 · INSPECT</text>
+    <text class="cap" x="1046" y="499">target size, light and dark</text>
+
+    <!-- 04 FIX (SW): proofreader's caret and correction -->
+    <g transform="translate(814 412)">
+      <circle r="42" fill="#F4F1E9" stroke="#1F221E" stroke-width="2.5"/>
+      <line x1="-16" y1="-2" x2="16" y2="-2" class="wMed"/>
+      <path d="M-6 12 L0 1 L6 12" fill="none" stroke="#C2401F" stroke-width="2.2" stroke-linejoin="round"/>
+      <line x1="-4.5" y1="-12" x2="4.5" y2="-12" stroke="#C2401F" stroke-width="2.2"/>
+    </g>
+    <text class="lbl" x="814" y="480">04 · FIX</text>
+    <text class="cap" x="814" y="499">what the render exposes</text>
+
+    <!-- single callout: leader from the fault under the loupe -->
+    <g>
+      <circle cx="1056" cy="408" r="1.8" fill="#1F221E"/>
+      <path d="M1056 408 L1110 440 H1128" fill="none" stroke="#1F221E" stroke-width="1" stroke-opacity="0.7"/>
+      <text class="note" x="1134" y="437">the render</text>
+      <text class="note" x="1134" y="454">exposes it</text>
+    </g>
+  </g>
+
+  <!-- ===================== sheet footer ===================== -->
+  <line x1="64" y1="524" x2="1216" y2="524" stroke="#1F221E" stroke-width="1" stroke-opacity="0.85"/>
+  <text class="fig" x="64" y="558">FIG. 1 · THE RENDER-AND-VERIFY LOOP</text>
+  <text class="fig" x="1216" y="558" text-anchor="end">64-STYLE CATALOGUE · PRINCIPLES, NEVER PRESETS</text>
+</svg>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Northbeam Status</title>
+<style>
+  body { font-family: Verdana, sans-serif; margin: 0; background: #ffffff; }
+  .top { background: #1b4f72; color: white; padding: 10px; text-align: center; }
+  .top h1 { font-size: 20px; margin: 4px; font-family: Georgia, serif; }
+  .wrap { width: 900px; margin: auto; }
+  .banner { background: #d4efdf; padding: 8px; text-align: center; margin-top: 10px; font-size: 13px; }
+  table { border-collapse: collapse; margin-top: 18px; width: 100%; }
+  td { border: 1px solid #ddd; padding: 7px 10px; font-size: 13px; }
+  .ok { color: #27ae60; }
+  .down { color: #e74c3c; }
+  .degraded { color: #f39c12; }
+  h2 { font-size: 15px; margin-top: 26px; font-family: "Trebuchet MS", sans-serif; }
+  .incident { border: 1px solid #eee; padding: 9px; margin-top: 8px; font-size: 12.5px; }
+  .incident b { font-size: 13px; }
+  .meta { color: #b5b5b5; font-size: 11px; }
+  .subscribe { margin-top: 30px; text-align: center; }
+  .subscribe input { padding: 6px; width: 240px; }
+  .subscribe button { padding: 6px 14px; background: #1b4f72; color: #fff; border: 0; }
+  .footer { margin-top: 40px; padding: 14px; text-align: center; color: #cccccc; font-size: 11px; }
+</style>
+</head>
+<body>
+  <div class="top"><h1>Northbeam</h1>System Status</div>
+  <div class="wrap">
+    <div class="banner">All Systems Operational (mostly)</div>
+
+    <h2>Current status</h2>
+    <table>
+      <tr><td>API</td><td class="ok">Operational</td></tr>
+      <tr><td>Web dashboard</td><td class="degraded">Degraded performance</td></tr>
+      <tr><td>Webhooks</td><td class="ok">Operational</td></tr>
+      <tr><td>Data ingest (EU)</td><td class="down">Partial outage</td></tr>
+      <tr><td>Data ingest (US)</td><td class="ok">Operational</td></tr>
+      <tr><td>Email notifications</td><td class="ok">Operational</td></tr>
+    </table>
+
+    <h2>Active incidents</h2>
+    <div class="incident">
+      <b>INC-4412: Elevated error rate on EU ingest</b><br>
+      We are investigating elevated 5xx responses on the EU ingest endpoints. Customers may see delayed event processing. Next update within 60 minutes.
+      <div class="meta">Opened 09:14 UTC · Investigating</div>
+    </div>
+    <div class="incident">
+      <b>INC-4415: Delayed webhook delivery</b><br>
+      Webhook deliveries are delayed up to 15 minutes due to queue backlog from the EU ingest incident.
+      <div class="meta">Opened 09:40 UTC · Monitoring</div>
+    </div>
+
+    <h2>Past incidents (7 days)</h2>
+    <div class="incident"><b>Resolved: API latency spike</b><br>Resolved after a configuration rollback.<div class="meta">16 Oct · Resolved in 42 min</div></div>
+
+    <div class="subscribe">
+      <h2>Get updates</h2>
+      <input type="text" placeholder="email address"><button>SUBSCRIBE!!</button>
+    </div>
+
+    <div class="footer">Northbeam Inc · status.northbeam.example · support@northbeam.example</div>
+  </div>
+</body>
+</html>

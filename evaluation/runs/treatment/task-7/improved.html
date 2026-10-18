@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northbeam Status</title>
+<style>
+  :root {
+    --ink: #1F2933;
+    --muted: #52606E;
+    --faint: #8795A3;
+    --line: #E1E6EB;
+    --bg: #F7F9FA;
+    --card: #FFFFFF;
+    --brand: #1B4F72;
+    --ok: #116B3F;       --ok-dot: #15803D;      --ok-bg: #E2F2E9;
+    --warn: #8A5300;     --warn-dot: #B45309;    --warn-bg: #FBEED3;
+    --down: #B01D1D;     --down-dot: #DC2626;    --down-bg: #FBE4E4;
+    --banner-bg: #FDF4E3;
+    --banner-border: #EBD9B4;
+    --banner-ink: #6E4A03;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  a { color: var(--brand); }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    padding: 18px 0;
+  }
+  .masthead .wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .masthead h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+  .masthead .sub {
+    font-size: 14px;
+    color: #CFE0EC;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Overall state: the one focal point. It reports the worst active condition. */
+  .banner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--banner-bg);
+    border: 1px solid var(--banner-border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 28px 0 0;
+    color: var(--banner-ink);
+  }
+  .banner svg { flex: none; margin-top: 2px; }
+  .banner .title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 2px;
+  }
+  .banner p { margin: 0; font-size: 14.5px; }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 36px 0 10px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  /* Component status list */
+  .components { list-style: none; margin: 0; padding: 0; }
+  .components li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 13px 18px;
+    font-size: 15px;
+  }
+  .components li + li { border-top: 1px solid var(--line); }
+  .status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .status.ok       { color: var(--ok); }       .status.ok .dot       { background: var(--ok-dot); }
+  .status.degraded { color: var(--warn); }     .status.degraded .dot { background: var(--warn-dot); }
+  .status.down     { color: var(--down); }     .status.down .dot     { background: var(--down-dot); }
+
+  /* Incidents */
+  .incident {
+    padding: 16px 18px;
+    margin-top: 10px;
+  }
+  .incident .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .incident h3 { font-size: 15.5px; margin: 0; }
+  .incident p { margin: 0; font-size: 14.5px; color: var(--ink); }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.investigating { background: var(--warn-bg); color: var(--warn); }
+  .badge.monitoring    { background: #E3EDF5; color: var(--brand); }
+  .badge.resolved      { background: var(--ok-bg); color: var(--ok); }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+  /* Subscribe */
+  .subscribe { padding: 20px 18px; margin-top: 10px; }
+  .subscribe p { margin: 0 0 12px; font-size: 14.5px; color: var(--muted); }
+  .subscribe form { display: flex; gap: 8px; flex-wrap: wrap; }
+  .subscribe label {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .subscribe input {
+    flex: 1 1 220px;
+    min-width: 0;
+    padding: 9px 12px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    border: 1px solid #697786;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .subscribe button {
+    padding: 9px 20px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--brand);
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .subscribe button:hover { background: #163F5B; }
+  input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  .footer {
+    margin: 48px 0 32px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .components li { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 16px; }
+    .banner { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <h1>Northbeam</h1>
+      <span class="sub">System Status</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="banner" aria-labelledby="overall-status">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <path d="M11 2.5 20.5 19h-19L11 2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <line x1="11" y1="9" x2="11" y2="13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="11" cy="16.2" r="1.1" fill="currentColor"/>
+      </svg>
+      <div>
+        <p class="title" id="overall-status">Some systems are experiencing issues</p>
+        <p>2 active incidents: a partial outage on EU data ingest and degraded web dashboard performance. Details below.</p>
+      </div>
+    </section>
+
+    <h2>Current status</h2>
+    <ul class="components card">
+      <li><span>API</span><span class="status ok"><span class="dot"></span>Operational</span></li>
+      <li><span>Web dashboard</span><span class="status degraded"><span class="dot"></span>Degraded performance</span></li>
+      <li><span>Webhooks</span><span class="status ok"><span class="dot"></span>Operational</span></li>
+      <li><span>Data ingest (EU)</span><span class="status down"><span class="dot"></span>Partial outage</span></li>
+      <li><span>Data ingest (US)</span><span class="status ok"><span class="dot"></span>Operational</span></li>
+      <li><span>Email notifications</span><span class="status ok"><span class="dot"></span>Operational</span></li>
+    </ul>
+
+    <h2>Active incidents</h2>
+    <article class="incident card">
+      <div class="head">
+        <h3>INC-4412: Elevated error rate on EU ingest</h3>
+        <span class="badge investigating">Investigating</span>
+      </div>
+      <p>We are investigating elevated 5xx responses on the EU ingest endpoints. Customers may see delayed event processing. Next update within 60 minutes.</p>
+      <div class="meta">Opened 09:14 UTC</div>
+    </article>
+    <article class="incident card">
+      <div class="head">
+        <h3>INC-4415: Delayed webhook delivery</h3>
+        <span class="badge monitoring">Monitoring</span>
+      </div>
+      <p>Webhook deliveries are delayed up to 15 minutes due to queue backlog from the EU ingest incident.</p>
+      <div class="meta">Opened 09:40 UTC</div>
+    </article>
+
+    <h2>Past incidents (7 days)</h2>
+    <article class="incident card">
+      <div class="head">
+        <h3>API latency spike</h3>
+        <span class="badge resolved">Resolved</span>
+      </div>
+      <p>Resolved after a configuration rollback.</p>
+      <div class="meta">16 Oct · Resolved in 42 min</div>
+    </article>
+
+    <h2 id="subscribe-heading">Get updates</h2>
+    <section class="subscribe card" aria-labelledby="subscribe-heading">
+      <p>Receive an email when an incident is opened, updated or resolved.</p>
+      <form action="#" method="post">
+        <label for="sub-email">Email address</label>
+        <input id="sub-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      Northbeam Inc · status.northbeam.example · <a href="mailto:support@northbeam.example">support@northbeam.example</a>
+    </footer>
+  </main>
+</body>
+</html>

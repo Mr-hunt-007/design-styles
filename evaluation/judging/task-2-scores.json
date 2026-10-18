@@ -1,0 +1,45 @@
+{
+  "task": 2,
+  "scores": {
+    "A": {
+      "brief_alignment": 4.5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4.5,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4.5,
+      "efficiency_no_unnecessary_complexity": 5
+    },
+    "B": {
+      "brief_alignment": 4,
+      "hierarchy_composition": 4,
+      "typography_colour_legibility": 4,
+      "usability_accessibility": 4,
+      "technical_correctness": 4,
+      "cross_disciplinary_reasoning": 4,
+      "originality_coherence": 4.5,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4
+    }
+  },
+  "defects": {
+    "A": [
+      "Grammar slip in the unit-chart caption: '1 IN 100 replayed credentials logs in' (subject-verb disagreement)",
+      "'STRONGEST' tag sits awkwardly inline beside the wrapped 'PASSKEYS AND' heading line",
+      "Disclosed artifact: at thumbnail scale Chrome's minimum-font-size clamp pushes tracked footer/kicker strings to the edge (print scales are clean)",
+      "Lower-right of section 01 leaves a band of slack whitespace under the unit chart"
+    ],
+    "B": [
+      "Root element has fixed width=842 height=1191 px, so the SVG does not scale to a larger viewport (rendered at quarter area in the mandated 1684x2382 test); viewBox saves it for print but it is less robust than A's responsive root",
+      "Body copy drops to 10.5px on a dark ground, noticeably below A's 12.5-14pt close-reading tier; defence-card text is dense at poster distance",
+      "Statistics are hedged but attributed only to unnamed 'public industry threat reports, 2022-2025'; no named sources (A cites Google/Harris 2019, Digital Shadows 2022, NIST, MITRE, OWASP)",
+      "The 65% reuse figure appears twice (headline chip and 'why it works' panel), spending prime space on redundancy",
+      "Full-bleed near-black ground for an A3 print poster (ink coverage, venue lighting) is a real production concern not addressed in DECISIONS; verification was a single 2x render vs A's three-scale check"
+    ]
+  },
+  "better_overall": "A",
+  "confidence": "high",
+  "notes": "Both are professional, technically accurate posters with clean renders, valid XML, and non-colour-alone encoding (A uses numbered tags and labels; B pairs every colour with PREVENT/DETECT/RESPOND text badges). A wins on the rubric's core axes: stronger 2m hierarchy (100pt title, 26pt section heads, 12.5-14pt body vs B's 64/21/10.5), named and dated sources with an explicitly labelled illustrative unit chart versus B's anonymous 'industry reports' footnote, a responsive viewBox-only root versus B's fixed-pixel root that failed to fill the 2x test window, and a deeper documented verification loop. B's dark threat-briefing aesthetic is more distinctive and its PREVENT/DETECT/RESPOND taxonomy is a genuinely good security-communication idea, but its smaller low-contrast body type, duplicated 65% stat, and unexamined dark-print trade-off leave it a notch behind."
+}

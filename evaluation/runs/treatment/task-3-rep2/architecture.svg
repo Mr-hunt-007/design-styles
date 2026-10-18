@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="1200" height="780" role="img" aria-labelledby="wp-title wp-desc">
+  <title id="wp-title">Web platform architecture</title>
+  <desc id="wp-desc">Request flow from users through an edge zone (CDN, WAF, load balancer) into an application zone with three services (API, Auth, Media), a job queue consumed by a worker pool, and a data zone with PostgreSQL, Redis and object storage. A monitoring panel on the right receives telemetry from every zone. Solid arrows show request and data flow, dashed arrows asynchronous jobs, dotted arrows telemetry.</desc>
+
+  <defs>
+    <marker id="wp-ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#5B6B7F"/>
+    </marker>
+    <marker id="wp-ah-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#6B46C1"/>
+    </marker>
+    <marker id="wp-ah-tele" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#B7791F"/>
+    </marker>
+    <!-- service chip icon, reused by the three app services -->
+    <g id="wp-ic-svc" fill="none" stroke="#6B46C1" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="-8" y="-8" width="16" height="16" rx="3"/>
+      <polyline points="-2.5,-3 -5.5,0 -2.5,3"/>
+      <polyline points="2.5,-3 5.5,0 2.5,3"/>
+    </g>
+    <style>
+      .t-title { font: 650 21px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #16233A; letter-spacing: .2px; }
+      .t-zone  { font: 700 12px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; letter-spacing: 2.2px; }
+      .t-node  { font: 600 14.5px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #1A2433; }
+      .t-sub   { font: 400 11px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #5F6E80; }
+      .t-con   { font: 500 11px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #44556B;
+                 paint-order: stroke; stroke: #F7F9FB; stroke-width: 4.5px; stroke-linejoin: round; }
+      .t-chip  { font: 600 10.5px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #6B46C1; }
+      .t-leg   { font: 400 11.5px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #44556B; }
+      .t-pill  { font: 600 12.5px -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #16233A; }
+      .flow  { stroke: #5B6B7F; stroke-width: 1.6; fill: none; }
+      .async { stroke: #6B46C1; stroke-width: 1.6; fill: none; stroke-dasharray: 6 5; }
+      .tele  { stroke: #B7791F; stroke-width: 1.6; fill: none; stroke-dasharray: 2 4.5; stroke-linecap: round; }
+      .node  { fill: #FFFFFF; stroke-width: 1.2; }
+      .ic    { fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- canvas -->
+  <rect x="0" y="0" width="1200" height="780" fill="#F7F9FB"/>
+
+  <!-- header -->
+  <text class="t-title" x="60" y="52">Web Platform Architecture</text>
+  <g id="wp-legend">
+    <line class="flow" x1="824" y1="42" x2="848" y2="42" marker-end="url(#wp-ah-flow)"/>
+    <text class="t-leg" x="854" y="46">request flow</text>
+    <line class="async" x1="946" y1="42" x2="970" y2="42" marker-end="url(#wp-ah-async)"/>
+    <text class="t-leg" x="976" y="46">async jobs</text>
+    <line class="tele" x1="1052" y1="42" x2="1076" y2="42" marker-end="url(#wp-ah-tele)"/>
+    <text class="t-leg" x="1082" y="46">telemetry</text>
+  </g>
+
+  <!-- zones -->
+  <g id="wp-zones">
+    <rect x="60" y="118" width="880" height="130" rx="12" fill="#EBF2FA" stroke="#C3D7EB"/>
+    <text class="t-zone" x="78" y="142" fill="#2B6CB0">EDGE</text>
+    <rect x="60" y="288" width="880" height="264" rx="12" fill="#F2EFFA" stroke="#D4CBEC"/>
+    <text class="t-zone" x="78" y="312" fill="#6B46C1">APPLICATION</text>
+    <rect x="60" y="582" width="880" height="150" rx="12" fill="#ECF5EF" stroke="#C2DECC"/>
+    <text class="t-zone" x="78" y="606" fill="#276749">DATA</text>
+    <rect x="980" y="118" width="160" height="614" rx="12" fill="#FBF5E8" stroke="#E4D3AD"/>
+  </g>
+
+  <!-- connectors: request / data flow -->
+  <g id="wp-flow">
+    <path class="flow" d="M210,92 V158" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M300,190 H406" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M590,190 H696" marker-end="url(#wp-ah-flow)"/>
+    <!-- load balancer fans out to the three services -->
+    <path class="flow" d="M790,218 V268 H200 V322" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M460,268 V322" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M720,268 V322" marker-end="url(#wp-ah-flow)"/>
+    <!-- services and workers to the data tier -->
+    <path class="flow" d="M150,384 V618" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M410,384 V618" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M770,512 V566 H240 V618" marker-end="url(#wp-ah-flow)"/>
+    <path class="flow" d="M835,512 V618" marker-end="url(#wp-ah-flow)"/>
+  </g>
+
+  <!-- connectors: async jobs -->
+  <g id="wp-async">
+    <path class="async" d="M200,384 V408 H720 V384 M460,384 V408"/>
+    <path class="async" d="M585,408 V432" marker-end="url(#wp-ah-async)"/>
+    <path class="async" d="M680,462 H726" marker-end="url(#wp-ah-async)"/>
+  </g>
+
+  <!-- connectors: telemetry -->
+  <g id="wp-tele">
+    <path class="tele" d="M940,190 H976" marker-end="url(#wp-ah-tele)"/>
+    <path class="tele" d="M940,420 H976" marker-end="url(#wp-ah-tele)"/>
+    <path class="tele" d="M940,657 H976" marker-end="url(#wp-ah-tele)"/>
+  </g>
+
+  <!-- connector labels -->
+  <g id="wp-con-labels">
+    <text class="t-con" x="220" y="132">HTTPS</text>
+    <text class="t-con" x="355" y="180" text-anchor="middle">cache miss</text>
+    <text class="t-con" x="645" y="180" text-anchor="middle">filtered</text>
+    <text class="t-con" x="798" y="258">route</text>
+    <text class="t-con" x="595" y="424">enqueue</text>
+    <text class="t-con" x="703" y="452" text-anchor="middle">consume</text>
+    <text class="t-con" x="158" y="545">SQL</text>
+    <text class="t-con" x="418" y="530">cache</text>
+    <text class="t-con" x="310" y="558" text-anchor="middle">results</text>
+    <text class="t-con" x="843" y="570">artifacts</text>
+  </g>
+
+  <!-- users -->
+  <g id="wp-users">
+    <rect x="146" y="62" width="128" height="30" rx="15" fill="#FFFFFF" stroke="#ADBECE" stroke-width="1.2"/>
+    <text class="t-pill" x="210" y="81" text-anchor="middle">Users / Clients</text>
+  </g>
+
+  <!-- edge zone nodes -->
+  <g id="wp-edge-nodes">
+    <rect class="node" x="120" y="162" width="180" height="56" rx="8" stroke="#BFD3E6"/>
+    <g class="ic" stroke="#2B6CB0" transform="translate(148,190)">
+      <circle r="8"/>
+      <ellipse rx="3.4" ry="8"/>
+      <line x1="-8" y1="0" x2="8" y2="0"/>
+    </g>
+    <text class="t-node" x="170" y="187">CDN</text>
+    <text class="t-sub" x="170" y="203">edge cache</text>
+
+    <rect class="node" x="410" y="162" width="180" height="56" rx="8" stroke="#BFD3E6"/>
+    <g class="ic" stroke="#2B6CB0" transform="translate(438,190)">
+      <path d="M0,-9 L7.5,-6 V0 C7.5,5 4.5,8 0,9.6 C-4.5,8 -7.5,5 -7.5,0 V-6 Z"/>
+    </g>
+    <text class="t-node" x="460" y="187">WAF</text>
+    <text class="t-sub" x="460" y="203">L7 filtering</text>
+
+    <rect class="node" x="700" y="162" width="180" height="56" rx="8" stroke="#BFD3E6"/>
+    <g class="ic" stroke="#2B6CB0" transform="translate(728,190)">
+      <path d="M-8,0 H-2 M-2,0 L7,-6.5 M-2,0 H7 M-2,0 L7,6.5"/>
+      <circle cx="8" cy="-6.5" r="1.4" fill="#2B6CB0" stroke="none"/>
+      <circle cx="8" cy="0" r="1.4" fill="#2B6CB0" stroke="none"/>
+      <circle cx="8" cy="6.5" r="1.4" fill="#2B6CB0" stroke="none"/>
+    </g>
+    <text class="t-node" x="750" y="187">Load Balancer</text>
+    <text class="t-sub" x="750" y="203">TLS, routing</text>
+  </g>
+
+  <!-- application zone nodes -->
+  <g id="wp-app-nodes">
+    <rect class="node" x="100" y="326" width="200" height="58" rx="8" stroke="#CFC6E8"/>
+    <use href="#wp-ic-svc" transform="translate(128,355)"/>
+    <text class="t-node" x="150" y="352">API Service</text>
+    <text class="t-sub" x="150" y="368">stateless, xN replicas</text>
+
+    <rect class="node" x="360" y="326" width="200" height="58" rx="8" stroke="#CFC6E8"/>
+    <use href="#wp-ic-svc" transform="translate(388,355)"/>
+    <text class="t-node" x="410" y="352">Auth Service</text>
+    <text class="t-sub" x="410" y="368">sessions, tokens</text>
+
+    <rect class="node" x="620" y="326" width="200" height="58" rx="8" stroke="#CFC6E8"/>
+    <use href="#wp-ic-svc" transform="translate(648,355)"/>
+    <text class="t-node" x="670" y="352">Media Service</text>
+    <text class="t-sub" x="670" y="368">uploads, transforms</text>
+
+    <rect class="node" x="490" y="436" width="190" height="52" rx="8" stroke="#CFC6E8"/>
+    <g class="ic" stroke="#6B46C1" transform="translate(518,462)">
+      <line x1="-7" y1="-5" x2="7" y2="-5"/>
+      <line x1="-7" y1="0" x2="5" y2="0"/>
+      <line x1="-7" y1="5" x2="7" y2="5"/>
+    </g>
+    <text class="t-node" x="540" y="459">Job Queue</text>
+    <text class="t-sub" x="540" y="474">at-least-once</text>
+
+    <rect class="node" x="730" y="436" width="200" height="76" rx="8" stroke="#CFC6E8"/>
+    <text class="t-node" x="744" y="458">Worker Pool</text>
+    <g id="wp-workers">
+      <rect x="744" y="470" width="50" height="26" rx="5" fill="#F2EFFA" stroke="#D4CBEC"/>
+      <text class="t-chip" x="769" y="487" text-anchor="middle">W1</text>
+      <rect x="802" y="470" width="50" height="26" rx="5" fill="#F2EFFA" stroke="#D4CBEC"/>
+      <text class="t-chip" x="827" y="487" text-anchor="middle">W2</text>
+      <rect x="860" y="470" width="50" height="26" rx="5" fill="#F2EFFA" stroke="#D4CBEC"/>
+      <text class="t-chip" x="885" y="487" text-anchor="middle">W3</text>
+    </g>
+  </g>
+
+  <!-- data zone nodes -->
+  <g id="wp-data-nodes">
+    <rect class="node" x="110" y="622" width="180" height="64" rx="8" stroke="#BFD9C9"/>
+    <g class="ic" stroke="#2F855A" transform="translate(138,654)">
+      <path d="M-8,-6 A8,3.2 0 0 0 8,-6 A8,3.2 0 0 0 -8,-6 M-8,-6 V6 A8,3.2 0 0 0 8,6 V-6"/>
+    </g>
+    <text class="t-node" x="160" y="651">PostgreSQL</text>
+    <text class="t-sub" x="160" y="667">primary + replica</text>
+
+    <rect class="node" x="380" y="622" width="180" height="64" rx="8" stroke="#BFD9C9"/>
+    <g stroke="#2F855A" fill="none" stroke-width="1.7" stroke-linejoin="round" transform="translate(408,654)">
+      <polygon points="2,-9 -5.5,1 -1,1 -2,9 5.5,-1 1,-1"/>
+    </g>
+    <text class="t-node" x="430" y="651">Redis</text>
+    <text class="t-sub" x="430" y="667">cache, sessions</text>
+
+    <rect class="node" x="690" y="622" width="200" height="64" rx="8" stroke="#BFD9C9"/>
+    <g class="ic" stroke="#2F855A" transform="translate(718,654)">
+      <rect x="-8" y="-7" width="16" height="14" rx="2"/>
+      <line x1="-8" y1="-1.5" x2="8" y2="-1.5"/>
+      <line x1="-2.5" y1="3" x2="2.5" y2="3"/>
+    </g>
+    <text class="t-node" x="740" y="651">Object Storage</text>
+    <text class="t-sub" x="740" y="667">S3-compatible</text>
+  </g>
+
+  <!-- monitoring panel -->
+  <g id="wp-monitoring">
+    <text class="t-zone" x="998" y="142" fill="#8C5C10">MONITORING</text>
+    <g class="ic" stroke="#B7791F" transform="translate(1060,176)">
+      <polyline points="-11,0 -4.5,0 -1.5,-7 2,7 5,0 11,0"/>
+    </g>
+    <line x1="996" y1="202" x2="1124" y2="202" stroke="#E4D3AD" stroke-width="1"/>
+    <g id="wp-mon-items">
+      <circle cx="1004" cy="230.5" r="2.5" fill="#B7791F"/>
+      <text class="t-sub" x="1014" y="234">Metrics</text>
+      <circle cx="1004" cy="258.5" r="2.5" fill="#B7791F"/>
+      <text class="t-sub" x="1014" y="262">Logs</text>
+      <circle cx="1004" cy="286.5" r="2.5" fill="#B7791F"/>
+      <text class="t-sub" x="1014" y="290">Traces</text>
+      <circle cx="1004" cy="314.5" r="2.5" fill="#B7791F"/>
+      <text class="t-sub" x="1014" y="318">Alerts</text>
+    </g>
+    <text class="t-sub" x="1060" y="714" text-anchor="middle" font-style="italic">observes every tier</text>
+  </g>
+</svg>

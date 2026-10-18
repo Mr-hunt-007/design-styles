@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Icon Family Preview</title>
+<style>
+  :root {
+    --bg: #eef1f5;
+    --panel-light: #ffffff;
+    --panel-light-ink: #1c2430;
+    --panel-light-muted: #6b7686;
+    --panel-light-line: #e3e8ee;
+    --panel-dark: #10151d;
+    --panel-dark-ink: #e7ecf3;
+    --panel-dark-muted: #8b96a6;
+    --panel-dark-line: #262e3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 16px 64px;
+    background: var(--bg);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--panel-light-ink);
+  }
+  main { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .sub { color: var(--panel-light-muted); margin: 0 0 28px; }
+  .panel {
+    border-radius: 12px;
+    padding: 28px 32px 32px;
+    margin-bottom: 24px;
+    border: 1px solid var(--panel-light-line);
+  }
+  .panel.light { background: var(--panel-light); color: var(--panel-light-ink); }
+  .panel.dark  { background: var(--panel-dark);  color: var(--panel-dark-ink); border-color: var(--panel-dark-line); }
+  .panel h2 {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+  .panel.light h2 { color: var(--panel-light-muted); }
+  .panel.dark  h2 { color: var(--panel-dark-muted); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: center; padding: 14px 8px; }
+  th { font-size: 12px; font-weight: 500; }
+  .panel.light th { color: var(--panel-light-muted); }
+  .panel.dark  th { color: var(--panel-dark-muted); }
+  th.size-label, td.size-label {
+    text-align: left; width: 72px;
+    font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 500;
+  }
+  .panel.light td.size-label { color: var(--panel-light-muted); }
+  .panel.dark  td.size-label { color: var(--panel-dark-muted); }
+  tbody tr { border-top: 1px solid var(--panel-light-line); }
+  .panel.dark tbody tr { border-top-color: var(--panel-dark-line); }
+  .icon { vertical-align: middle; }
+  svg.icon { display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- Inline copy of the symbol sheet. icons.svg is the canonical asset; it is
+     duplicated here only because external <use> fragments do not resolve from
+     file:// URLs. In an app, reference icons.svg directly or inline it once. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9V6a2 2 0 0 1 2-2h3"/>
+    <path d="M15 4h3a2 2 0 0 1 2 2v3"/>
+    <path d="M20 15v3a2 2 0 0 1-2 2h-3"/>
+    <path d="M9 20H6a2 2 0 0 1-2-2v-3"/>
+    <path d="M7 12h10"/>
+  </symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+    <path d="M12 9v4"/>
+    <path d="M12 17h.01"/>
+  </symbol>
+  <symbol id="icon-report" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+    <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+    <path d="M9 13h6"/>
+    <path d="M9 17h6"/>
+  </symbol>
+  <symbol id="icon-asset" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+    <path d="m3.3 7 8.7 5 8.7-5"/>
+    <path d="M12 22V12"/>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 6h8.25"/>
+    <path d="M17.75 6H20"/>
+    <circle cx="15" cy="6" r="2"/>
+    <path d="M4 12h2.25"/>
+    <path d="M11.75 12H20"/>
+    <circle cx="9" cy="12" r="2"/>
+    <path d="M4 18h5.25"/>
+    <path d="M14.75 18H20"/>
+    <circle cx="12" cy="18" r="2"/>
+  </symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="7" r="4"/>
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+  </symbol>
+</svg>
+
+<main>
+  <h1>Interface icon family</h1>
+  <p class="sub">24&times;24 grid &middot; 2px stroke &middot; round caps and joins &middot; currentColor</p>
+
+  <section class="panel light">
+    <h2>Light background</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="size-label">Size</th>
+          <th>scan</th><th>alert</th><th>report</th><th>asset</th><th>settings</th><th>user</th>
+        </tr>
+      </thead>
+      <tbody id="rows-light"></tbody>
+    </table>
+  </section>
+
+  <section class="panel dark">
+    <h2>Dark background</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="size-label">Size</th>
+          <th>scan</th><th>alert</th><th>report</th><th>asset</th><th>settings</th><th>user</th>
+        </tr>
+      </thead>
+      <tbody id="rows-dark"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+  const icons = ["scan", "alert", "report", "asset", "settings", "user"];
+  const sizes = [16, 24, 48];
+  for (const bodyId of ["rows-light", "rows-dark"]) {
+    const tbody = document.getElementById(bodyId);
+    for (const size of sizes) {
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        `<td class="size-label">${size}px</td>` +
+        icons.map(name =>
+          `<td><svg class="icon" width="${size}" height="${size}" role="img" aria-label="${name}">` +
+          `<use href="#icon-${name}"/></svg></td>`
+        ).join("");
+      tbody.appendChild(tr);
+    }
+  }
+</script>
+</body>
+</html>

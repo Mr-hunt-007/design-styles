@@ -1,0 +1,42 @@
+{
+  "task": "8-rep3",
+  "scores": {
+    "A": {
+      "brief_alignment": 5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 5,
+      "originality_coherence": 4.5,
+      "maintainability_implementation": 4.5,
+      "efficiency_no_unnecessary_complexity": 4
+    },
+    "B": {
+      "brief_alignment": 5,
+      "hierarchy_composition": 4.5,
+      "typography_colour_legibility": 4.5,
+      "usability_accessibility": 4.5,
+      "technical_correctness": 4.5,
+      "cross_disciplinary_reasoning": 4,
+      "originality_coherence": 4,
+      "maintainability_implementation": 4,
+      "efficiency_no_unnecessary_complexity": 4.5
+    }
+  },
+  "defects": {
+    "A": [
+      "Typeface guidance stays generic ('a neutral sans of the Helvetica/Inter class') where concrete, vettable families would make the spec directly executable",
+      "Prose is dense and occasionally rhetorical ('scarcity economics', 'trend trap'), spending words that a spec reader must unpack",
+      "Accessibility section omits text-zoom/reflow and colour-vision-deficiency simulation, both relevant to the stated 60+ audience"
+    ],
+    "B": [
+      "No token/design-system governance story: nothing ensures the restraint and the two-family budget survive future contributors",
+      "The supporting influence's boundary is looser than A's - no explicit rule for what classical print may NOT do when it conflicts with clarity",
+      "Chart integrity is thinner (palette ramp specified, but no guidance on axis honesty, baselines, or stale-data handling for figures the bank is accountable for)"
+    ]
+  },
+  "better_overall": "A",
+  "confidence": "medium",
+  "notes": "Both teams converged on Swiss/International Typographic primary with a print/editorial supporting voice, satisfied every brief element within the line limit, and named a fashionable-but-unsuitable rejection (glassmorphism). B is the more immediately buildable spec (named fonts, hex values, row heights, max widths, print stylesheet, CVD simulation). A wins narrowly on depth of reasoning: an explicitly budgeted supporting influence with a conflict rule, semantic-colour reservation argued from instrumentation practice, chart honesty and data-recency rules, and a governance/token layer that makes the restraint durable - the quality that matters most for a regulated bank's decade-scale system."
+}

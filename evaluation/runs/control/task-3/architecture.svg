@@ -1,0 +1,275 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1000" viewBox="0 0 1560 1000" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <title>Web Platform Architecture</title>
+  <defs>
+    <filter id="sh" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#0f2a43" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7b8794"/>
+    </marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="1560" height="1000" fill="#f7f9fb"/>
+
+  <!-- header -->
+  <text x="70" y="58" font-size="22" font-weight="700" fill="#0f172a">Web Platform Architecture</text>
+  <text x="70" y="84" font-size="12.5" fill="#64748b">Request flow across edge, application, and data tiers, with async processing and centralized observability</text>
+
+  <!-- legend -->
+  <g font-size="11" fill="#5b6572">
+    <line x1="1050" y1="55" x2="1082" y2="55" stroke="#7b8794" stroke-width="1.6" marker-end="url(#arr)"/>
+    <text x="1092" y="59">request path</text>
+    <line x1="1190" y1="55" x2="1222" y2="55" stroke="#7b8794" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+    <text x="1232" y="59">async jobs</text>
+    <line x1="1325" y1="55" x2="1357" y2="55" stroke="#d97706" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arrA)"/>
+    <text x="1367" y="59">telemetry</text>
+  </g>
+
+  <!-- ================= ZONES ================= -->
+  <!-- Edge zone -->
+  <rect x="290" y="130" width="960" height="170" rx="14" fill="#2563eb" fill-opacity="0.055" stroke="#2563eb" stroke-opacity="0.32"/>
+  <text x="310" y="155" font-size="11" font-weight="700" letter-spacing="2.5" fill="#1d4ed8">EDGE</text>
+  <text x="358" y="155" font-size="11" fill="#60749b">public ingress</text>
+
+  <!-- App zone -->
+  <rect x="290" y="360" width="960" height="330" rx="14" fill="#7c3aed" fill-opacity="0.05" stroke="#7c3aed" stroke-opacity="0.30"/>
+  <text x="310" y="385" font-size="11" font-weight="700" letter-spacing="2.5" fill="#6d28d9">APP</text>
+  <text x="350" y="385" font-size="11" fill="#7b6f9b">private subnets</text>
+
+  <!-- Data zone -->
+  <rect x="290" y="740" width="960" height="200" rx="14" fill="#059669" fill-opacity="0.055" stroke="#059669" stroke-opacity="0.32"/>
+  <text x="310" y="765" font-size="11" font-weight="700" letter-spacing="2.5" fill="#047857">DATA</text>
+  <text x="358" y="765" font-size="11" fill="#5f8d7c">encrypted at rest</text>
+
+  <!-- ================= CONNECTORS ================= -->
+  <g fill="none" stroke="#7b8794" stroke-width="1.6">
+    <!-- users -> cdn -->
+    <path d="M230 210 H327" marker-end="url(#arr)"/>
+    <!-- cdn -> waf -> lb -->
+    <path d="M550 210 H657" marker-end="url(#arr)"/>
+    <path d="M880 210 H987" marker-end="url(#arr)"/>
+    <!-- lb fan-out to services -->
+    <path d="M1100 255 V330 H430 V407" marker-end="url(#arr)"/>
+    <path d="M1100 255 V330 H770 V407" marker-end="url(#arr)"/>
+    <path d="M1100 255 V407" marker-end="url(#arr)"/>
+    <!-- web -> api -->
+    <path d="M530 440 H667" marker-end="url(#arr)"/>
+    <!-- api -> postgres / redis -->
+    <path d="M700 500 V730 H433 V787" marker-end="url(#arr)"/>
+    <path d="M760 500 V787" marker-end="url(#arr)"/>
+    <!-- auth -> redis -->
+    <path d="M1100 500 V705 H820 V787" marker-end="url(#arr)"/>
+    <!-- workers -> postgres / object storage -->
+    <path d="M830 645 V760 H493 V787" marker-end="url(#arr)"/>
+    <path d="M940 645 V725 H1090 V787" marker-end="url(#arr)"/>
+  </g>
+  <!-- async (queue) -->
+  <g fill="none" stroke="#7b8794" stroke-width="1.6" stroke-dasharray="5 4">
+    <path d="M670 478 H560 V562" marker-end="url(#arr)"/>
+    <path d="M650 605 H797" marker-end="url(#arr)"/>
+  </g>
+  <!-- telemetry -->
+  <g fill="none" stroke="#d97706" stroke-width="1.4" stroke-dasharray="5 4" stroke-opacity="0.75">
+    <path d="M1250 215 H1405 V447" marker-end="url(#arrA)"/>
+    <path d="M1250 525 H1297" marker-end="url(#arrA)"/>
+    <path d="M1250 840 H1405 V633" marker-end="url(#arrA)"/>
+  </g>
+
+  <!-- connector labels -->
+  <g font-size="10.5" fill="#5b6572" paint-order="stroke" stroke="#f7f9fb" stroke-width="3.5" stroke-linejoin="round">
+    <text x="278" y="200" text-anchor="middle">HTTPS</text>
+    <text x="603" y="200" text-anchor="middle">cache miss</text>
+    <text x="933" y="200" text-anchor="middle">filtered</text>
+    <text x="765" y="322" text-anchor="middle">HTTP, least connections</text>
+    <text x="598" y="432" text-anchor="middle">REST / JSON</text>
+    <text x="552" y="530" text-anchor="end">enqueue</text>
+    <text x="723" y="597" text-anchor="middle">consume</text>
+    <text x="692" y="645" text-anchor="end">SQL</text>
+    <text x="768" y="645">cache</text>
+    <text x="1092" y="645" text-anchor="end">sessions</text>
+    <text x="822" y="712" text-anchor="end">results</text>
+    <text x="948" y="700">artifacts</text>
+  </g>
+
+  <!-- ================= NODES ================= -->
+  <!-- Users -->
+  <g>
+    <rect x="70" y="175" width="160" height="70" rx="14" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="84" y="193" width="34" height="34" rx="9" fill="#475569" fill-opacity="0.12"/>
+    <g transform="translate(91,200)" fill="none" stroke="#475569" stroke-width="1.6" stroke-linecap="round">
+      <circle cx="10" cy="6.5" r="3.4"/>
+      <path d="M3.5 17 a6.5 5.5 0 0 1 13 0"/>
+    </g>
+    <text x="130" y="206" font-size="13.5" font-weight="650" fill="#0f172a">Users</text>
+    <text x="130" y="223" font-size="10.5" fill="#64748b">Web and mobile</text>
+  </g>
+
+  <!-- CDN -->
+  <g>
+    <rect x="330" y="165" width="220" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="346" y="193" width="34" height="34" rx="9" fill="#2563eb" fill-opacity="0.12"/>
+    <g transform="translate(353,200)" fill="none" stroke="#2563eb" stroke-width="1.5">
+      <circle cx="10" cy="10" r="7.6"/>
+      <path d="M2.4 10 H17.6"/>
+      <ellipse cx="10" cy="10" rx="3.4" ry="7.6"/>
+    </g>
+    <text x="392" y="204" font-size="13.5" font-weight="650" fill="#0f172a">CDN</text>
+    <text x="392" y="221" font-size="10.5" fill="#64748b">Static cache, edge PoPs</text>
+  </g>
+
+  <!-- WAF -->
+  <g>
+    <rect x="660" y="165" width="220" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="676" y="193" width="34" height="34" rx="9" fill="#2563eb" fill-opacity="0.12"/>
+    <g transform="translate(683,200)" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M10 2 L16.6 4.8 V9.8 C16.6 14.6 13.4 17.2 10 18.3 C6.6 17.2 3.4 14.6 3.4 9.8 V4.8 Z"/>
+      <path d="M6.8 10 L9.2 12.4 L13.4 7.6"/>
+    </g>
+    <text x="722" y="204" font-size="13.5" font-weight="650" fill="#0f172a">WAF</text>
+    <text x="722" y="221" font-size="10.5" fill="#64748b">OWASP rules, rate limits</text>
+  </g>
+
+  <!-- Load balancer -->
+  <g>
+    <rect x="990" y="165" width="220" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="1006" y="193" width="34" height="34" rx="9" fill="#2563eb" fill-opacity="0.12"/>
+    <g transform="translate(1013,200)" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round">
+      <path d="M10 3.5 V8"/>
+      <path d="M10 8 L4.5 13.5 M10 8 V13.5 M10 8 L15.5 13.5"/>
+      <circle cx="4.5" cy="15.5" r="1.4"/>
+      <circle cx="10" cy="15.5" r="1.4"/>
+      <circle cx="15.5" cy="15.5" r="1.4"/>
+    </g>
+    <text x="1052" y="204" font-size="13.5" font-weight="650" fill="#0f172a">Load Balancer</text>
+    <text x="1052" y="221" font-size="10.5" fill="#64748b">L7, health checks</text>
+  </g>
+
+  <!-- Web frontend -->
+  <g>
+    <rect x="330" y="410" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="346" y="438" width="34" height="34" rx="9" fill="#7c3aed" fill-opacity="0.12"/>
+    <g transform="translate(353,445)" fill="none" stroke="#7c3aed" stroke-width="1.5">
+      <rect x="2.5" y="3.5" width="15" height="13" rx="2"/>
+      <path d="M2.5 7.5 H17.5"/>
+      <circle cx="5.2" cy="5.5" r="0.4"/>
+    </g>
+    <text x="392" y="449" font-size="13.5" font-weight="650" fill="#0f172a">Web Frontend</text>
+    <text x="392" y="466" font-size="10.5" fill="#64748b">SSR pages, assets</text>
+  </g>
+
+  <!-- API service -->
+  <g>
+    <rect x="670" y="410" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="686" y="438" width="34" height="34" rx="9" fill="#7c3aed" fill-opacity="0.12"/>
+    <g transform="translate(693,445)" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round">
+      <path d="M7 3.5 C4.5 3.5 6.5 7 3.5 10 C6.5 13 4.5 16.5 7 16.5"/>
+      <path d="M13 3.5 C15.5 3.5 13.5 7 16.5 10 C13.5 13 15.5 16.5 13 16.5"/>
+    </g>
+    <text x="732" y="449" font-size="13.5" font-weight="650" fill="#0f172a">API Service</text>
+    <text x="732" y="466" font-size="10.5" fill="#64748b">Core business logic</text>
+  </g>
+
+  <!-- Auth service -->
+  <g>
+    <rect x="1000" y="410" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="1016" y="438" width="34" height="34" rx="9" fill="#7c3aed" fill-opacity="0.12"/>
+    <g transform="translate(1023,445)" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-linejoin="round">
+      <rect x="4.5" y="9" width="11" height="8" rx="1.6"/>
+      <path d="M7 9 V6.5 a3 3 0 0 1 6 0 V9"/>
+      <circle cx="10" cy="13" r="1.2"/>
+    </g>
+    <text x="1062" y="449" font-size="13.5" font-weight="650" fill="#0f172a">Auth Service</text>
+    <text x="1062" y="466" font-size="10.5" fill="#64748b">OIDC, tokens, sessions</text>
+  </g>
+
+  <!-- Queue -->
+  <g>
+    <rect x="470" y="565" width="180" height="80" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="484" y="588" width="34" height="34" rx="9" fill="#7c3aed" fill-opacity="0.12"/>
+    <g transform="translate(491,595)" fill="none" stroke="#7c3aed" stroke-width="1.6" stroke-linecap="round">
+      <path d="M4 6 H16"/>
+      <path d="M4 10 H16"/>
+      <path d="M4 14 H11.5"/>
+    </g>
+    <text x="528" y="599" font-size="13" font-weight="650" fill="#0f172a">Message Queue</text>
+    <text x="528" y="616" font-size="10.5" fill="#64748b">Jobs, retries, DLQ</text>
+  </g>
+
+  <!-- Worker pool -->
+  <g>
+    <rect x="800" y="565" width="200" height="80" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="814" y="588" width="34" height="34" rx="9" fill="#7c3aed" fill-opacity="0.12"/>
+    <g transform="translate(821,595)" fill="none" stroke="#7c3aed" stroke-width="1.5">
+      <circle cx="6" cy="7" r="2.3"/>
+      <circle cx="14" cy="7" r="2.3"/>
+      <circle cx="10" cy="14" r="2.3"/>
+    </g>
+    <text x="858" y="599" font-size="13" font-weight="650" fill="#0f172a">Worker Pool</text>
+    <text x="858" y="616" font-size="10.5" fill="#64748b">Autoscaled consumers</text>
+  </g>
+
+  <!-- PostgreSQL -->
+  <g>
+    <rect x="330" y="790" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="346" y="818" width="34" height="34" rx="9" fill="#059669" fill-opacity="0.12"/>
+    <g transform="translate(353,825)" fill="none" stroke="#059669" stroke-width="1.5">
+      <ellipse cx="10" cy="4.8" rx="6.8" ry="2.5"/>
+      <path d="M3.2 4.8 V15.2 a6.8 2.5 0 0 0 13.6 0 V4.8"/>
+      <path d="M3.2 10 a6.8 2.5 0 0 0 13.6 0"/>
+    </g>
+    <text x="392" y="829" font-size="13.5" font-weight="650" fill="#0f172a">PostgreSQL</text>
+    <text x="392" y="846" font-size="10.5" fill="#64748b">Primary + read replica</text>
+  </g>
+
+  <!-- Redis -->
+  <g>
+    <rect x="660" y="790" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="676" y="818" width="34" height="34" rx="9" fill="#059669" fill-opacity="0.12"/>
+    <g transform="translate(683,825)" fill="none" stroke="#059669" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M11 2.5 L4.5 11 H9 L8.2 17.5 L15.5 8.5 H10.5 Z"/>
+    </g>
+    <text x="722" y="829" font-size="13.5" font-weight="650" fill="#0f172a">Redis</text>
+    <text x="722" y="846" font-size="10.5" fill="#64748b">Cache, session store</text>
+  </g>
+
+  <!-- Object storage -->
+  <g>
+    <rect x="990" y="790" width="200" height="90" rx="10" fill="#ffffff" stroke="#d6dde6" filter="url(#sh)"/>
+    <rect x="1006" y="818" width="34" height="34" rx="9" fill="#059669" fill-opacity="0.12"/>
+    <g transform="translate(1013,825)" fill="none" stroke="#059669" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M3 7 L5 3.5 H15 L17 7"/>
+      <rect x="3" y="7" width="14" height="10" rx="1.5"/>
+      <path d="M7.5 10.5 H12.5"/>
+    </g>
+    <text x="1052" y="829" font-size="13.5" font-weight="650" fill="#0f172a">Object Storage</text>
+    <text x="1052" y="846" font-size="10.5" fill="#64748b">S3-compatible buckets</text>
+  </g>
+
+  <!-- Monitoring -->
+  <g>
+    <rect x="1300" y="450" width="210" height="180" rx="10" fill="#ffffff" stroke="#e5c9a3" filter="url(#sh)"/>
+    <rect x="1316" y="468" width="34" height="34" rx="9" fill="#d97706" fill-opacity="0.14"/>
+    <g transform="translate(1323,475)" fill="none" stroke="#d97706" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M2 11 H6 L8.5 5 L11.5 16 L14 11 H18"/>
+    </g>
+    <text x="1362" y="483" font-size="13.5" font-weight="650" fill="#0f172a">Monitoring</text>
+    <text x="1362" y="500" font-size="10.5" fill="#64748b">Observability stack</text>
+    <g font-size="11" fill="#5b6572">
+      <circle cx="1322" cy="531" r="2" fill="#d97706"/>
+      <text x="1332" y="535">Metrics and dashboards</text>
+      <circle cx="1322" cy="556" r="2" fill="#d97706"/>
+      <text x="1332" y="560">Centralized logs</text>
+      <circle cx="1322" cy="581" r="2" fill="#d97706"/>
+      <text x="1332" y="585">Distributed traces</text>
+      <circle cx="1322" cy="606" r="2" fill="#d97706"/>
+      <text x="1332" y="610">Alerting and on-call</text>
+    </g>
+  </g>
+
+  <!-- footer -->
+  <text x="70" y="972" font-size="10.5" fill="#94a3b8">All tiers deployed across 3 availability zones. Arrows show primary direction of calls.</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" role="img" aria-label="Interface icon family: scan, alert, report, asset, settings, user">
+  <!--
+    Icon family — 24x24 grid, stroke 1.75, round caps/joins, 2px corner radius.
+    Live area 18x18 (3..21 on stroke centerline); pointed shapes (alert, asset)
+    overshoot slightly for optical balance. All strokes use currentColor.
+  -->
+
+  <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>Scan</title>
+    <path d="M3 8V5a2 2 0 0 1 2-2h3"/>
+    <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+    <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
+    <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
+    <path d="M7 12h10"/>
+  </symbol>
+
+  <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>Alert</title>
+    <path d="M10.27 4.4 3.1 17.5a2 2 0 0 0 1.73 3h14.34a2 2 0 0 0 1.73-3L13.73 4.4a2 2 0 0 0-3.46 0Z"/>
+    <path d="M12 9.5v4"/>
+    <path d="M12 16.5h.01"/>
+  </symbol>
+
+  <symbol id="icon-report" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>Report</title>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/>
+    <path d="M14 3v3a2 2 0 0 0 2 2h3"/>
+    <path d="M9 17v-2"/>
+    <path d="M12 17v-5"/>
+    <path d="M15 17v-3.5"/>
+  </symbol>
+
+  <symbol id="icon-asset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>Asset</title>
+    <path d="M20.1 8.4a1.8 1.8 0 0 0-.9-1.56l-6.3-3.6a1.8 1.8 0 0 0-1.8 0l-6.3 3.6a1.8 1.8 0 0 0-.9 1.56v7.2a1.8 1.8 0 0 0 .9 1.56l6.3 3.6a1.8 1.8 0 0 0 1.8 0l6.3-3.6a1.8 1.8 0 0 0 .9-1.56Z"/>
+    <path d="m4.17 7.5 7.83 4.5 7.83-4.5"/>
+    <path d="M12 20.9V12"/>
+  </symbol>
+
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>Settings</title>
+    <path d="M3.5 6h6.25"/>
+    <circle cx="14" cy="6" r="2"/>
+    <path d="M18.25 6h2.25"/>
+    <circle cx="6.5" cy="12" r="2"/>
+    <path d="M10.75 12h9.75"/>
+    <path d="M3.5 18h9.75"/>
+    <circle cx="17.5" cy="18" r="2"/>
+  </symbol>
+
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <title>User</title>
+    <circle cx="12" cy="7.5" r="3.75"/>
+    <path d="M19 20.5v-1a4.5 4.5 0 0 0-4.5-4.5h-5A4.5 4.5 0 0 0 5 19.5v1"/>
+  </symbol>
+
+  <!-- Self-preview when the sheet is opened directly -->
+  <use href="#icon-scan"     x="8"   y="8" width="24" height="24"/>
+  <use href="#icon-alert"    x="40"  y="8" width="24" height="24"/>
+  <use href="#icon-report"   x="72"  y="8" width="24" height="24"/>
+  <use href="#icon-asset"    x="104" y="8" width="24" height="24"/>
+  <use href="#icon-settings" x="136" y="8" width="24" height="24"/>
+  <use href="#icon-user"     x="168" y="8" width="24" height="24"/>
+</svg>

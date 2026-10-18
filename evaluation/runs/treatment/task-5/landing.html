@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian · External Attack Surface Management</title>
+<meta name="description" content="Meridian continuously maps your external attack surface, validates what is exploitable, and ranks it by consequence.">
+<style>
+  /* ============ Tokens (Corporate Swiss: everything is a token) ============ */
+  :root{
+    /* Light page surface */
+    --bg:#ffffff;
+    --bg-alt:#f4f6f9;
+    --ink:#182230;
+    --ink-soft:#3c4a5e;
+    --muted:#51627a;
+    --line:#dde3ec;
+    --brand:#1c46c8;
+    --brand-ink:#163aa8;
+    --brand-tint:#eaeffc;
+
+    /* Instrument panel surface (Aerospace layer) */
+    --panel:#0c1320;
+    --panel-2:#111a2b;
+    --panel-line:#223049;
+    --panel-ink:#e9eff7;
+    --panel-muted:#90a4bb;
+
+    /* Semantic severity: reserved, never decorative */
+    --sev-crit:#ff6b5e;
+    --sev-high:#f5a623;
+    --sev-med:#6f87a6;
+    --sev-ok:#43d17c;
+
+    /* Type + space scale (8pt grid) */
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:40px; --s6:48px; --s8:64px; --s12:96px;
+    --radius:6px;
+    --maxw:1120px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-sans);
+    background:var(--bg);
+    color:var(--ink);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%}
+  a{color:inherit}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--s3)}
+
+  /* ============ Type scale ============ */
+  h1{font-size:clamp(34px,4.6vw,54px);line-height:1.08;letter-spacing:-0.022em;font-weight:700}
+  h2{font-size:clamp(26px,3.2vw,36px);line-height:1.15;letter-spacing:-0.018em;font-weight:700}
+  h3{font-size:19px;line-height:1.3;letter-spacing:-0.01em;font-weight:650}
+  .lede{font-size:18px;color:var(--muted);max-width:56ch}
+  .eyebrow{
+    font-size:12px;font-weight:650;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--brand-ink);margin-bottom:var(--s2);
+  }
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ============ Buttons ============ */
+  .btn{
+    display:inline-block;font-weight:600;font-size:15px;text-decoration:none;
+    padding:12px 22px;border-radius:var(--radius);border:1px solid transparent;
+    transition:background-color .18s ease,border-color .18s ease;
+  }
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand-ink)}
+  .btn-ghost{border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--muted)}
+  .btn-inverse{background:#fff;color:var(--panel)}
+  .btn-inverse:hover{background:#dbe4f0}
+  .btn-outline-inverse{border-color:#3a4c69;color:var(--panel-ink)}
+  .btn-outline-inverse:hover{border-color:var(--panel-muted)}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+  /* ============ Header ============ */
+  header{
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);z-index:50;
+  }
+  .nav{display:flex;align-items:center;gap:var(--s4);height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-0.01em;text-decoration:none}
+  .nav-links{display:flex;gap:var(--s3);margin-left:auto;list-style:none}
+  .nav-links a{text-decoration:none;font-size:14.5px;color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--ink)}
+  .nav .btn{padding:9px 16px;font-size:14px}
+
+  /* ============ Hero ============ */
+  .hero{padding:var(--s12) 0 var(--s8)}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,46fr) minmax(0,54fr);gap:var(--s6);align-items:center}
+  .hero-grid > *,.feature > *,.cta-inner > *{min-width:0}
+  .hero .lede{margin:var(--s3) 0 var(--s4)}
+  .hero-ctas{display:flex;gap:var(--s2);flex-wrap:wrap}
+  .hero-note{margin-top:var(--s3);font-size:13.5px;color:var(--muted)}
+  .hero-note strong{color:var(--ink-soft);font-weight:600}
+
+  /* ============ Instrument panel (Aerospace layer, the signature element) ============ */
+  .panel{
+    background:var(--panel);color:var(--panel-ink);
+    border:1px solid var(--panel-line);border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 24px 48px -24px rgba(12,19,32,.45);
+  }
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;gap:var(--s2);
+    padding:12px 18px;border-bottom:1px solid var(--panel-line);background:var(--panel-2);
+  }
+  .panel-title{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;color:var(--panel-muted)}
+  .feed-status{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--sev-ok)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--sev-ok)}
+  @media (prefers-reduced-motion:no-preference){
+    .dot{animation:pulse 2.4s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  }
+  .panel-zone{padding:16px 18px;border-bottom:1px solid var(--panel-line)}
+  .panel-zone:last-child{border-bottom:0}
+  .zone-label{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;color:var(--panel-muted);margin-bottom:10px}
+  .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+  .readout .k{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:var(--panel-muted)}
+  .readout .v{font-size:27px;font-weight:700;letter-spacing:-0.01em;line-height:1.2}
+  .readout .d{font-family:var(--font-mono);font-size:11.5px;color:var(--panel-muted)}
+  .readout .d.up{color:var(--sev-ok)}
+  .sev-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)}
+  .sev .v{font-size:22px;font-weight:700}
+  .sev .k{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--panel-muted)}
+  .sq{width:8px;height:8px;border-radius:2px;flex:none}
+  .sq.crit{background:var(--sev-crit)} .sq.high{background:var(--sev-high)}
+  .sq.med{background:var(--sev-med)} .sq.ok{background:var(--sev-ok)}
+  .v.crit{color:var(--sev-crit)} .v.high{color:var(--sev-high)} .v.okc{color:var(--sev-ok)}
+  .spark-caption{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--panel-muted);margin-bottom:8px}
+  .panel-foot{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--font-mono);font-size:11.5px;color:var(--panel-muted)}
+  .stale{color:var(--sev-high)}
+
+  /* ============ Sections ============ */
+  section{padding:var(--s8) 0}
+  .section-alt{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .section-head{max-width:62ch;margin-bottom:var(--s6)}
+  .section-head .lede{margin-top:var(--s2)}
+
+  .feature{display:grid;grid-template-columns:minmax(0,42fr) minmax(0,58fr);gap:var(--s6);align-items:center;padding:var(--s6) 0}
+  .feature + .feature{border-top:1px solid var(--line)}
+  .feature.flip{grid-template-columns:minmax(0,58fr) minmax(0,42fr)}
+  .feature.flip .feature-copy{order:2}
+  .feature.flip .feature-visual{order:1}
+  .feature h3{font-size:24px;letter-spacing:-0.015em;margin-bottom:var(--s2)}
+  .feature p{color:var(--muted);max-width:48ch}
+  .feature ul{list-style:none;margin-top:var(--s3);display:grid;gap:10px}
+  .feature li{position:relative;padding-left:22px;color:var(--ink-soft);font-size:15px}
+  .feature li::before{
+    content:"";position:absolute;left:0;top:9px;width:10px;height:2px;background:var(--brand);
+  }
+  .feature-kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--brand-ink);margin-bottom:10px}
+
+  /* Mono feed rows */
+  .feed{font-family:var(--font-mono);font-size:12.5px}
+  .feed-row{display:flex;gap:14px;padding:9px 18px;border-bottom:1px solid var(--panel-line);align-items:baseline}
+  .feed-row:last-child{border-bottom:0}
+  .feed-ts{color:var(--panel-muted);flex:none}
+  .feed-host{color:var(--panel-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .feed-src{margin-left:auto;color:var(--panel-muted);flex:none}
+  .tag{font-size:10px;letter-spacing:.08em;padding:2px 7px;border-radius:3px;flex:none}
+  .tag-new{background:rgba(67,209,124,.14);color:var(--sev-ok);border:1px solid rgba(67,209,124,.35)}
+
+  /* Ranked exposure table */
+  .rank-table{font-size:13px;width:100%}
+  .rank-row{display:grid;grid-template-columns:62px minmax(0,1fr) 104px 86px;gap:12px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--panel-line)}
+  .rank-row:last-child{border-bottom:0}
+  .rank-head{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;color:var(--panel-muted);background:var(--panel-2)}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;padding:3px 9px;border-radius:4px;border:1px solid}
+  .chip-crit{color:var(--sev-crit);border-color:rgba(255,107,94,.4);background:rgba(255,107,94,.1)}
+  .chip-high{color:var(--sev-high);border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.09)}
+  .chip-med{color:#a9bcd4;border-color:rgba(111,135,166,.5);background:rgba(111,135,166,.14)}
+  .rank-what{min-width:0}
+  .rank-what .t{display:block;color:var(--panel-ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rank-what .s{display:block;font-family:var(--font-mono);font-size:11px;color:var(--panel-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rank-why{font-family:var(--font-mono);font-size:11px;color:var(--panel-muted)}
+  .rank-reach{font-family:var(--font-mono);font-size:11px;text-align:right}
+  .reach-yes{color:var(--sev-crit)} .reach-no{color:var(--panel-muted)}
+
+  /* Evidence card */
+  .evidence{padding:18px}
+  .evidence-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .evidence-top .t{font-weight:650;font-size:15px}
+  .verified{font-family:var(--font-mono);font-size:11px;color:var(--sev-ok)}
+  .proof{
+    font-family:var(--font-mono);font-size:12px;line-height:1.7;color:#b9c8da;
+    background:var(--panel-2);border:1px solid var(--panel-line);border-radius:6px;padding:14px 16px;
+    overflow-x:auto;white-space:pre;
+  }
+  .proof .ok{color:var(--sev-ok)} .proof .warn{color:var(--sev-high)} .proof .cm{color:var(--panel-muted)}
+  .route{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-family:var(--font-mono);font-size:11.5px;color:var(--panel-muted)}
+  .route b{color:var(--panel-ink);font-weight:600}
+
+  /* ============ Social proof ============ */
+  .logos{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);align-items:center;justify-content:space-between;margin:var(--s5) 0 var(--s8)}
+  .logos span{font-weight:700;font-size:17px;letter-spacing:.02em;color:#8d99aa}
+  .logos .serifish{font-family:Georgia,serif;letter-spacing:.04em}
+  .logos .monoish{font-family:var(--font-mono);font-size:15px}
+  .proof-label{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:var(--s5) 0;margin-bottom:var(--s8)}
+  .stat .v{font-size:40px;font-weight:700;letter-spacing:-0.02em;color:var(--ink)}
+  .stat .k{font-size:14px;color:var(--muted);max-width:26ch;margin-top:4px}
+
+  blockquote{max-width:72ch}
+  blockquote p{font-size:clamp(20px,2.6vw,27px);line-height:1.4;letter-spacing:-0.012em;font-weight:500;color:var(--ink)}
+  blockquote footer{margin-top:var(--s3);font-size:14.5px;color:var(--muted)}
+  blockquote footer b{color:var(--ink-soft);font-weight:650}
+
+  /* ============ CTA ============ */
+  .cta .panel{padding:0}
+  .cta-inner{padding:var(--s8) var(--s6);display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:var(--s6);align-items:center}
+  .cta h2{color:#fff}
+  .cta p{color:var(--panel-muted);margin-top:var(--s2);max-width:46ch}
+  .cta-actions{display:flex;flex-direction:column;gap:var(--s2);align-items:flex-start;justify-self:end}
+  .cta-actions .btn{text-align:center;min-width:220px}
+  .cta-meta{font-family:var(--font-mono);font-size:11.5px;color:var(--panel-muted);letter-spacing:.04em}
+
+  /* ============ Footer ============ */
+  footer.site{border-top:1px solid var(--line);padding:var(--s4) 0;margin-top:var(--s8)}
+  .foot{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);align-items:center;font-size:13.5px;color:var(--muted)}
+  .foot nav{display:flex;gap:var(--s3);margin-left:auto}
+  .foot a{text-decoration:none;color:var(--muted)}
+  .foot a:hover{color:var(--ink)}
+
+  /* ============ Responsive ============ */
+  @media (max-width:960px){
+    .hero-grid,.feature,.cta-inner{grid-template-columns:1fr}
+    .feature.flip .feature-copy{order:1}
+    .feature.flip .feature-visual{order:2}
+    .cta-actions{justify-self:start}
+    .stats{grid-template-columns:1fr;gap:var(--s4)}
+    .nav-links{display:none}
+    .hero{padding-top:var(--s6)}
+    .readouts{grid-template-columns:repeat(3,1fr)}
+    .sev-row{grid-template-columns:repeat(2,1fr);row-gap:var(--s2)}
+    .rank-row{grid-template-columns:62px minmax(0,1fr) 86px}
+    .rank-why{display:none}
+    .feed-src{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#" aria-label="Meridian home">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <circle cx="13" cy="13" r="11" stroke="#1c46c8" stroke-width="2"/>
+        <path d="M13 2 A11 16 0 0 0 13 24 A11 16 0 0 0 13 2 Z" stroke="#1c46c8" stroke-width="1.5"/>
+        <line x1="2" y1="13" x2="24" y2="13" stroke="#1c46c8" stroke-width="1.5"/>
+      </svg>
+      Meridian
+    </a>
+    <ul class="nav-links">
+      <li><a href="#discover">Platform</a></li>
+      <li><a href="#rank">Prioritization</a></li>
+      <li><a href="#evidence">Evidence</a></li>
+      <li><a href="#proof">Customers</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#cta">Request demo</a>
+  </div>
+</header>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">External Attack Surface Management</p>
+        <h1>Know every asset. Rank every exposure.</h1>
+        <p class="lede">Meridian continuously maps your external attack surface, validates what is actually exploitable, and ranks it by consequence, so your team fixes what matters first.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#cta">Request a demo</a>
+          <a class="btn btn-ghost" href="#evidence">See a sample finding</a>
+        </div>
+        <p class="hero-note"><strong>Agentless and read-only.</strong> First full inventory within 48 hours of your domain seed.</p>
+      </div>
+
+      <div class="panel" role="img" aria-label="Meridian perimeter overview panel showing live asset counts, open exposures by severity, and a 30 day critical exposure trend">
+        <div class="panel-head">
+          <span class="panel-title">PERIMETER OVERVIEW</span>
+          <span class="feed-status"><span class="dot"></span>LIVE · SYNCED 38s AGO</span>
+        </div>
+        <div class="panel-zone">
+          <p class="zone-label">INVENTORY</p>
+          <div class="readouts">
+            <div class="readout"><p class="k">ASSETS</p><p class="v num">14,382</p><p class="d up num">+126 / 24h</p></div>
+            <div class="readout"><p class="k">DOMAINS</p><p class="v num">1,208</p><p class="d num">+3 / 24h</p></div>
+            <div class="readout"><p class="k">SERVICES</p><p class="v num">3,941</p><p class="d num">+41 / 24h</p></div>
+          </div>
+        </div>
+        <div class="panel-zone">
+          <p class="zone-label">OPEN EXPOSURES</p>
+          <div class="sev-row">
+            <div class="sev"><p class="k"><span class="sq crit"></span>CRITICAL</p><p class="v crit num">7</p></div>
+            <div class="sev"><p class="k"><span class="sq high"></span>HIGH</p><p class="v high num">41</p></div>
+            <div class="sev"><p class="k"><span class="sq med"></span>MEDIUM</p><p class="v num">210</p></div>
+            <div class="sev"><p class="k"><span class="sq ok"></span>RESOLVED 30d</p><p class="v okc num">1,284</p></div>
+          </div>
+        </div>
+        <div class="panel-zone">
+          <p class="spark-caption"><span>OPEN CRITICALS · 30 DAYS</span><span>22 → 7</span></p>
+          <svg viewBox="0 0 520 72" width="100%" height="72" aria-hidden="true" preserveAspectRatio="none">
+            <line x1="0" y1="18" x2="520" y2="18" stroke="#223049" stroke-width="1"/>
+            <line x1="0" y1="44" x2="520" y2="44" stroke="#223049" stroke-width="1"/>
+            <line x1="0" y1="70" x2="520" y2="70" stroke="#223049" stroke-width="1"/>
+            <path d="M0,14 L37,16 L74,12 L111,20 L148,24 L185,22 L222,30 L259,28 L296,38 L333,36 L370,44 L407,48 L444,52 L481,56 L520,58"
+                  fill="none" stroke="#43d17c" stroke-width="2" vector-effect="non-scaling-stroke"/>
+            <circle cx="520" cy="58" r="3" fill="#43d17c"/>
+          </svg>
+        </div>
+        <div class="panel-zone">
+          <div class="panel-foot">
+            <span>SCAN COVERAGE <b class="num" style="color:var(--panel-ink)">98.7%</b></span>
+            <span>FEEDS <b class="num" style="color:var(--panel-ink)">11/12</b></span>
+            <span class="stale">▲ CT-LOG FEED STALE 2h 04m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="section-alt" id="discover">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How Meridian works</p>
+        <h2>From one domain seed to a ranked, evidence-backed work queue</h2>
+        <p class="lede">Three disciplines, one pipeline: discover everything, rank by consequence, prove every claim.</p>
+      </div>
+
+      <!-- Feature 1 -->
+      <div class="feature">
+        <div class="feature-copy">
+          <p class="feature-kicker">01 · DISCOVERY</p>
+          <h3>Discovery that never sleeps</h3>
+          <p>Meridian walks outward from your domains the way an attacker would: certificates, DNS, registrars, cloud tenants, code hosts and marketplaces. Every asset is attributed to your organization with a confidence score before it enters your inventory.</p>
+          <ul>
+            <li>Continuous re-enumeration, not quarterly snapshots</li>
+            <li>Shadow IT and forgotten subsidiaries surfaced automatically</li>
+            <li>Attribution evidence attached to every asset</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="panel" role="img" aria-label="Live discovery feed listing newly found hosts with timestamps and sources">
+            <div class="panel-head">
+              <span class="panel-title">DISCOVERY FEED</span>
+              <span class="feed-status"><span class="dot"></span>ENUMERATING</span>
+            </div>
+            <div class="feed">
+              <div class="feed-row"><span class="feed-ts num">14:02:11</span><span class="feed-host">staging-pay.examplo.com</span><span class="tag tag-new">NEW</span><span class="feed-src">CT-LOG</span></div>
+              <div class="feed-row"><span class="feed-ts num">14:01:54</span><span class="feed-host">vpn-legacy.examplo.net</span><span class="tag tag-new">NEW</span><span class="feed-src">DNS</span></div>
+              <div class="feed-row"><span class="feed-ts num">14:01:37</span><span class="feed-host">examplo-backups.s3.amazonaws.com</span><span class="tag tag-new">NEW</span><span class="feed-src">CLOUD</span></div>
+              <div class="feed-row"><span class="feed-ts num">14:01:02</span><span class="feed-host">api-v2.examplo.com</span><span class="feed-src">RESCAN</span></div>
+              <div class="feed-row"><span class="feed-ts num">14:00:48</span><span class="feed-host">git.subsidiary-acme.io</span><span class="tag tag-new">NEW</span><span class="feed-src">WHOIS</span></div>
+              <div class="feed-row"><span class="feed-ts num">14:00:21</span><span class="feed-host">mail.examplo.de</span><span class="feed-src">RESCAN</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature flip" id="rank">
+        <div class="feature-copy">
+          <p class="feature-kicker">02 · PRIORITIZATION</p>
+          <h3>Ranked by consequence, not score dumps</h3>
+          <p>A CVSS 9.8 behind three network hops is not your first problem. Meridian ranks every exposure by what an attacker can actually reach and what it would cost you: reachability, exploit maturity and business blast radius, in one ordered queue.</p>
+          <ul>
+            <li>Severity colors are reserved for severity, nothing else</li>
+            <li>Reachability verified from the internet, not assumed</li>
+            <li>One queue your engineers can work top to bottom</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="panel" role="img" aria-label="Exposure queue table ranked by consequence with severity, reachability and blast radius columns">
+            <div class="panel-head">
+              <span class="panel-title">EXPOSURE QUEUE · RANKED</span>
+              <span class="panel-title num">259 OPEN</span>
+            </div>
+            <div class="rank-table">
+              <div class="rank-row rank-head"><span>SEVERITY</span><span>EXPOSURE</span><span class="rank-why">BLAST RADIUS</span><span style="text-align:right">REACHABLE</span></div>
+              <div class="rank-row">
+                <span class="chip chip-crit">CRIT</span>
+                <span class="rank-what"><span class="t">Exposed admin console</span><span class="s">vpn-legacy.examplo.net:443</span></span>
+                <span class="rank-why">payments · prod</span>
+                <span class="rank-reach reach-yes">YES · 0 HOPS</span>
+              </div>
+              <div class="rank-row">
+                <span class="chip chip-crit">CRIT</span>
+                <span class="rank-what"><span class="t">Public build-artifact bucket</span><span class="s">examplo-backups.s3.amazonaws.com</span></span>
+                <span class="rank-why">source · creds</span>
+                <span class="rank-reach reach-yes">YES · PUBLIC</span>
+              </div>
+              <div class="rank-row">
+                <span class="chip chip-high">HIGH</span>
+                <span class="rank-what"><span class="t">Expired TLS on login page</span><span class="s">staging-pay.examplo.com</span></span>
+                <span class="rank-why">staging · pii</span>
+                <span class="rank-reach reach-yes">YES · 0 HOPS</span>
+              </div>
+              <div class="rank-row">
+                <span class="chip chip-high">HIGH</span>
+                <span class="rank-what"><span class="t">Outdated mail stack</span><span class="s">mail.examplo.de:25</span></span>
+                <span class="rank-why">email · emea</span>
+                <span class="rank-reach reach-yes">YES · 0 HOPS</span>
+              </div>
+              <div class="rank-row">
+                <span class="chip chip-med">MED</span>
+                <span class="rank-what"><span class="t">Version disclosure</span><span class="s">api-v2.examplo.com</span></span>
+                <span class="rank-why">api · prod</span>
+                <span class="rank-reach reach-no">INFO ONLY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature" id="evidence">
+        <div class="feature-copy">
+          <p class="feature-kicker">03 · EVIDENCE</p>
+          <h3>Proof your engineers do not argue with</h3>
+          <p>Every finding ships with the request that proved it, a freshness timestamp, and a one-click retest. When evidence goes stale, Meridian says so instead of pretending. Findings route to the owning team with the proof attached.</p>
+          <ul>
+            <li>Reproducible evidence on every finding</li>
+            <li>Stale data is flagged, never silently reported as current</li>
+            <li>Routes to your ticketing, chat and SIEM tools</li>
+          </ul>
+        </div>
+        <div class="feature-visual">
+          <div class="panel" role="img" aria-label="A finding card showing captured HTTP evidence, verification timestamp and routing to the owning team">
+            <div class="panel-head">
+              <span class="panel-title">FINDING MX-2041 · EXPOSED ADMIN CONSOLE</span>
+              <span class="verified">VERIFIED 12m AGO</span>
+            </div>
+            <div class="evidence">
+              <div class="proof"><span class="cm">$ meridian retest MX-2041</span>
+GET https://vpn-legacy.examplo.net/admin  <span class="cm">· no auth header</span>
+<span class="warn">HTTP/1.1 200 OK</span>  <span class="cm">· expected 401/302</span>
+server: LegacyVPN 4.2.1  <span class="cm">· EOL 2023-06</span>
+title: &lt;Administration · sign in&gt;
+<span class="ok">✓ evidence captured · reproducible · 2026-10-18 14:07 UTC</span></div>
+              <div class="route">
+                <span>OWNER <b>network-infra</b></span>
+                <span>TICKET <b>INF-883 OPEN</b></span>
+                <span>SLA <b class="num">41h REMAINING</b></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SOCIAL PROOF ================= -->
+  <section id="proof">
+    <div class="wrap">
+      <p class="proof-label">Trusted by security teams at</p>
+      <div class="logos" aria-label="Customer logos">
+        <span>EXAMPLO</span>
+        <span class="serifish">Atlas Mutual</span>
+        <span class="monoish">northgrid</span>
+        <span>Veldtbank</span>
+        <span class="serifish">Corvus&nbsp;Logistics</span>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><p class="v num">48h</p><p class="k">from domain seed to first complete external inventory</p></div>
+        <div class="stat"><p class="v num">41%</p><p class="k">median reduction in critical exposure window in the first quarter</p></div>
+        <div class="stat"><p class="v num">0</p><p class="k">unknown internet-facing assets is the standing target, and the metric we report</p></div>
+      </div>
+
+      <blockquote>
+        <p>“Meridian found forty assets we did not know we owned in the first week. More importantly, its queue is the first ranking our engineers actually trust enough to work top to bottom.”</p>
+        <footer><b>Dana Okafor</b> · Chief Information Security Officer, Examplo</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="cta" id="cta">
+    <div class="wrap">
+      <div class="panel">
+        <div class="cta-inner">
+          <div>
+            <p class="panel-title" style="margin-bottom:14px">GET STARTED</p>
+            <h2>Put your perimeter on the map.</h2>
+            <p>Give us one domain. Within 48 hours you get a complete external inventory and a ranked exposure queue, reviewed live with our team.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-inverse" href="#">Request a demo</a>
+            <a class="btn btn-outline-inverse" href="#">Download sample report</a>
+            <p class="cta-meta">AGENTLESS · READ-ONLY · SOC 2 TYPE II</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap foot">
+    <span>© 2026 Meridian Security, Inc.</span>
+    <nav aria-label="Footer">
+      <a href="#">Security</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Status</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

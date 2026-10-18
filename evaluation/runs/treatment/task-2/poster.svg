@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 842 1191" role="img" aria-labelledby="cs-title cs-desc">
+  <title id="cs-title">Credential Stuffing: how the attack works and how to defend against it</title>
+  <desc id="cs-desc">A3 conference poster. Section 1 explains the five-step attack chain from breach to cash-out, with a 100-dot unit chart showing a roughly 1-in-100 success rate. Section 2 gives three statistics on why the attack keeps working. Section 3 presents six defences, led by passkeys and phishing-resistant MFA.</desc>
+
+  <defs>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #111111; }
+      .k   { font-size: 12.5px; font-weight: bold; letter-spacing: 2px; }
+      .t1  { font-size: 100px; font-weight: bold; letter-spacing: -2.5px; }
+      .sub { font-size: 17.5px; fill: #333333; }
+      .secn{ font-size: 26px; font-weight: bold; fill: #D7261E; }
+      .sec { font-size: 26px; font-weight: bold; letter-spacing: 0.5px; }
+      .secr{ font-size: 12px; fill: #666666; letter-spacing: 1px; }
+      .stn { font-size: 17px; font-weight: bold; fill: #FFFFFF; }
+      .stt { font-size: 19px; font-weight: bold; letter-spacing: 0.4px; }
+      .std { font-size: 14px; fill: #3A3A3A; }
+      .ph  { font-size: 14px; font-weight: bold; letter-spacing: 1.2px; }
+      .big { font-size: 30px; font-weight: bold; fill: #D7261E; }
+      .bigl{ font-size: 13px; font-weight: bold; }
+      .cap { font-size: 11.5px; fill: #555555; }
+      .bh  { font-size: 12px; font-weight: bold; fill: #BBBBB6; letter-spacing: 2px; }
+      .sn  { font-size: 44px; font-weight: bold; fill: #FFFFFF; letter-spacing: -1px; }
+      .sl  { font-size: 11.5px; fill: #C9C9C4; }
+      .ct  { font-size: 14.5px; font-weight: bold; letter-spacing: 0.3px; }
+      .tag { font-size: 9.5px; font-weight: bold; fill: #D7261E; letter-spacing: 1.5px; }
+      .cd  { font-size: 12.5px; fill: #333333; }
+      .ft  { font-size: 9.5px; fill: #666666; letter-spacing: 0.8px; }
+    </style>
+    <pattern id="cs-dots" x="573" y="413" width="21" height="21" patternUnits="userSpaceOnUse">
+      <circle cx="11" cy="11" r="6.5" fill="#C9C9C4"/>
+    </pattern>
+  </defs>
+
+  <!-- background -->
+  <rect width="842" height="1191" fill="#FFFFFF"/>
+
+  <!-- ===== masthead ===== -->
+  <g id="masthead">
+    <rect x="52" y="42" width="84" height="10" fill="#D7261E"/>
+    <text class="k" x="790" y="52" text-anchor="end">ACCOUNT-TAKEOVER TTP &#183; MITRE ATT&amp;CK T1110.004</text>
+    <text class="t1" x="48" y="150">CREDENTIAL</text>
+    <text class="t1" x="48" y="244">STUFFING</text>
+    <text class="sub" x="52" y="282">Stolen passwords from one site, replayed by bots against every other</text>
+    <text class="sub" x="52" y="306">login they can find. Password reuse does the rest.</text>
+    <line x1="52" y1="332" x2="790" y2="332" stroke="#111111" stroke-width="2"/>
+  </g>
+
+  <!-- ===== section 01: the attack chain ===== -->
+  <g id="attack">
+    <text class="secn" x="52" y="374">01</text>
+    <text class="sec" x="94" y="374">HOW THE ATTACK WORKS</text>
+
+    <!-- connector spine -->
+    <line x1="69" y1="400" x2="69" y2="660" stroke="#D8D8D3" stroke-width="2"/>
+
+    <!-- step 1 -->
+    <g id="step-1">
+      <rect x="52" y="392" width="34" height="34" fill="#111111"/>
+      <text class="stn" x="69" y="415" text-anchor="middle">1</text>
+      <text class="stt" x="100" y="408">BREACH</text>
+      <text class="std" x="100" y="428">A third-party site is compromised; its username and</text>
+      <text class="std" x="100" y="445">password database leaks or is dumped for sale.</text>
+    </g>
+
+    <!-- step 2 -->
+    <g id="step-2">
+      <rect x="52" y="455" width="34" height="34" fill="#111111"/>
+      <text class="stn" x="69" y="478" text-anchor="middle">2</text>
+      <text class="stt" x="100" y="471">COMPILE AND SELL</text>
+      <text class="std" x="100" y="491">Leaked pairs are merged into combolists: millions of</text>
+      <text class="std" x="100" y="508">ready-to-try logins traded on forums and markets.</text>
+    </g>
+
+    <!-- step 3 -->
+    <g id="step-3">
+      <rect x="52" y="518" width="34" height="34" fill="#111111"/>
+      <text class="stn" x="69" y="541" text-anchor="middle">3</text>
+      <text class="stt" x="100" y="534">REPLAY AT SCALE</text>
+      <text class="std" x="100" y="554">Botnets fire the list at other sites' login endpoints,</text>
+      <text class="std" x="100" y="571">rotating IPs and devices to slip under rate limits.</text>
+    </g>
+
+    <!-- step 4 -->
+    <g id="step-4">
+      <rect x="52" y="581" width="34" height="34" fill="#111111"/>
+      <text class="stn" x="69" y="604" text-anchor="middle">4</text>
+      <text class="stt" x="100" y="597">REUSE PAYS OFF</text>
+      <text class="std" x="100" y="617">Wherever the owner reused that password, the login</text>
+      <text class="std" x="100" y="634">simply succeeds. No exploit, no malware required.</text>
+    </g>
+
+    <!-- step 5 -->
+    <g id="step-5">
+      <rect x="52" y="644" width="34" height="34" fill="#D7261E"/>
+      <text class="stn" x="69" y="667" text-anchor="middle">5</text>
+      <text class="stt" x="100" y="660">CASH OUT</text>
+      <text class="std" x="100" y="680">Hit accounts are drained, used for fraud and spam,</text>
+      <text class="std" x="100" y="697">or resold as verified access.</text>
+    </g>
+
+    <!-- divider -->
+    <line x1="552" y1="352" x2="552" y2="710" stroke="#D8D8D3" stroke-width="1"/>
+
+    <!-- unit chart panel -->
+    <g id="odds">
+      <text class="ph" x="576" y="376">WHY SMALL ODDS WIN</text>
+      <!-- 100-dot grid: 10 x 10, one red = 1% -->
+      <rect x="573" y="413" width="210" height="210" fill="url(#cs-dots)"/>
+      <circle cx="773" cy="613" r="6.5" fill="#D7261E"/>
+      <text class="big" x="576" y="662">&#8776; 1 IN 100</text>
+      <text class="bigl" x="576" y="681">replayed credentials logs in</text>
+      <text class="cap" x="576" y="698">(typical reported hit rate 0.1&#8211;2%).</text>
+      <text class="cap" x="576" y="714">At combolist scale that is thousands</text>
+      <text class="cap" x="576" y="730">of takeovers per campaign.</text>
+    </g>
+  </g>
+
+  <!-- ===== section 02: stat band ===== -->
+  <g id="whyband">
+    <rect x="0" y="756" width="842" height="116" fill="#111111"/>
+    <text class="bh" x="52" y="782">02&#160;&#160;WHY IT KEEPS WORKING</text>
+    <g id="stat-1">
+      <text class="sn" x="52" y="830">65%</text>
+      <text class="sl" x="52" y="848">of people reuse passwords across</text>
+      <text class="sl" x="52" y="862">accounts (Google/Harris Poll, 2019)</text>
+    </g>
+    <g id="stat-2">
+      <text class="sn" x="318" y="830">24.6B</text>
+      <text class="sl" x="318" y="848">stolen credential pairs in circulation</text>
+      <text class="sl" x="318" y="862">online (Digital Shadows, 2022)</text>
+    </g>
+    <g id="stat-3">
+      <text class="sn" x="584" y="830">0.1&#8211;2%</text>
+      <text class="sl" x="584" y="848">of replayed logins succeed</text>
+      <text class="sl" x="584" y="862">(published bot-defence reports)</text>
+    </g>
+  </g>
+
+  <!-- ===== section 03: defences ===== -->
+  <g id="defend">
+    <text class="secn" x="52" y="912">03</text>
+    <text class="sec" x="94" y="912">BREAKING THE CHAIN</text>
+    <text class="secr" x="790" y="912" text-anchor="end">DEFENCES RANKED BY LEVERAGE</text>
+
+    <!-- row 1 -->
+    <g id="card-1">
+      <rect x="52" y="932" width="235" height="3" fill="#D7261E"/>
+      <text class="tag" x="287" y="958" text-anchor="end">STRONGEST</text>
+      <text class="ct" x="52" y="958">PASSKEYS AND</text>
+      <text class="ct" x="52" y="976">PHISHING-PROOF MFA</text>
+      <text class="cd" x="52" y="998">Remove the shared secret: a</text>
+      <text class="cd" x="52" y="1014">stolen password alone can no</text>
+      <text class="cd" x="52" y="1030">longer log anyone in.</text>
+    </g>
+    <g id="card-2">
+      <rect x="303" y="932" width="235" height="3" fill="#111111"/>
+      <text class="ct" x="303" y="958">SCREEN FOR</text>
+      <text class="ct" x="303" y="976">BREACHED PASSWORDS</text>
+      <text class="cd" x="303" y="998">Check new and existing passwords</text>
+      <text class="cd" x="303" y="1014">against known-breach corpora</text>
+      <text class="cd" x="303" y="1030">(NIST SP 800-63B).</text>
+    </g>
+    <g id="card-3">
+      <rect x="554" y="932" width="235" height="3" fill="#111111"/>
+      <text class="ct" x="554" y="958">RATE AND BOT</text>
+      <text class="ct" x="554" y="976">CONTROLS</text>
+      <text class="cd" x="554" y="998">Throttle by IP, ASN and device</text>
+      <text class="cd" x="554" y="1014">fingerprint; challenge scripted</text>
+      <text class="cd" x="554" y="1030">and headless clients.</text>
+    </g>
+
+    <!-- row 2 -->
+    <g id="card-4">
+      <rect x="52" y="1052" width="235" height="3" fill="#111111"/>
+      <text class="ct" x="52" y="1078">MONITOR LEAKED</text>
+      <text class="ct" x="52" y="1096">CREDENTIALS</text>
+      <text class="cd" x="52" y="1118">Watch combolists for your users;</text>
+      <text class="cd" x="52" y="1134">force resets before stolen pairs</text>
+      <text class="cd" x="52" y="1150">are replayed against you.</text>
+    </g>
+    <g id="card-5">
+      <rect x="303" y="1052" width="235" height="3" fill="#111111"/>
+      <text class="ct" x="303" y="1078">DETECT THE</text>
+      <text class="ct" x="303" y="1096">STUFFING PATTERN</text>
+      <text class="cd" x="303" y="1118">Stuffing is many accounts failing</text>
+      <text class="cd" x="303" y="1134">once, not one account failing</text>
+      <text class="cd" x="303" y="1150">often. Alert on that shape.</text>
+    </g>
+    <g id="card-6">
+      <rect x="554" y="1052" width="235" height="3" fill="#111111"/>
+      <text class="ct" x="554" y="1078">UNIQUE PASSWORDS</text>
+      <text class="ct" x="554" y="1096">EVERYWHERE</text>
+      <text class="cd" x="554" y="1118">A password manager makes every</text>
+      <text class="cd" x="554" y="1134">password unique. Reuse is the</text>
+      <text class="cd" x="554" y="1150">fuel this attack burns.</text>
+    </g>
+  </g>
+
+  <!-- ===== footer ===== -->
+  <g id="footer">
+    <line x1="52" y1="1164" x2="790" y2="1164" stroke="#D8D8D3" stroke-width="1"/>
+    <text class="ft" x="52" y="1180">MITRE ATT&amp;CK T1110.004 &#183; OWASP CREDENTIAL STUFFING PREVENTION &#183; NIST SP 800-63B</text>
+    <text class="ft" x="790" y="1180" text-anchor="end">UNIT CHART: ILLUSTRATIVE 1% RATE</text>
+  </g>
+</svg>

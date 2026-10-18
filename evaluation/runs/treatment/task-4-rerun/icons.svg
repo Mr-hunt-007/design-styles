@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Interface icon family - symbol sheet
+    Grid: 24x24. Stroke: 2, round caps/joins, fill none, paints via currentColor.
+    Live area ~4..20; pointed/diagonal glyphs (alert, asset) overshoot for equal visual mass.
+    Usage: <svg width="24" height="24"><use href="icons.svg#icon-scan"/></svg>
+  -->
+
+  <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>Scan</title>
+    <path d="M4 9V6a2 2 0 0 1 2-2h3"/>
+    <path d="M15 4h3a2 2 0 0 1 2 2v3"/>
+    <path d="M20 15v3a2 2 0 0 1-2 2h-3"/>
+    <path d="M9 20H6a2 2 0 0 1-2-2v-3"/>
+    <path d="M7 12h10"/>
+  </symbol>
+
+  <symbol id="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>Alert</title>
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+    <path d="M12 9v4"/>
+    <path d="M12 17h.01"/>
+  </symbol>
+
+  <symbol id="icon-report" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>Report</title>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+    <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+    <path d="M9 13h6"/>
+    <path d="M9 17h6"/>
+  </symbol>
+
+  <symbol id="icon-asset" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>Asset</title>
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+    <path d="m3.3 7 8.7 5 8.7-5"/>
+    <path d="M12 22V12"/>
+  </symbol>
+
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>Settings</title>
+    <path d="M4 6h8.25"/>
+    <path d="M17.75 6H20"/>
+    <circle cx="15" cy="6" r="2"/>
+    <path d="M4 12h2.25"/>
+    <path d="M11.75 12H20"/>
+    <circle cx="9" cy="12" r="2"/>
+    <path d="M4 18h5.25"/>
+    <path d="M14.75 18H20"/>
+    <circle cx="12" cy="18" r="2"/>
+  </symbol>
+
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <title>User</title>
+    <circle cx="12" cy="7" r="4"/>
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+  </symbol>
+</svg>
