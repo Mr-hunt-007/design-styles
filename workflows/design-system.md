@@ -34,6 +34,17 @@ Search before creating: an installed brand or design-system skill covering this 
 
 9. **Optional: package the system as a skill.** When the user wants the system available to future agent sessions, generate a standalone design-system skill the host environment can install (for Claude Code: `<brand>-design-system/SKILL.md` with a frontmatter description naming the brand and its surfaces, plus token/reference files). The skill must contain: the tokens as the single source of truth, the semantic role table, type scale, component shapes, usage rules and prohibitions, voice notes if any, and a short QA checklist; instruct consumers to load tokens from the skill rather than improvising values. Keep it opt-in by description scope (its brand), test that it parses, and tell the user where it was installed. design-styles itself then defers to that skill for this brand (see "Design systems: detect, use, create" in SKILL.md).
 
+## Canonical contents
+
+Whether delivered as a handoff document or packaged as a skill (step 9), a generated design system covers this table of contents. Sections may merge for a small product, but a missing section is a stated decision, never an oversight. Component entries below are the minimum set; the real list comes from the step 1 inventory.
+
+- **Readme**: what the system is for, how to consume the tokens, how to extend it (step 8's worked example lives here).
+- **Brand**: iconography rules (grid, stroke, optical corrections), logo usage and clear space, voice and tone.
+- **Colours**: brand colours; neutrals; secondary and tertiary accents; semantic colours (roles, not raw values); status palette (success, warning, danger, info); surfaces (background, raised, overlay, with both themes where the product has them).
+- **Components**: buttons; inputs; cards and stat tiles; status pills and tags; sidebar or primary navigation; data table; at least one chart treatment (e.g. a donut or bar spec with its palette and label rules). Each with anatomy, variants and full states per step 3.
+- **Spacing, radii, shadows**: the spacing scale and base unit; the radius set and what each size means; elevation levels and when each applies.
+- **Type**: body and mono faces with fallback stacks; display headline treatment; the heading scale with weights and line heights.
+
 ## Gate
 
 Done only when: real screens were rebuilt from the system without ad-hoc values; all text/background role pairs pass contrast; every component spec includes focus, disabled and error states; governance names an owner. A token file alone is not a design system.
