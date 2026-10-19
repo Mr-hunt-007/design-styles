@@ -1,0 +1,285 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title>How household recycling is sorted at a materials recovery facility</title>
+  <desc>Flow diagram in six grouped stages: kerbside collection, pre-sort cabin, screens, magnet and eddy current, optical sorters, and baler, ending in baled output sold to reprocessors. Two callouts explain what contaminates a batch and where glass ends up.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3E6B57"/>
+    </marker>
+    <marker id="arrowSm" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2F7A52"/>
+    </marker>
+    <filter id="cardShadow" x="-10%" y="-12%" width="120%" height="132%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#1B3A2D" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .card   { fill:#FFFFFF; stroke:#D8E2DA; stroke-width:1.5; }
+      .stitle { font-size:14px; font-weight:700; fill:#1B3A2D; }
+      .body   { font-size:11px; fill:#44584C; }
+      .badge  { fill:#2F7A52; }
+      .badgeT { font-size:13px; font-weight:700; fill:#FFFFFF; text-anchor:middle; }
+      .flow   { stroke:#3E6B57; stroke-width:2.2; fill:none; }
+      .clabel { font-size:10.5px; font-style:italic; fill:#3E6B57; text-anchor:middle; }
+      .ico    { stroke:#2F7A52; stroke-width:2.2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+      .icoFill{ fill:#E7F1EA; }
+      .coTitleA { font-size:13px; font-weight:700; fill:#8C4A1D; }
+      .coBodyA  { font-size:11px; fill:#70503A; }
+      .coTitleB { font-size:13px; font-weight:700; fill:#1F586B; }
+      .coBodyB  { font-size:11px; fill:#3E5B66; }
+      .chipT  { font-size:11px; fill:#2C463A; text-anchor:middle; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="600" fill="#F3F6F2"/>
+
+  <!-- ================= Header ================= -->
+  <g id="header">
+    <text x="40" y="42" font-size="24" font-weight="800" fill="#152F24">How your recycling gets sorted</text>
+    <text x="40" y="62" font-size="12.5" fill="#53685C">Inside a materials recovery facility (MRF): the journey from kerbside bin to baled output</text>
+    <g transform="translate(900,42)">
+      <g>
+        <path class="ico" stroke-width="3" d="M 12.12 7 A 14 14 0 0 0 5.92 -12.69" marker-end="url(#arrowSm)"/>
+      </g>
+      <g transform="rotate(120)">
+        <path class="ico" stroke-width="3" d="M 12.12 7 A 14 14 0 0 0 5.92 -12.69" marker-end="url(#arrowSm)"/>
+      </g>
+      <g transform="rotate(240)">
+        <path class="ico" stroke-width="3" d="M 12.12 7 A 14 14 0 0 0 5.92 -12.69" marker-end="url(#arrowSm)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= Row 1 stages ================= -->
+  <g id="stage-1">
+    <title>Stage 1: Kerbside collection</title>
+    <rect class="card" x="40" y="74" width="232" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="64" cy="98" r="12"/>
+    <text class="badgeT" x="64" y="102.5">1</text>
+    <text class="stitle" x="84" y="103">Kerbside collection</text>
+    <g transform="translate(56,118)">
+      <path class="ico icoFill" d="M 6 9 L 38 9 L 34 3 L 10 3 Z"/>
+      <path class="ico icoFill" d="M 8 12 L 36 12 L 31 42 L 13 42 Z"/>
+      <path class="ico" d="M 18 17 V 37 M 26 17 V 37"/>
+      <circle cx="15" cy="46" r="3" fill="#2F7A52"/>
+      <circle cx="29" cy="46" r="3" fill="#2F7A52"/>
+    </g>
+    <text class="body" x="112" y="132">Mixed recycling is</text>
+    <text class="body" x="112" y="147">collected and tipped</text>
+    <text class="body" x="112" y="162">onto the facility&#8217;s</text>
+    <text class="body" x="112" y="177">receiving floor.</text>
+  </g>
+
+  <g id="connector-1-2">
+    <text class="clabel" x="310" y="110">tipped onto</text>
+    <text class="clabel" x="310" y="122">conveyors</text>
+    <path class="flow" d="M 274 130 H 342" marker-end="url(#arrow)"/>
+  </g>
+
+  <g id="stage-2">
+    <title>Stage 2: Pre-sort cabin</title>
+    <rect class="card" x="348" y="74" width="264" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="372" cy="98" r="12"/>
+    <text class="badgeT" x="372" y="102.5">2</text>
+    <text class="stitle" x="392" y="103">Pre-sort cabin</text>
+    <g transform="translate(364,118)">
+      <path class="ico" d="M 2 40 H 42"/>
+      <circle class="ico" cx="8" cy="45" r="2.6"/>
+      <circle class="ico" cx="22" cy="45" r="2.6"/>
+      <circle class="ico" cx="36" cy="45" r="2.6"/>
+      <circle class="ico" cx="12" cy="14" r="4.2"/>
+      <path class="ico" d="M 12 19 V 34 M 12 23 L 22 29"/>
+      <circle class="ico icoFill" cx="26" cy="30" r="4.5"/>
+      <path class="ico" stroke-width="1.6" d="M 24 26.5 l 2 -3 m 2 3 l -1 -3"/>
+      <rect class="ico" x="33" y="34" width="6" height="5"/>
+    </g>
+    <text class="body" x="420" y="132">Workers pull out plastic</text>
+    <text class="body" x="420" y="147">bags, film and other</text>
+    <text class="body" x="420" y="162">obvious contaminants</text>
+    <text class="body" x="420" y="177">by hand.</text>
+  </g>
+
+  <g id="connector-2-3">
+    <text class="clabel" x="650" y="110">cleaner mix</text>
+    <text class="clabel" x="650" y="122">moves on</text>
+    <path class="flow" d="M 614 130 H 682" marker-end="url(#arrow)"/>
+  </g>
+
+  <g id="stage-3">
+    <title>Stage 3: Screens</title>
+    <rect class="card" x="688" y="74" width="232" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="712" cy="98" r="12"/>
+    <text class="badgeT" x="712" y="102.5">3</text>
+    <text class="stitle" x="732" y="103">Screens</text>
+    <g transform="translate(704,118)">
+      <path class="ico" d="M 4 40 L 40 16"/>
+      <circle class="ico icoFill" cx="11" cy="35.4" r="5"/>
+      <circle class="ico icoFill" cx="22" cy="28" r="5"/>
+      <circle class="ico icoFill" cx="33" cy="20.6" r="5"/>
+      <path class="ico icoFill" stroke-width="1.8" d="M 18 9 l 17 -7 l 3 6 l -17 7 z"/>
+      <circle cx="14" cy="46" r="1.7" fill="#4E8EA2"/>
+      <circle cx="20" cy="44" r="1.7" fill="#4E8EA2"/>
+      <circle cx="26" cy="48" r="1.7" fill="#4E8EA2"/>
+    </g>
+    <text class="body" x="760" y="132">Spinning discs lift</text>
+    <text class="body" x="760" y="147">cardboard and paper;</text>
+    <text class="body" x="760" y="162">glass smashes and</text>
+    <text class="body" x="760" y="177">falls through the gaps.</text>
+  </g>
+
+  <!-- ================= Callout band ================= -->
+  <g id="callout-contamination">
+    <title>Callout: what contaminates a batch</title>
+    <rect x="40" y="206" width="360" height="106" rx="10" fill="#FDF4EC" stroke="#E3B88F" stroke-width="1.5" filter="url(#cardShadow)"/>
+    <path d="M 370 210 L 435 184 L 398 210" fill="#FDF4EC" stroke="#E3B88F" stroke-width="1.5"/>
+    <g transform="translate(56,215)">
+      <path d="M 11 0 L 22 19 H 0 Z" fill="#FBE3CE" stroke="#C2622B" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M 11 7 V 12" stroke="#C2622B" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="11" cy="15.5" r="1.4" fill="#C2622B"/>
+    </g>
+    <text class="coTitleA" x="88" y="230">What contaminates a batch</text>
+    <text class="coBodyA" x="58" y="254">Greasy pizza boxes, food-smeared tubs, plastic bags and</text>
+    <text class="coBodyA" x="58" y="269">film (they tangle the discs), nappies, hoses and batteries.</text>
+    <text class="coBodyA" x="58" y="284">One bad bin can send a whole truckload to landfill, so</text>
+    <text class="coBodyA" x="58" y="299">rinse containers and never bag your recycling.</text>
+  </g>
+
+  <g id="callout-glass">
+    <title>Callout: where the glass ends up</title>
+    <rect x="430" y="206" width="340" height="106" rx="10" fill="#EDF5F7" stroke="#9FC4CF" stroke-width="1.5" filter="url(#cardShadow)"/>
+    <path d="M 690 210 L 710 183 L 720 210" fill="#EDF5F7" stroke="#9FC4CF" stroke-width="1.5"/>
+    <g transform="translate(446,218)">
+      <path d="M 8 0 h 5 v 5 q 6 3 6 9 v 12 h -17 v -12 q 0 -6 6 -9 z" fill="#DEEEF2" stroke="#2C6B80" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M 6 13 l 5 4 l -3 3 l 4 4" fill="none" stroke="#2C6B80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 23 20 l 4 2 l -3 3 z" fill="#4E8EA2"/>
+    </g>
+    <text class="coTitleB" x="478" y="230">Where the glass ends up</text>
+    <text class="coBodyB" x="448" y="254">Glass is smashed on purpose at the screens (stage 3):</text>
+    <text class="coBodyB" x="448" y="269">the shards fall through the gaps into a bunker under</text>
+    <text class="coBodyB" x="448" y="284">the line. It leaves as crushed &#8220;cullet&#8221; for new bottles</text>
+    <text class="coBodyB" x="448" y="299">and jars, never pressed into a bale.</text>
+  </g>
+
+  <g id="connector-3-4">
+    <path class="flow" d="M 804 188 V 316" marker-end="url(#arrow)"/>
+    <text class="clabel" x="816" y="246" style="text-anchor:start">containers</text>
+    <text class="clabel" x="816" y="260" style="text-anchor:start">roll onward</text>
+  </g>
+
+  <!-- ================= Row 2 stages ================= -->
+  <g id="stage-4">
+    <title>Stage 4: Magnet and eddy current</title>
+    <rect class="card" x="688" y="324" width="232" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="712" cy="348" r="12"/>
+    <text class="badgeT" x="712" y="352.5">4</text>
+    <text class="stitle" x="732" y="353">Magnet &amp; eddy current</text>
+    <g transform="translate(704,368)">
+      <path class="ico icoFill" d="M 10 3 h 8 v 13 a 4 4 0 0 0 8 0 V 3 h 8 v 13 a 12 12 0 0 1 -24 0 Z"/>
+      <rect class="ico" x="11" y="36" width="9" height="10" rx="1"/>
+      <rect class="ico" x="26" y="34" width="9" height="10" rx="1"/>
+      <path class="ico" stroke-width="1.6" d="M 15.5 33 v -3 M 30.5 31 v -3"/>
+    </g>
+    <text class="body" x="760" y="382">A magnet grabs steel</text>
+    <text class="body" x="760" y="397">cans; an eddy current</text>
+    <text class="body" x="760" y="412">flings aluminium into</text>
+    <text class="body" x="760" y="427">its own chute.</text>
+  </g>
+
+  <g id="connector-4-5">
+    <text class="clabel" x="650" y="360">what&#8217;s left:</text>
+    <text class="clabel" x="650" y="372">plastics</text>
+    <path class="flow" d="M 686 380 H 618" marker-end="url(#arrow)"/>
+  </g>
+
+  <g id="stage-5">
+    <title>Stage 5: Optical sorters</title>
+    <rect class="card" x="348" y="324" width="264" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="372" cy="348" r="12"/>
+    <text class="badgeT" x="372" y="352.5">5</text>
+    <text class="stitle" x="392" y="353">Optical sorters</text>
+    <g transform="translate(364,368)">
+      <rect class="ico icoFill" x="13" y="2" width="18" height="9" rx="2"/>
+      <polygon points="17,11 9,34 35,34 27,11" fill="#2F7A52" opacity="0.18"/>
+      <path class="ico" d="M 2 40 H 42"/>
+      <rect class="ico" x="12" y="33.5" width="7" height="6"/>
+      <circle class="ico" cx="27" cy="36.5" r="3.2"/>
+      <path class="ico" stroke-width="1.6" d="M 36 25 l 5 -2 M 36 30 l 5 2"/>
+    </g>
+    <text class="body" x="420" y="382">Infrared cameras identify</text>
+    <text class="body" x="420" y="397">each plastic type; air jets</text>
+    <text class="body" x="420" y="412">blast PET and HDPE into</text>
+    <text class="body" x="420" y="427">separate streams.</text>
+  </g>
+
+  <g id="connector-5-6">
+    <text class="clabel" x="310" y="360">sorted by</text>
+    <text class="clabel" x="310" y="372">material</text>
+    <path class="flow" d="M 346 380 H 278" marker-end="url(#arrow)"/>
+  </g>
+
+  <g id="stage-6">
+    <title>Stage 6: Baler</title>
+    <rect class="card" x="40" y="324" width="232" height="112" rx="10" filter="url(#cardShadow)"/>
+    <circle class="badge" cx="64" cy="348" r="12"/>
+    <text class="badgeT" x="64" y="352.5">6</text>
+    <text class="stitle" x="84" y="353">Baler</text>
+    <g transform="translate(56,368)">
+      <path class="ico" d="M 22 1 V 7 M 19 5 l 3 4 l 3 -4"/>
+      <rect class="ico icoFill" x="7" y="12" width="30" height="28" rx="2"/>
+      <path class="ico" stroke-width="1.8" d="M 16 12 V 40 M 28 12 V 40 M 7 26 H 37"/>
+    </g>
+    <text class="body" x="112" y="382">Each sorted material is</text>
+    <text class="body" x="112" y="397">squashed into dense,</text>
+    <text class="body" x="112" y="412">truck-ready bales.</text>
+  </g>
+
+  <g id="connector-6-out">
+    <path class="flow" d="M 156 438 V 462" marker-end="url(#arrow)"/>
+    <text class="clabel" x="168" y="456" style="text-anchor:start">ready to ship</text>
+  </g>
+
+  <!-- ================= Baled output ================= -->
+  <g id="baled-output">
+    <title>Baled output sold to reprocessors</title>
+    <rect x="40" y="468" width="880" height="94" rx="10" fill="#EAF2EC" stroke="#CBDCCF" stroke-width="1.5"/>
+    <text x="58" y="492" font-size="13" font-weight="700" fill="#1B3A2D">Baled output, sold to reprocessors as raw material</text>
+
+    <g id="bale-chips">
+      <g transform="translate(58,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">Cardboard</text>
+      </g>
+      <g transform="translate(178,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">Mixed paper</text>
+      </g>
+      <g transform="translate(298,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">Steel cans</text>
+      </g>
+      <g transform="translate(418,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">Aluminium</text>
+      </g>
+      <g transform="translate(538,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">PET plastic</text>
+      </g>
+      <g transform="translate(658,506)">
+        <rect width="106" height="36" rx="7" fill="#FFFFFF" stroke="#BCCFC2" stroke-width="1.3"/>
+        <path d="M 23 1 V 35 M 83 1 V 35" stroke="#DCE8DF" stroke-width="3"/>
+        <text class="chipT" x="53" y="22.5">HDPE plastic</text>
+      </g>
+      <g transform="translate(784,506)">
+        <rect width="124" height="36" rx="7" fill="#F0F7F9" stroke="#4E8EA2" stroke-width="1.3" stroke-dasharray="5 3"/>
+        <text x="62" y="22.5" font-size="11" fill="#1F586B" text-anchor="middle">Glass cullet (loose)</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="480" y="584" font-size="10" fill="#6F7E74" text-anchor="middle">Simplified view: exact equipment and running order vary from facility to facility.</text>
+</svg>

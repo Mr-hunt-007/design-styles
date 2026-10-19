@@ -1,0 +1,46 @@
+{
+  "task": "g3",
+  "A": {
+    "criteria": {
+      "Brief and user-goal alignment": 5,
+      "Visual hierarchy and composition": 4.5,
+      "Typography, colour and legibility": 4.5,
+      "Usability and accessibility": 4,
+      "Technical correctness": 5,
+      "Cross-disciplinary reasoning": 4.5,
+      "Originality and coherence": 4,
+      "Maintainability and implementation quality": 4,
+      "Efficiency and absence of unnecessary complexity": 4.5
+    },
+    "total": 91,
+    "notable_defects": [
+      "Secondary line 'then every Saturday through 30 October' in sage #6B7560 on cream is ~4.2:1 contrast, borderline for its 27px size",
+      "No role=img/aria-labelledby wiring (title/desc present but unlinked)",
+      "Eleven scallop paths hand-duplicated instead of defs/use; one x-coordinate (612.5 vs 612.6) drifts 0.1 unit",
+      "DECISIONS claims nothing is fitted tighter than ~85% width, but the SEASON OPENING ribbon text measures ~90% under a wide DejaVu fallback (still safe, slight overstatement)"
+    ]
+  },
+  "B": {
+    "criteria": {
+      "Brief and user-goal alignment": 5,
+      "Visual hierarchy and composition": 5,
+      "Typography, colour and legibility": 4.5,
+      "Usability and accessibility": 5,
+      "Technical correctness": 4,
+      "Cross-disciplinary reasoning": 5,
+      "Originality and coherence": 5,
+      "Maintainability and implementation quality": 5,
+      "Efficiency and absence of unnecessary complexity": 4.5
+    },
+    "total": 95.5,
+    "notable_defects": [
+      "Footer practicals at 16.5px (~4mm caps) fall below the 2m legibility floor the team itself cites (acknowledged as walk-up-only by design) and sit fairly tight under the second category row",
+      "<use href> without xlink:href fallback and reliance on textLength as the primary robustness mechanism reduce portability to older non-browser rasterisers (librsvg/resvg variants), which the team honestly lists as unverified",
+      "Category chip labels at 20px are the smallest primary content on either poster, marginal at thumbnail width"
+    ]
+  },
+  "winner": "B",
+  "margin": 4.5,
+  "confidence": "medium",
+  "notes": "Both posters are complete, self-contained, defect-free in render, carry all required facts (both correctly chose real Saturdays, 1 May and 30 Oct 2027), and both survived an empirical Times New Roman substitution re-render with no overflow. B wins on information design and craft: the reversed cream-on-green when/where panel is the single most legible block at thumbnail width, the scalloped awning placed under the headline reads as a storefront rather than a border, and its textLength width-locking claim was reproduced exactly in the substitution test. B also has proper role=img/aria-labelledby accessibility wiring, defs/use engineering, and the more rigorous, honest DECISIONS.md (rejected directions, measured contrasts, declared unverified items). A counters with maximal rasteriser portability (no use/href, no textLength, pure primitives) and takes the technical-correctness criterion, but its unlinked title/desc, borderline sage secondary line, and hand-duplicated geometry leave it slightly behind. The gap is real but modest; A is an excellent runner-up."
+}

@@ -2,7 +2,7 @@
 
 Controlled comparison run 2026-10-18. Protocol, tasks, rubric and thresholds were pre-registered in `evaluation/protocol.md` BEFORE any run executed and were not changed afterwards. Raw judge scores: `evaluation/judging/*.json`. All artefacts: `evaluation/runs/`.
 
-## Verdict: Partially effective (direction confirmed by replication)
+## Verdict: Partially effective (direction confirmed by replication and by a general-audience round)
 
 First round: the skill produced the better deliverable in 7 of 8 blind-judged tasks (8 of 8 after one targeted fix and rerun), mean +5.8/100 (+7.1 post-fix) at roughly +22% token cost. A follow-up n=3 replication on three representative tasks went 9/9 to the skill (sign test p about 0.004) with mean +8.5. The pre-registered +10 overall threshold is still not met, so the formal verdict stays Partially effective; the replication establishes with high consistency WHERE it earns its cost: complex artefact work (diagrams +12.5, dashboards +9.7), with a small consistent margin on advisory text (+3.3) and near-parity on audits the baseline already does well.
 
@@ -63,6 +63,20 @@ Three representative tasks (1 dashboard, 3 diagram, 8 style selection) were re-r
 | 8 Style selection | +5.5 | +2.0 | +2.5 | +3.3 (1.9) |
 
 Treatment won all 9 replicated comparisons (two-sided sign test p = 2/512, about 0.004). Mean delta across the 9: +8.5 (sd 4.9). Reading: on complex artefact tasks the effect is large and consistent (the diagram task clears the +10 threshold on its own; the dashboard task sits at its edge); on advisory text tasks the baseline is already strong and the skill adds a small, consistent margin. One treatment defect surfaced by a replicate judge (hardcoded, non-reconciling KPI deltas) was recorded in `LESSONS.md`.
+
+## General-audience round (2026-10-19; pre-registered separately in `evaluation/protocol-general.md`)
+
+The original 8 tasks skewed towards cybersecurity subjects. This round tests whether the effect holds on everyday subjects, with three new tasks, fresh agents, and fresh blind judges; the A/B key was fixed by recorded coin flips and committed before any run executed.
+
+| Task | Control | Treatment | Delta | Judge confidence |
+|---|---:|---:|---:|---|
+| G1 Home energy dashboard | 79.0 | 95.0 | +16.0 | high |
+| G2 Recycling diagram | 88.5 | 93.5 | +5.0 | medium |
+| G3 Farmers market poster | 91.0 | 95.5 | +4.5 | medium |
+
+Treatment won 3/3; mean delta +8.5. Decisive judge findings: the G1 control hardcoded KPI figures separately from its data (including an unlabelled partial-month versus full-month cost comparison) and set most small text at a measured 3.5:1 contrast, below the AA floor, while the treatment derived every number from one data object and its contrast claims reproduced; the G2 treatment's pictograms explain each sorting mechanism and survive half-size rendering where the control's glyphs decorate; the G3 posters were both strong, with the treatment ahead on hierarchy at thumbnail size, accessibility wiring and verified robustness claims. One criterion went the other way: the G2 control completed the brief's "to baled output" arc with an explicit output strip the treatment lacked, recorded in `LESSONS.md`.
+
+Reading against the thresholds: mean +8.5 is below the registered +10, so this round alone is again "Partially effective"; direction confirmed 3/3 on non-cyber subjects, with the dashboard task clearing the threshold outright. Round-specific caveats: the treatment G2 run was twice interrupted by infrastructure failures (timeout, machine sleep) before a fresh run completed, treatment G3 token usage went unrecorded for the same reason (`evaluation/judging/usage-log-general.tsv` holds what was recorded; the two complete pairs show treatment near cost parity, -4% and +11%), and the G1 control independently followed the environment's general charting guidance, making it a strong baseline rather than a bare model.
 
 ## Threshold outcomes (pre-registered)
 

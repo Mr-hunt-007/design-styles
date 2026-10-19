@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="rc-title rc-desc">
+  <title id="rc-title">How your recycling gets sorted at a materials recovery facility</title>
+  <desc id="rc-desc">A six-stage flow diagram. Mixed recycling is collected and trucked in, tipped out and pre-sorted by hand, split by spinning screens that crush glass into a separate cullet stream, passed under magnets and eddy currents that remove steel and aluminium, scanned by optical sorters that separate plastics with air jets, and finally pressed into dense bales for reprocessors. Two callouts explain what contaminates a batch and where glass ends up.</desc>
+
+  <defs>
+    <marker id="rc-arrow" markerWidth="9" markerHeight="8" refX="7.5" refY="4" orient="auto">
+      <path d="M0,0 L8.5,4 L0,8 Z" fill="#2b3445"/>
+    </marker>
+    <marker id="rc-arrow-sm" markerWidth="7" markerHeight="6" refX="5.5" refY="3" orient="auto">
+      <path d="M0,0 L6.5,3 L0,6 Z" fill="#2b3445"/>
+    </marker>
+    <!-- conveyor roller -->
+    <circle id="rc-roller" r="5" fill="#ffffff" stroke="#2b3445" stroke-width="2"/>
+    <!-- finished bale: 34x30 box with two straps, origin at top-left -->
+    <g id="rc-bale">
+      <rect width="34" height="30" rx="2" fill="#e9e4d8" stroke="#2b3445" stroke-width="2"/>
+      <line x1="11" y1="0" x2="11" y2="30" stroke="#2b3445" stroke-width="1.5"/>
+      <line x1="23" y1="0" x2="23" y2="30" stroke="#2b3445" stroke-width="1.5"/>
+    </g>
+    <style>
+      .t-title { font: 700 23px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #2b3445; }
+      .t-sub   { font: 400 12.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #5c6370; }
+      .t-stage { font: 700 13.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #2b3445; }
+      .t-num   { font: 700 12.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #ffffff; }
+      .t-body  { font: 400 11px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #454c59; }
+      .t-lab   { font: italic 400 10.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #5c6370; }
+      .t-cot-a { font: 700 12.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #8a4a0d; }
+      .t-cob-a { font: 400 11px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #6b4a1b; }
+      .t-cot-g { font: 700 12.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #0f564d; }
+      .t-cob-g { font: 400 11px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #174f48; }
+      .t-foot  { font: 400 10.5px "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; fill: #5c6370; }
+      .panel   { fill: #ffffff; stroke: #d9d3c6; stroke-width: 1.5; }
+      .pic     { stroke: #2b3445; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; fill: none; }
+      .pic-f   { stroke: #2b3445; stroke-width: 2; stroke-linejoin: round; fill: #e9e4d8; }
+      .pic-w   { stroke: #2b3445; stroke-width: 2; stroke-linejoin: round; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <!-- ===== background ===== -->
+  <rect width="960" height="600" fill="#f6f4ee"/>
+
+  <!-- ===== title block ===== -->
+  <g id="rc-header">
+    <text class="t-title" x="480" y="40" text-anchor="middle">How Your Recycling Gets Sorted</text>
+    <text class="t-sub" x="480" y="61" text-anchor="middle">Inside a materials recovery facility, from kerbside bin to baled output</text>
+  </g>
+
+  <!-- ===== stage panels, row 1 (left to right) ===== -->
+  <g id="rc-stage-1">
+    <rect class="panel" x="40" y="86" width="230" height="148" rx="10"/>
+    <circle cx="66" cy="114" r="12" fill="#2b3445"/>
+    <text class="t-num" x="66" y="118.5" text-anchor="middle">1</text>
+    <text class="t-stage" x="86" y="118.5">Collection</text>
+    <!-- pictogram: wheelie bin + truck on a ground line -->
+    <g id="rc-pic-collection">
+      <line x1="72" y1="180" x2="238" y2="180" stroke="#c9c2b2" stroke-width="1.5"/>
+      <path class="pic-f" d="M97,148 L125,148 L121.5,176 L100.5,176 Z"/>
+      <rect class="pic-f" x="93" y="142" width="36" height="6" rx="2"/>
+      <circle class="pic-w" cx="104" cy="177" r="3.5"/>
+      <circle class="pic-w" cx="118" cy="177" r="3.5"/>
+      <rect class="pic-w" x="150" y="140" width="56" height="30" rx="3"/>
+      <path class="pic-w" d="M206,146 h16 l10,12 v12 h-26 Z"/>
+      <circle class="pic-w" cx="166" cy="172" r="6"/>
+      <circle class="pic-w" cx="216" cy="172" r="6"/>
+    </g>
+    <text class="t-body" x="56" y="204">Mixed recycling is collected</text>
+    <text class="t-body" x="56" y="218">and trucked to the facility.</text>
+  </g>
+
+  <g id="rc-stage-2">
+    <rect class="panel" x="365" y="86" width="230" height="148" rx="10"/>
+    <circle cx="391" cy="114" r="12" fill="#2b3445"/>
+    <text class="t-num" x="391" y="118.5" text-anchor="middle">2</text>
+    <text class="t-stage" x="411" y="118.5">Tipping and pre-sort</text>
+    <!-- pictogram: conveyor with mixed items, picker pulling a bag off -->
+    <g id="rc-pic-presort">
+      <line class="pic" x1="385" y1="170" x2="540" y2="170"/>
+      <use href="#rc-roller" x="395" y="176"/>
+      <use href="#rc-roller" x="467" y="176"/>
+      <use href="#rc-roller" x="530" y="176"/>
+      <rect class="pic-f" x="419" y="158" width="12" height="12" rx="1.5"/>
+      <circle class="pic-f" cx="460" cy="163" r="7"/>
+      <path class="pic-f" d="M489,170 l8,-14 l8,14 Z"/>
+      <!-- picker -->
+      <circle class="pic-w" cx="560" cy="136" r="7"/>
+      <line class="pic" x1="560" y1="143" x2="560" y2="166"/>
+      <line class="pic" x1="560" y1="166" x2="552" y2="182"/>
+      <line class="pic" x1="560" y1="166" x2="568" y2="182"/>
+      <line class="pic" x1="560" y1="150" x2="541" y2="142"/>
+      <!-- bag being removed -->
+      <path d="M531,132 q5,-7 10,-1 q4,5 -1,9 q-7,4 -10,-2 q-2,-4 1,-6 Z" fill="#e8b765" stroke="#b45309" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+    <text class="t-body" x="381" y="204">Loads are tipped out and staff</text>
+    <text class="t-body" x="381" y="218">pull problem items off the belt</text>
+    <text class="t-body" x="381" y="232">before the machines.</text>
+  </g>
+
+  <g id="rc-stage-3">
+    <rect class="panel" x="690" y="86" width="230" height="148" rx="10"/>
+    <circle cx="716" cy="114" r="12" fill="#2b3445"/>
+    <text class="t-num" x="716" y="118.5" text-anchor="middle">3</text>
+    <text class="t-stage" x="736" y="118.5">Screening</text>
+    <!-- pictogram: inclined trommel drum, glass falling through to a hopper -->
+    <g id="rc-pic-screen">
+      <g transform="rotate(-8 790 145)">
+        <rect class="pic-w" x="733" y="130" width="112" height="30" rx="15"/>
+        <ellipse class="pic-w" cx="843" cy="145" rx="7" ry="15"/>
+        <circle cx="757" cy="140" r="2.5" fill="#c9c2b2"/>
+        <circle cx="772" cy="150" r="2.5" fill="#c9c2b2"/>
+        <circle cx="787" cy="140" r="2.5" fill="#c9c2b2"/>
+        <circle cx="802" cy="150" r="2.5" fill="#c9c2b2"/>
+        <circle cx="817" cy="140" r="2.5" fill="#c9c2b2"/>
+      </g>
+      <!-- cardboard riding over the top -->
+      <path d="M850,130 Q860,122 870,121" fill="none" stroke="#5c6370" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <path class="pic-f" d="M872,116 l16,-4 l2,9 l-16,4 Z"/>
+      <!-- glass shards falling into hopper -->
+      <path d="M752,166 l4,-7 l4,7 Z" fill="#2e8d81"/>
+      <path d="M766,172 l3.5,-6 l3.5,6 Z" fill="#2e8d81"/>
+      <path d="M780,167 l4,-7 l4,7 Z" fill="#2e8d81"/>
+      <path d="M740,178 L800,178 L790,191 L750,191 Z" fill="#d6ece8" stroke="#137a6e" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+    <text class="t-body" x="706" y="204">Spinning screens split the</text>
+    <text class="t-body" x="706" y="218">stream by size; crushed glass</text>
+    <text class="t-body" x="706" y="232">falls through to a hopper.</text>
+  </g>
+
+  <!-- ===== stage panels, row 2 (right to left) ===== -->
+  <g id="rc-stage-4">
+    <rect class="panel" x="690" y="364" width="230" height="148" rx="10"/>
+    <circle cx="716" cy="392" r="12" fill="#2b3445"/>
+    <text class="t-num" x="716" y="396.5" text-anchor="middle">4</text>
+    <text class="t-stage" x="736" y="396.5">Metal separation</text>
+    <!-- pictogram: overhead magnet lifting steel, eddy current flinging aluminium -->
+    <g id="rc-pic-metals">
+      <line class="pic" x1="710" y1="452" x2="878" y2="452"/>
+      <use href="#rc-roller" x="720" y="458"/>
+      <use href="#rc-roller" x="798" y="458"/>
+      <use href="#rc-roller" x="868" y="458"/>
+      <rect class="pic-f" x="738" y="408" width="56" height="16" rx="4"/>
+      <line x1="750" y1="412" x2="758" y2="420" stroke="#2b3445" stroke-width="1.5"/>
+      <line x1="766" y1="412" x2="774" y2="420" stroke="#2b3445" stroke-width="1.5"/>
+      <rect class="pic-w" x="750" y="432" width="11" height="13" rx="1.5"/>
+      <rect class="pic-w" x="772" y="436" width="11" height="13" rx="1.5"/>
+      <line x1="755.5" y1="430" x2="755.5" y2="426" stroke="#2b3445" stroke-width="1.5"/>
+      <line x1="777.5" y1="434" x2="777.5" y2="427" stroke="#2b3445" stroke-width="1.5"/>
+      <!-- eddy current fling -->
+      <path d="M838,448 Q856,424 874,428" fill="none" stroke="#5c6370" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect class="pic-w" x="872" y="420" width="11" height="13" rx="1.5" transform="rotate(18 877 426)"/>
+    </g>
+    <text class="t-body" x="706" y="482">A magnet lifts out steel cans;</text>
+    <text class="t-body" x="706" y="496">an eddy current flings</text>
+    <text class="t-body" x="706" y="510">aluminium off the belt.</text>
+  </g>
+
+  <g id="rc-stage-5">
+    <rect class="panel" x="365" y="364" width="230" height="148" rx="10"/>
+    <circle cx="391" cy="392" r="12" fill="#2b3445"/>
+    <text class="t-num" x="391" y="396.5" text-anchor="middle">5</text>
+    <text class="t-stage" x="411" y="396.5">Optical sorting</text>
+    <!-- pictogram: scanner beam over belt, air jet blowing a bottle off -->
+    <g id="rc-pic-optical">
+      <line class="pic" x1="385" y1="452" x2="548" y2="452"/>
+      <use href="#rc-roller" x="395" y="458"/>
+      <use href="#rc-roller" x="470" y="458"/>
+      <use href="#rc-roller" x="538" y="458"/>
+      <rect class="pic-f" x="434" y="406" width="30" height="16" rx="3"/>
+      <path d="M449,424 L433,450 L465,450 Z" fill="#2b3445" opacity="0.12"/>
+      <rect class="pic-w" x="424" y="438" width="9" height="13" rx="2"/>
+      <circle class="pic-f" cx="478" cy="445" r="6.5"/>
+      <!-- air jet + flying bottle -->
+      <line x1="540" y1="456" x2="548" y2="448" stroke="#2b3445" stroke-width="1.5"/>
+      <line x1="546" y1="459" x2="554" y2="451" stroke="#2b3445" stroke-width="1.5"/>
+      <path d="M548,446 Q560,424 574,420" fill="none" stroke="#5c6370" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <rect class="pic-w" x="568" y="410" width="9" height="14" rx="2" transform="rotate(20 572 417)"/>
+    </g>
+    <text class="t-body" x="381" y="482">Scanners identify each plastic</text>
+    <text class="t-body" x="381" y="496">and air jets blow the types</text>
+    <text class="t-body" x="381" y="510">onto separate lines.</text>
+  </g>
+
+  <g id="rc-stage-6">
+    <rect class="panel" x="40" y="364" width="230" height="148" rx="10"/>
+    <circle cx="66" cy="392" r="12" fill="#2b3445"/>
+    <text class="t-num" x="66" y="396.5" text-anchor="middle">6</text>
+    <text class="t-stage" x="86" y="396.5">Baling</text>
+    <!-- pictogram: baler press + stacked bales -->
+    <g id="rc-pic-baling">
+      <rect class="pic-w" x="70" y="408" width="54" height="52" rx="3"/>
+      <rect class="pic-f" x="84" y="413" width="26" height="10" rx="2"/>
+      <line x1="97" y1="427" x2="97" y2="437" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow-sm)"/>
+      <rect class="pic-f" x="80" y="444" width="34" height="11" rx="1.5"/>
+      <use href="#rc-bale" x="150" y="428"/>
+      <use href="#rc-bale" x="192" y="428"/>
+      <use href="#rc-bale" x="171" y="394"/>
+    </g>
+    <text class="t-body" x="56" y="482">Each material is pressed into</text>
+    <text class="t-body" x="56" y="496">dense bales and sold on</text>
+    <text class="t-body" x="56" y="510">to reprocessors.</text>
+  </g>
+
+  <!-- ===== labelled connectors ===== -->
+  <g id="rc-connectors">
+    <line x1="274" y1="160" x2="358" y2="160" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow)"/>
+    <text class="t-lab" x="316" y="148" text-anchor="middle">trucked in</text>
+
+    <line x1="599" y1="160" x2="683" y2="160" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow)"/>
+    <text class="t-lab" x="641" y="148" text-anchor="middle">by conveyor</text>
+
+    <line x1="846" y1="238" x2="846" y2="357" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow)"/>
+    <text class="t-lab" x="854" y="293">containers</text>
+    <text class="t-lab" x="854" y="307">move on</text>
+
+    <line x1="686" y1="438" x2="602" y2="438" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow)"/>
+    <text class="t-lab" x="644" y="426" text-anchor="middle">non-metals</text>
+
+    <line x1="361" y1="438" x2="277" y2="438" stroke="#2b3445" stroke-width="2" marker-end="url(#rc-arrow)"/>
+    <text class="t-lab" x="319" y="426" text-anchor="middle">sorted streams</text>
+  </g>
+
+  <!-- ===== callout: contamination (points at pre-sort) ===== -->
+  <g id="rc-callout-contamination">
+    <line x1="312" y1="262" x2="396" y2="239" stroke="#b45309" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <circle cx="399" cy="238" r="3" fill="#b45309"/>
+    <rect x="40" y="262" width="390" height="86" rx="10" fill="#faf0dd" stroke="#c98a2b" stroke-width="1.5"/>
+    <path d="M78,281 L94,309 L62,309 Z" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="78" y1="291" x2="78" y2="299" stroke="#b45309" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="78" cy="304.5" r="1.7" fill="#b45309"/>
+    <text class="t-cot-a" x="106" y="288">What contaminates a batch</text>
+    <text class="t-cob-a" x="106" y="307">Food-soiled packaging, bagged-up recycling, nappies,</text>
+    <text class="t-cob-a" x="106" y="321">hoses and tangled film. Bags jam the screens, and one</text>
+    <text class="t-cob-a" x="106" y="335">bad load can send a whole bale to landfill.</text>
+  </g>
+
+  <!-- ===== callout: glass (points at screening) ===== -->
+  <g id="rc-callout-glass">
+    <line x1="702" y1="262" x2="760" y2="240" stroke="#137a6e" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <circle cx="763" cy="239" r="3" fill="#137a6e"/>
+    <rect x="470" y="262" width="350" height="86" rx="10" fill="#e1f2ef" stroke="#4e9e94" stroke-width="1.5"/>
+    <!-- broken bottle + loose shard -->
+    <path d="M487,306 v-16 l5,4 4,-8 4,8 5,-5 v17 Z" fill="none" stroke="#137a6e" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M510,306 l4.5,-10 l4.5,10 Z" fill="#2e8d81"/>
+    <text class="t-cot-g" x="522" y="288">Where glass ends up</text>
+    <text class="t-cob-g" x="522" y="307">Glass shatters early, so the screens crush it on purpose.</text>
+    <text class="t-cob-g" x="522" y="321">The shards fall through as cullet, get cleaned, and go</text>
+    <text class="t-cob-g" x="522" y="335">to glass plants, never into the bales.</text>
+  </g>
+
+  <!-- ===== footer ===== -->
+  <text class="t-foot" x="480" y="556" text-anchor="middle">Simplified single-stream flow. Paper and cardboard are screened off alongside the container line; exact machinery varies by facility.</text>
+</svg>

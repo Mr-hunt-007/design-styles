@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="420mm" viewBox="0 0 1123 1588" font-family="Arial, Helvetica, sans-serif">
+  <title>Greenfield Saturday Farmers Market - Season Opening</title>
+  <desc>A3 portrait poster announcing the season opening of the Greenfield Saturday Farmers Market: opening day Saturday 1 May 2027, 8 am to 1 pm, Greenfield Town Square, then every Saturday through 30 October. Six stall categories: fresh produce, baked goods, dairy and eggs, flowers and plants, honey and preserves, crafts and makers.</desc>
+
+  <!-- ======================= background ======================= -->
+  <rect width="1123" height="1588" fill="#F6F0E2"/>
+
+  <!-- ======================= awning top band ======================= -->
+  <rect width="1123" height="50" fill="#1C5436"/>
+  <g>
+    <path d="M0,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+    <path d="M102.1,50 a51.05,28 0 0 0 102.1,0 Z" fill="#E0A73A"/>
+    <path d="M204.2,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+    <path d="M306.3,50 a51.05,28 0 0 0 102.1,0 Z" fill="#E0A73A"/>
+    <path d="M408.4,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+    <path d="M510.5,50 a51.05,28 0 0 0 102.1,0 Z" fill="#E0A73A"/>
+    <path d="M612.5,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+    <path d="M714.6,50 a51.05,28 0 0 0 102.1,0 Z" fill="#E0A73A"/>
+    <path d="M816.7,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+    <path d="M918.8,50 a51.05,28 0 0 0 102.1,0 Z" fill="#E0A73A"/>
+    <path d="M1020.9,50 a51.05,28 0 0 0 102.1,0 Z" fill="#1C5436"/>
+  </g>
+
+  <!-- ======================= eyebrow ======================= -->
+  <g fill="#C44A26">
+    <rect x="150" y="164" width="112" height="4"/>
+    <rect x="861" y="164" width="112" height="4"/>
+    <path d="M282,156 l10,10 -10,10 -10,-10 Z"/>
+    <path d="M841,156 l10,10 -10,10 -10,-10 Z"/>
+  </g>
+  <text x="561.5" y="176" text-anchor="middle" font-size="30" font-weight="bold" letter-spacing="7" fill="#C44A26">GREENFIELD SATURDAY</text>
+
+  <!-- ======================= hero ======================= -->
+  <text x="561.5" y="352" text-anchor="middle" font-size="168" font-weight="bold" letter-spacing="4" fill="#1C5436">FARMERS</text>
+  <text x="561.5" y="512" text-anchor="middle" font-size="168" font-weight="bold" letter-spacing="4" fill="#1C5436">MARKET</text>
+
+  <!-- ======================= season-opening ribbon ======================= -->
+  <polygon points="151,578 226,578 226,634 151,634 183,606" fill="#A63D1F"/>
+  <polygon points="972,578 897,578 897,634 972,634 940,606" fill="#A63D1F"/>
+  <rect x="221.5" y="560" width="680" height="92" fill="#C44A26"/>
+  <text x="561.5" y="625" text-anchor="middle" font-size="54" font-weight="bold" letter-spacing="5" fill="#F6F0E2">SEASON OPENING</text>
+
+  <!-- ======================= when and where ======================= -->
+  <text x="561.5" y="745" text-anchor="middle" font-size="64" font-weight="bold" letter-spacing="2" fill="#1C5436">SATURDAY 1 MAY 2027</text>
+  <text x="561.5" y="807" text-anchor="middle" font-size="46" font-weight="bold" letter-spacing="2" fill="#C44A26">8 AM &#8211; 1 PM</text>
+  <text x="561.5" y="858" text-anchor="middle" font-size="36" font-weight="bold" letter-spacing="1" fill="#2B2B23">GREENFIELD TOWN SQUARE, HIGH STREET</text>
+  <text x="561.5" y="901" text-anchor="middle" font-size="27" fill="#6B7560">then every Saturday through 30 October</text>
+
+  <!-- ======================= stalls section header ======================= -->
+  <g fill="#6B7560">
+    <rect x="100" y="947" width="104" height="3"/>
+    <rect x="919" y="947" width="104" height="3"/>
+  </g>
+  <text x="561.5" y="958" text-anchor="middle" font-size="27" font-weight="bold" letter-spacing="5" fill="#C44A26">SIX KINDS OF STALLS EVERY WEEK</text>
+
+  <!-- ======================= stall cards ======================= -->
+  <g stroke="#1C5436" stroke-width="2" fill="#FDFAF1">
+    <rect x="72" y="985" width="300" height="225" rx="14"/>
+    <rect x="411.5" y="985" width="300" height="225" rx="14"/>
+    <rect x="751" y="985" width="300" height="225" rx="14"/>
+    <rect x="72" y="1235" width="300" height="225" rx="14"/>
+    <rect x="411.5" y="1235" width="300" height="225" rx="14"/>
+    <rect x="751" y="1235" width="300" height="225" rx="14"/>
+  </g>
+  <g fill="#EAF0DF">
+    <circle cx="222" cy="1055" r="50"/>
+    <circle cx="561.5" cy="1055" r="50"/>
+    <circle cx="901.5" cy="1055" r="50"/>
+    <circle cx="222" cy="1305" r="50"/>
+    <circle cx="561.5" cy="1305" r="50"/>
+    <circle cx="901.5" cy="1305" r="50"/>
+  </g>
+
+  <!-- icon: carrot (fresh produce) -->
+  <g transform="translate(222,1055)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-10,-40 C-14,-30 -13,-24 -9,-17"/>
+    <path d="M0,-44 C0,-33 0,-26 0,-17"/>
+    <path d="M10,-40 C14,-30 13,-24 9,-17"/>
+    <path d="M-15,-13 C-15,3 -8,24 0,37 C8,24 15,3 15,-13 C6,-19 -6,-19 -15,-13 Z"/>
+    <path d="M-7,1 h9"/>
+    <path d="M-4,14 h7"/>
+  </g>
+
+  <!-- icon: bread loaf (baked goods) -->
+  <g transform="translate(561.5,1055)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-34,20 V10 a34,30 0 0 1 68,0 V20 Z"/>
+    <path d="M-17,-4 l8,-11"/>
+    <path d="M-4,-7 l8,-11"/>
+    <path d="M9,-4 l8,-11"/>
+  </g>
+
+  <!-- icon: milk bottle and egg (dairy and eggs) -->
+  <g transform="translate(901.5,1055)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-33,22 V2 C-33,-5 -28,-8 -28,-15 V-24 H-13 V-15 C-13,-8 -8,-5 -8,2 V22 a4,4 0 0 1 -4,4 H-29 a4,4 0 0 1 -4,-4 Z"/>
+    <path d="M-28,-19 h15"/>
+    <ellipse cx="17" cy="8" rx="13" ry="17"/>
+  </g>
+
+  <!-- icon: tulip (flowers and plants) -->
+  <g transform="translate(222,1305)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-15,-34 V-20 A15,15 0 0 0 15,-20 V-34 L7.5,-25 L0,-34 L-7.5,-25 Z"/>
+    <path d="M0,-5 V36"/>
+    <path d="M0,18 C-6,10 -14,10 -21,15 C-16,23 -7,25 0,18 Z"/>
+    <path d="M0,27 C6,19 14,19 21,24 C16,32 7,34 0,27 Z"/>
+  </g>
+
+  <!-- icon: honey jar (honey and preserves) -->
+  <g transform="translate(561.5,1305)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="-17" y="-34" width="34" height="11" rx="3"/>
+    <path d="M-15,-17 H15 C21,-11 23,-5 23,1 V24 a8,8 0 0 1 -8,8 H-15 a8,8 0 0 1 -8,-8 V1 C-23,-5 -21,-11 -15,-17 Z"/>
+    <polygon points="0,-1 8,3.5 8,12.5 0,17 -8,12.5 -8,3.5"/>
+  </g>
+
+  <!-- icon: vase (crafts and makers) -->
+  <g transform="translate(901.5,1305)" fill="none" stroke="#1C5436" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-8,-36 H8 V-28 C8,-23 11,-20 15,-16 C21,-10 24,-3 24,5 A24,21 0 0 1 -24,5 C-24,-3 -21,-10 -15,-16 C-11,-20 -8,-23 -8,-28 Z"/>
+    <path d="M-15,8 H15"/>
+  </g>
+
+  <!-- stall labels -->
+  <g text-anchor="middle" font-size="29" font-weight="bold" letter-spacing="2" fill="#1C5436">
+    <text x="222" y="1148">FRESH</text>
+    <text x="222" y="1184">PRODUCE</text>
+    <text x="561.5" y="1148">BAKED</text>
+    <text x="561.5" y="1184">GOODS</text>
+    <text x="901.5" y="1148">DAIRY</text>
+    <text x="901.5" y="1184">&amp; EGGS</text>
+    <text x="222" y="1398">FLOWERS</text>
+    <text x="222" y="1434">&amp; PLANTS</text>
+    <text x="561.5" y="1398">HONEY &amp;</text>
+    <text x="561.5" y="1434">PRESERVES</text>
+    <text x="901.5" y="1398">CRAFTS &amp;</text>
+    <text x="901.5" y="1434">MAKERS</text>
+  </g>
+
+  <!-- ======================= footer band ======================= -->
+  <rect y="1492" width="1123" height="6" fill="#E0A73A"/>
+  <rect y="1498" width="1123" height="90" fill="#1C5436"/>
+  <text x="561.5" y="1552" text-anchor="middle" font-size="26" font-weight="bold" letter-spacing="2" fill="#F6F0E2">FREE ENTRY &#183; RAIN OR SHINE &#183; DOGS ON LEADS WELCOME</text>
+</svg>

@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 842 1191" width="297mm" height="420mm" role="img" aria-labelledby="gm-title gm-desc">
+  <title id="gm-title">Greenfield Saturday Farmers Market — Season Opening</title>
+  <desc id="gm-desc">A3 poster announcing the season opening of the Greenfield Saturday Farmers Market: opening day Saturday 1 May 2027, then every Saturday through 30 October, 8 AM to 1 PM at Greenfield Town Square, 12 Market Lane. Six stall categories: fresh produce, baked goods, dairy and eggs, cut flowers, honey and jams, local crafts.</desc>
+
+  <defs>
+    <!-- One awning stripe unit: 54 wide, straight sides, elliptical scallop below -->
+    <path id="gm-scallop" d="M0 0 H54 V34 A27 16 0 0 1 0 34 Z"/>
+
+    <!-- Stall icons, each drawn in a 0..44 box -->
+    <g id="gm-ic-carrot">
+      <path fill="#C23B22" d="M22 14 C27 14 29.5 17 28.4 22 L24.2 37.5 C23.5 39.8 20.5 39.8 19.8 37.5 L15.6 22 C14.5 17 17 14 22 14 Z"/>
+      <path fill="#1F4A2C" d="M20.8 12.5 C15.8 11.8 12.6 8.8 11.6 4.4 C16.2 4.6 19.9 7.6 20.8 12.5 Z"/>
+      <path fill="#1F4A2C" d="M23.2 12.5 C28.2 11.8 31.4 8.8 32.4 4.4 C27.8 4.6 24.1 7.6 23.2 12.5 Z"/>
+      <ellipse fill="#1F4A2C" cx="22" cy="7.4" rx="2.1" ry="5.2"/>
+    </g>
+    <g id="gm-ic-loaf">
+      <path fill="#D99A2B" d="M7 29.5 V24 C7 16 13.5 11.5 22 11.5 C30.5 11.5 37 16 37 24 V29.5 C37 31.4 35.6 32.8 33.7 32.8 H10.3 C8.4 32.8 7 31.4 7 29.5 Z"/>
+      <g stroke="#FFFDF6" stroke-width="2.6" stroke-linecap="round" fill="none">
+        <path d="M13.5 19.5 L17 23.5"/>
+        <path d="M20.5 17.5 L24 21.5"/>
+        <path d="M27.5 17.5 L31 21.5"/>
+      </g>
+    </g>
+    <g id="gm-ic-dairy">
+      <path fill="#1F4A2C" d="M15 7 H23 V10 C23 12.4 25.8 14 25.8 17 V33.6 C25.8 35.5 24.4 36.9 22.5 36.9 H15.5 C13.6 36.9 12.2 35.5 12.2 33.6 V17 C12.2 14 15 12.4 15 10 Z"/>
+      <rect fill="#D99A2B" x="13.8" y="3.6" width="10.4" height="3.6" rx="1.8"/>
+      <rect fill="#FFFDF6" x="12.2" y="21" width="13.6" height="6"/>
+      <path fill="#F6EFDD" stroke="#1F4A2C" stroke-width="2" d="M33 21.4 C36.2 21.4 38.6 24.8 38.6 29 C38.6 33.4 36.3 36.4 33 36.4 C29.7 36.4 27.4 33.4 27.4 29 C27.4 24.8 29.8 21.4 33 21.4 Z"/>
+    </g>
+    <g id="gm-ic-tulip">
+      <path fill="#C23B22" d="M13.5 8.5 V17.5 C13.5 23.5 16.8 26.8 22 26.8 C27.2 26.8 30.5 23.5 30.5 17.5 V8.5 C27.6 11.8 24.9 11.8 22 8.5 C19.1 11.8 16.4 11.8 13.5 8.5 Z"/>
+      <path stroke="#1F4A2C" stroke-width="2.6" stroke-linecap="round" fill="none" d="M22 27.5 V40"/>
+      <path fill="#1F4A2C" d="M21.2 36.2 C17.2 34.6 14.2 31.4 13.2 27.2 C18 28.2 20.7 31.4 21.2 36.2 Z"/>
+      <path fill="#1F4A2C" d="M22.8 39 C26.8 37.4 29.8 34.2 30.8 30 C26 31 23.3 34.2 22.8 39 Z"/>
+    </g>
+    <g id="gm-ic-jar">
+      <rect fill="#1F4A2C" x="14" y="6.5" width="16" height="5.4" rx="2.7"/>
+      <path fill="#D99A2B" d="M15.4 13.4 H28.6 C30.8 16.2 31.8 18.6 31.8 22.2 V31.8 C31.8 34.8 29.6 37 26.6 37 H17.4 C14.4 37 12.2 34.8 12.2 31.8 V22.2 C12.2 18.6 13.2 16.2 15.4 13.4 Z"/>
+      <rect fill="#FFFDF6" x="12.2" y="21.6" width="19.6" height="6.4"/>
+    </g>
+    <g id="gm-ic-jug">
+      <path fill="#1F4A2C" d="M17.6 10.5 C13.6 14.5 10.8 19.3 10.8 25.6 C10.8 32 15.4 36.9 22 36.9 C28.6 36.9 33.2 32 33.2 25.6 C33.2 19.3 30.4 14.5 26.4 10.5 Z"/>
+      <rect fill="#1F4A2C" x="16.6" y="6.4" width="10.8" height="4.4" rx="2.2"/>
+      <path stroke="#1F4A2C" stroke-width="2.6" fill="none" stroke-linecap="round" d="M31.5 15.5 C36.6 17.2 37.4 22.6 33 25.4"/>
+      <rect fill="#FFFDF6" x="13.4" y="20" width="17.2" height="4.6"/>
+    </g>
+
+    <!-- Category chip ring -->
+    <circle id="gm-chip" r="33" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2.5"/>
+    <!-- Small diamond ornament -->
+    <path id="gm-diamond" d="M0 -6 L6 0 L0 6 L-6 0 Z"/>
+  </defs>
+
+  <!-- Paper -->
+  <rect width="842" height="1191" fill="#F6EFDD"/>
+
+  <!-- Double frame -->
+  <rect x="24" y="24" width="794" height="1143" fill="none" stroke="#1F4A2C" stroke-width="4"/>
+  <rect x="34" y="34" width="774" height="1123" fill="none" stroke="#1F4A2C" stroke-width="1.5"/>
+
+  <!-- Eyebrow -->
+  <g font-family="Arial, Helvetica, 'Liberation Sans', 'DejaVu Sans', sans-serif">
+    <text x="421" y="92" text-anchor="middle" font-size="23" font-weight="700" letter-spacing="5" fill="#1F4A2C" textLength="460" lengthAdjust="spacingAndGlyphs">THE GREENFIELD SATURDAY</text>
+    <line x1="92" y1="84" x2="160" y2="84" stroke="#1F4A2C" stroke-width="1.5"/>
+    <line x1="682" y1="84" x2="750" y2="84" stroke="#1F4A2C" stroke-width="1.5"/>
+    <use href="#gm-diamond" x="172" y="84" fill="#C23B22"/>
+    <use href="#gm-diamond" x="670" y="84" fill="#C23B22"/>
+
+    <!-- Headline -->
+    <text x="421" y="238" text-anchor="middle" font-size="148" font-weight="700" fill="#1F4A2C" textLength="714" lengthAdjust="spacingAndGlyphs">FARMERS</text>
+    <text x="421" y="384" text-anchor="middle" font-size="148" font-weight="700" fill="#1F4A2C" textLength="714" lengthAdjust="spacingAndGlyphs">MARKET</text>
+
+    <!-- Awning -->
+    <g>
+      <use href="#gm-scallop" x="70"  y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="124" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="178" y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="232" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="286" y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="340" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="394" y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="448" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="502" y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="556" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="610" y="412" fill="#1F4A2C"/>
+      <use href="#gm-scallop" x="664" y="412" fill="#FFFDF6" stroke="#1F4A2C" stroke-width="2"/>
+      <use href="#gm-scallop" x="718" y="412" fill="#1F4A2C"/>
+      <rect x="66" y="406" width="710" height="7" rx="3.5" fill="#1F4A2C"/>
+    </g>
+
+    <!-- Season opening -->
+    <text x="421" y="548" text-anchor="middle" font-size="64" font-weight="700" letter-spacing="2" fill="#C23B22" textLength="620" lengthAdjust="spacingAndGlyphs">SEASON OPENING</text>
+    <use href="#gm-diamond" x="85" y="526" fill="#C23B22"/>
+    <use href="#gm-diamond" x="757" y="526" fill="#C23B22"/>
+
+    <!-- Date / time / place panel -->
+    <rect x="64" y="584" width="714" height="240" rx="16" fill="#1F4A2C"/>
+    <text x="421" y="650" text-anchor="middle" font-size="46" font-weight="700" fill="#F6EFDD" textLength="560" lengthAdjust="spacingAndGlyphs">SATURDAY 1 MAY 2027</text>
+    <text x="421" y="712" text-anchor="middle" font-size="46" font-weight="700" fill="#F6EFDD" textLength="300" lengthAdjust="spacingAndGlyphs">8 AM – 1 PM</text>
+    <g fill="#D99A2B">
+      <use href="#gm-diamond" x="397" y="738" />
+      <use href="#gm-diamond" x="421" y="738"/>
+      <use href="#gm-diamond" x="445" y="738"/>
+    </g>
+    <text x="421" y="779" text-anchor="middle" font-size="27" font-weight="700" letter-spacing="1.5" fill="#F6EFDD" textLength="600" lengthAdjust="spacingAndGlyphs">GREENFIELD TOWN SQUARE · 12 MARKET LANE</text>
+    <text x="421" y="810" text-anchor="middle" font-size="22" font-style="italic" fill="#E7DCBE" font-family="Georgia, 'Times New Roman', serif">then every Saturday through 30 October</text>
+
+    <!-- Stall categories -->
+    <text x="421" y="870" text-anchor="middle" font-size="24" font-weight="700" letter-spacing="4" fill="#C23B22" textLength="340" lengthAdjust="spacingAndGlyphs">SIX KINDS OF STALLS</text>
+    <line x1="72" y1="862" x2="228" y2="862" stroke="#1F4A2C" stroke-width="1.5"/>
+    <line x1="614" y1="862" x2="770" y2="862" stroke="#1F4A2C" stroke-width="1.5"/>
+
+    <!-- Row 1 -->
+    <use href="#gm-chip" x="175" y="924"/>
+    <use href="#gm-ic-carrot" transform="translate(153,902)"/>
+    <text x="175" y="986" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">FRESH PRODUCE</text>
+
+    <use href="#gm-chip" x="421" y="924"/>
+    <use href="#gm-ic-loaf" transform="translate(399,902)"/>
+    <text x="421" y="986" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">BAKED GOODS</text>
+
+    <use href="#gm-chip" x="667" y="924"/>
+    <use href="#gm-ic-dairy" transform="translate(645,902)"/>
+    <text x="667" y="986" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">DAIRY &amp; EGGS</text>
+
+    <!-- Row 2 -->
+    <use href="#gm-chip" x="175" y="1038"/>
+    <use href="#gm-ic-tulip" transform="translate(153,1016)"/>
+    <text x="175" y="1100" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">CUT FLOWERS</text>
+
+    <use href="#gm-chip" x="421" y="1038"/>
+    <use href="#gm-ic-jar" transform="translate(399,1016)"/>
+    <text x="421" y="1100" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">HONEY &amp; JAMS</text>
+
+    <use href="#gm-chip" x="667" y="1038"/>
+    <use href="#gm-ic-jug" transform="translate(645,1016)"/>
+    <text x="667" y="1100" text-anchor="middle" font-size="20" font-weight="700" letter-spacing="1" fill="#1F4A2C">LOCAL CRAFTS</text>
+
+    <!-- Footer -->
+    <text x="421" y="1142" text-anchor="middle" font-size="16.5" font-weight="700" letter-spacing="2" fill="#1F4A2C" textLength="620" lengthAdjust="spacingAndGlyphs">FREE ENTRY · RAIN OR SHINE · DOGS ON LEADS WELCOME</text>
+  </g>
+</svg>

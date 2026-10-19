@@ -1,0 +1,45 @@
+{
+  "task": "g2",
+  "A": {
+    "criteria": {
+      "Brief and user-goal alignment": 5,
+      "Visual hierarchy and composition": 4,
+      "Typography, colour and legibility": 4,
+      "Usability and accessibility": 4,
+      "Technical correctness": 5,
+      "Cross-disciplinary reasoning": 4,
+      "Originality and coherence": 4,
+      "Maintainability and implementation quality": 4.5,
+      "Efficiency and absence of unnecessary complexity": 5
+    },
+    "total": 88.5,
+    "notable_defects": [
+      "Stage icons are small abstract glyphs; the pre-sort (stage 2) and screens (stage 3) icons are hard to decode at full size and become indistinct squiggles at half width, so the pictograms add little explanation",
+      "Row 1 is dense: connector labels, callout speech-bubble tails and card edges sit close together, and the contamination callout tail grazes the stage-2/connector zone",
+      "Glass callout tail points at stage 3's lower-left corner rather than at the screen mechanism itself; anchoring is correct but loose"
+    ]
+  },
+  "B": {
+    "criteria": {
+      "Brief and user-goal alignment": 4.5,
+      "Visual hierarchy and composition": 4.5,
+      "Typography, colour and legibility": 4.5,
+      "Usability and accessibility": 4.5,
+      "Technical correctness": 5,
+      "Cross-disciplinary reasoning": 5,
+      "Originality and coherence": 4.5,
+      "Maintainability and implementation quality": 5,
+      "Efficiency and absence of unnecessary complexity": 5
+    },
+    "total": 93.5,
+    "notable_defects": [
+      "No explicit baled-output terminal element: the kerbside-to-baled-output arc ends inside stage 6 (bale pictograms and caption) rather than at a distinct output destination, a weaker reading of the brief's endpoint",
+      "Callout leader dots land ~5px below the target panels' bottom edges rather than on them; visually acceptable but geometrically off-panel",
+      "Glass callout's broken-jar icon is ambiguous at a glance (reads crown-like); 11px body text at half width is at the legibility floor (as in A)"
+    ]
+  },
+  "winner": "B",
+  "margin": 5,
+  "confidence": "medium",
+  "notes": "Both are technically clean: exact 0 0 960 600 viewBox, fully self-contained (system font stacks, internal styles), six grouped stages in a serpentine, labelled connectors, both required callouts correctly anchored, no collisions or clipping at 960px or 480px, and factually sound single-stream MRF explanations. B wins on communication quality: its pictograms actually depict each mechanism (trommel with shards falling into a hopper, eddy-current fling, air-jet eject, picker pulling a bag) with one consistent dashed-arc motion vocabulary, and they stay legible at half width, where A's small abstract glyphs collapse. B also separates annotation from flow more cleanly (dashed leader plus dot versus solid arrows), carries proper ARIA wiring (role=img, aria-labelledby, full-sequence desc), and its DECISIONS.md documents a verifiable render-critique-fix loop whose claims match the artefact. A's genuine edge is the brief's endpoint: its dedicated baled-output strip with a dashed 'glass cullet (loose)' chip completes the kerbside-to-bale arc and visually reinforces the glass callout, which B only handles inside stage 6 and a footer. That edge narrows but does not close the gap created by B's stronger pictograms, hierarchy and accessibility."
+}

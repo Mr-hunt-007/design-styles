@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harper Energy</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f9f9f7;
+    --surface:     #fcfcfb;
+    --ink:         #0b0b0b;
+    --ink-2:       #52514e;
+    --muted:       #898781;
+    --grid:        #e1e0d9;
+    --axis:        #c3c2b7;
+    --border:      rgba(11,11,11,0.10);
+    --s1:          #2a78d6;  /* categorical slot 1 - grid draw / single-series */
+    --s2:          #eb6834;  /* categorical slot 2 - solar generation */
+    --good-text:   #006300;
+    --warn:        #fab219;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:      #0d0d0d;
+      --surface:   #1a1a19;
+      --ink:       #f0efec;
+      --ink-2:     #c3c2b7;
+      --muted:     #898781;
+      --grid:      #2c2c2a;
+      --axis:      #383835;
+      --border:    rgba(255,255,255,0.10);
+      --s1:        #3987e5;
+      --s2:        #d95926;
+      --good-text: #0ca30c;
+      --warn:      #fab219;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:      #0d0d0d;
+    --surface:   #1a1a19;
+    --ink:       #f0efec;
+    --ink-2:     #c3c2b7;
+    --muted:     #898781;
+    --grid:      #2c2c2a;
+    --axis:      #383835;
+    --border:    rgba(255,255,255,0.10);
+    --s1:        #3987e5;
+    --s2:        #d95926;
+    --good-text: #0ca30c;
+    --warn:      #fab219;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* ---------- header ---------- */
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  header h1 { font-size: 19px; font-weight: 650; margin: 0; letter-spacing: -0.01em; }
+  header .date { color: var(--muted); font-size: 13px; }
+  header .spacer { flex: 1; }
+  .theme-btn {
+    font: 600 12px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink-2); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 12px; cursor: pointer;
+  }
+  .theme-btn:hover { color: var(--ink); }
+
+  /* ---------- cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .card h2 {
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    margin: 0 0 2px; letter-spacing: 0.01em;
+  }
+  .card .sub { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+
+  /* ---------- alert ---------- */
+  .alert {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .alert svg { flex: none; margin-top: 1px; }
+  .alert .k { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+  .alert strong { display: block; font-size: 14px; font-weight: 650; margin: 2px 0 2px; }
+  .alert p { margin: 0 0 10px; color: var(--ink-2); max-width: 60ch; }
+  .alert button {
+    font: 600 12.5px/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink); background: transparent;
+    border: 1px solid var(--axis); border-radius: 8px;
+    padding: 7px 12px; cursor: pointer;
+  }
+  .alert button:hover { border-color: var(--muted); }
+
+  /* ---------- KPI row ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile .label { font-size: 12.5px; color: var(--ink-2); margin: 0 0 4px; }
+  .tile .value { font-size: 28px; font-weight: 650; line-height: 1.1; letter-spacing: -0.01em; }
+  .tile .value.hero { font-size: 48px; }
+  .tile .unit { font-size: 0.5em; font-weight: 600; color: var(--ink-2); margin-left: 2px; }
+  .tile .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .tile .delta-good { color: var(--good-text); font-weight: 650; font-size: 13px; }
+  .live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--good-text); margin-right: 5px; vertical-align: 1px;
+  }
+  .spark { display: block; margin-top: 8px; }
+
+  /* ---------- charts grid ---------- */
+  .charts { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 760px) {
+    .charts { grid-template-columns: 1fr 1fr; }
+    .charts .span2 { grid-column: 1 / -1; }
+  }
+  .chartbox { width: 100%; }
+  .chartbox svg { display: block; width: 100%; height: auto; }
+
+  .legend { display: flex; gap: 14px; align-items: center; margin: 0 0 8px; font-size: 12px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+  /* ---------- appliance bars ---------- */
+  .appl { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; gap: 8px 10px; align-items: center; margin-top: 4px; }
+  .appl .name { font-size: 12.5px; color: var(--ink-2); }
+  .appl .row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .appl .bar {
+    height: 14px; border-radius: 0 4px 4px 0;
+    background: var(--s1); flex: none;
+    transition: filter .12s;
+  }
+  .appl .row:hover .bar, .appl .row:focus-visible .bar { filter: brightness(1.15); }
+  .appl .row:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; border-radius: 4px; }
+  .appl .val { font-size: 12px; color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .appl .val .u { color: var(--muted); font-weight: 400; }
+
+  /* ---------- table views ---------- */
+  details.tbl { margin-top: 10px; }
+  details.tbl summary { font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; }
+  details.tbl summary:hover { color: var(--ink-2); }
+  details.tbl table { border-collapse: collapse; margin-top: 8px; font-size: 12.5px; width: 100%; max-width: 420px; }
+  details.tbl th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 4px 10px 4px 0; border-bottom: 1px solid var(--grid); }
+  details.tbl td { padding: 4px 10px 4px 0; border-bottom: 1px solid var(--grid); color: var(--ink); font-variant-numeric: tabular-nums; }
+  details.tbl td:first-child { color: var(--ink-2); font-variant-numeric: normal; }
+
+  /* ---------- svg chart chrome ---------- */
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .axisline { stroke: var(--axis); stroke-width: 1; }
+  .ticktext  { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .xtext     { fill: var(--muted); font-size: 11px; }
+  .endlabel  { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .seg { transition: filter .12s; }
+  .lift .seg { filter: brightness(1.12); }
+  .hit { fill: transparent; cursor: pointer; }
+  .hit:focus { outline: none; }
+  .hit:focus-visible { stroke: var(--s1); stroke-width: 2; }
+  .xhair { stroke: var(--axis); stroke-width: 1; }
+
+  /* ---------- tooltip ---------- */
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    font-size: 12px; display: none; max-width: 220px;
+  }
+  #tip .t-title { color: var(--muted); margin-bottom: 4px; }
+  #tip .t-row { display: flex; align-items: center; gap: 7px; margin-top: 2px; }
+  #tip .t-key { width: 10px; height: 2px; border-radius: 1px; flex: none; }
+  #tip .t-val { font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
+  #tip .t-name { color: var(--ink-2); }
+
+  footer { margin-top: 20px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Harper household energy</h1>
+    <span class="date">Sunday, Oct 19 · 4:38 PM</span>
+    <span class="spacer"></span>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch color theme">Theme: Auto</button>
+  </header>
+
+  <!-- one actionable alert -->
+  <section class="alert" role="status" aria-label="Energy alert">
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path d="M9 2 L16.5 15.5 H1.5 Z" fill="none" stroke="var(--warn)" stroke-width="1.8" stroke-linejoin="round"/>
+      <line x1="9" y1="7" x2="9" y2="11" stroke="var(--warn)" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="9" cy="13.4" r="1" fill="var(--warn)"/>
+    </svg>
+    <div>
+      <span class="k">Alert · action suggested</span>
+      <strong>Water heater is running on the overnight grid window</strong>
+      <p>It drew 3.2 kWh between 12 AM and 4 AM, about 38% above its usual cycle, all from the grid.
+         Shifting its timer to the 11 AM–2 PM solar peak would cover most of that from your panels, saving roughly $9/month.</p>
+      <button type="button">Shift schedule to solar window</button>
+    </div>
+  </section>
+
+  <!-- KPI row -->
+  <div class="kpis">
+    <div class="card tile">
+      <p class="label">Current usage</p>
+      <div class="value hero">2.9<span class="unit">kW</span></div>
+      <p class="meta"><span class="live-dot"></span>Live · home drawing now</p>
+      <svg class="spark" id="spark" width="150" height="34" aria-label="Power over the last 24 hours, peaking this evening"></svg>
+    </div>
+    <div class="card tile">
+      <p class="label">Solar generation now</p>
+      <div class="value">1.4<span class="unit">kW</span></div>
+      <p class="meta">Covering 48% of the current load</p>
+    </div>
+    <div class="card tile">
+      <p class="label">Cost this month</p>
+      <div class="value">$148</div>
+      <p class="meta"><span class="delta-good">▼ 16%</span> vs September ($176)</p>
+    </div>
+  </div>
+
+  <div class="charts">
+
+    <!-- 7-day trend -->
+    <section class="card span2">
+      <h2>Usage, last 7 days</h2>
+      <p class="sub">Total household energy per day (kWh)</p>
+      <div class="chartbox" id="trend"></div>
+      <details class="tbl">
+        <summary>View as table</summary>
+        <table>
+          <thead><tr><th scope="col">Day</th><th scope="col">Usage (kWh)</th></tr></thead>
+          <tbody id="trendTable"></tbody>
+        </table>
+      </details>
+    </section>
+
+    <!-- solar vs grid -->
+    <section class="card">
+      <h2>Solar vs. grid</h2>
+      <p class="sub">Where each day's energy came from (kWh)</p>
+      <div class="legend" aria-hidden="true">
+        <span><span class="sw" style="background:var(--s2)"></span>Solar generation</span>
+        <span><span class="sw" style="background:var(--s1)"></span>Grid draw</span>
+      </div>
+      <div class="chartbox" id="mix"></div>
+      <details class="tbl">
+        <summary>View as table</summary>
+        <table>
+          <thead><tr><th scope="col">Day</th><th scope="col">Solar</th><th scope="col">Grid</th><th scope="col">Total</th></tr></thead>
+          <tbody id="mixTable"></tbody>
+        </table>
+      </details>
+    </section>
+
+    <!-- top appliances -->
+    <section class="card">
+      <h2>Top appliances</h2>
+      <p class="sub">Energy used over the last 7 days (kWh)</p>
+      <div class="appl" id="appl"></div>
+      <p class="sub" style="margin-top:12px">These six account for 67% of the week's 172.8 kWh.</p>
+    </section>
+
+  </div>
+
+  <footer>Placeholder data · Harper family is fictional · Dashboard works in light &amp; dark and down to 400px wide.</footer>
+</div>
+
+<div id="tip" role="presentation"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- data (placeholder) ---------------- */
+  const DAYS = [
+    { label: "Mon", date: "Mon, Oct 13", solar:  9.2, grid: 14.9 },
+    { label: "Tue", date: "Tue, Oct 14", solar: 11.4, grid: 15.4 },
+    { label: "Wed", date: "Wed, Oct 15", solar:  6.1, grid: 16.2 },
+    { label: "Thu", date: "Thu, Oct 16", solar: 10.8, grid: 14.8 },
+    { label: "Fri", date: "Fri, Oct 17", solar: 12.3, grid: 16.6 },
+    { label: "Sat", date: "Sat, Oct 18", solar:  8.9, grid: 12.5 },
+    { label: "Sun", date: "Sun, Oct 19", solar: 10.2, grid: 13.5 }
+  ];
+  DAYS.forEach(d => d.total = +(d.solar + d.grid).toFixed(1));
+
+  const APPLIANCES = [
+    { name: "HVAC",           kwh: 38.4 },
+    { name: "Water heater",   kwh: 29.1 },
+    { name: "EV charger",     kwh: 22.6 },
+    { name: "Refrigerator",   kwh: 11.2 },
+    { name: "Washer & dryer", kwh:  8.7 },
+    { name: "Oven",           kwh:  5.3 }
+  ];
+
+  const SPARK = [1.1, 0.9, 0.8, 1.0, 1.6, 2.2, 1.9, 1.7, 2.1, 2.6, 3.4, 2.9]; // last 24 h, 2 h steps
+  const YMAX = 30, TICKS = [0, 10, 20, 30];
+  const NS = "http://www.w3.org/2000/svg";
+
+  /* ---------------- helpers ---------------- */
+  function el(name, attrs, parent) {
+    const n = document.createElementNS(NS, name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  const tip = document.getElementById("tip");
+  function tipShow(title, rows, x, y) {
+    tip.textContent = "";
+    const t = document.createElement("div");
+    t.className = "t-title"; t.textContent = title; tip.appendChild(t);
+    rows.forEach(r => {
+      const row = document.createElement("div"); row.className = "t-row";
+      const key = document.createElement("span"); key.className = "t-key";
+      key.style.background = r.color; row.appendChild(key);
+      const val = document.createElement("span"); val.className = "t-val";
+      val.textContent = r.value; row.appendChild(val);
+      const name = document.createElement("span"); name.className = "t-name";
+      name.textContent = r.name; row.appendChild(name);
+      tip.appendChild(row);
+    });
+    tip.style.display = "block";
+    const r = tip.getBoundingClientRect();
+    let left = x + 14, top = y - r.height - 10;
+    if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
+    if (left < 8) left = 8;
+    if (top < 8) top = y + 16;
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+  function tipHide() { tip.style.display = "none"; }
+
+  function roundedTop(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h);
+    return "M" + x + "," + (y + h) +
+           " L" + x + "," + (y + r) +
+           " Q" + x + "," + y + " " + (x + r) + "," + y +
+           " L" + (x + w - r) + "," + y +
+           " Q" + (x + w) + "," + y + " " + (x + w) + "," + (y + r) +
+           " L" + (x + w) + "," + (y + h) + " Z";
+  }
+
+  /* ---------------- 7-day trend (line) ---------------- */
+  function renderTrend() {
+    const box = document.getElementById("trend");
+    const W = Math.max(300, box.clientWidth), H = 230;
+    const m = { t: 18, r: 64, b: 28, l: 34 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const X = i => m.l + i * (iw / (DAYS.length - 1));
+    const Y = v => m.t + ih * (1 - v / YMAX);
+
+    box.textContent = "";
+    const svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img",
+      "aria-label": "Line chart of total daily usage for the last 7 days, from 21.4 to 28.9 kilowatt hours" }, box);
+
+    TICKS.forEach(t => {
+      if (t > 0) el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), class: "gridline" }, svg);
+      el("text", { x: m.l - 7, y: Y(t) + 4, "text-anchor": "end", class: "ticktext" }, svg).textContent = t;
+    });
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), class: "axisline" }, svg);
+
+    const skip = W < 480 ? 2 : 1;
+    DAYS.forEach((d, i) => {
+      if (i % skip === 0 || i === DAYS.length - 1)
+        el("text", { x: X(i), y: H - 9, "text-anchor": "middle", class: "xtext" }, svg).textContent = d.label;
+    });
+
+    const pts = DAYS.map((d, i) => [X(i), Y(d.total)]);
+    el("path", { d: "M" + pts.map(p => p.join(",")).join(" L") + " L" + X(DAYS.length - 1) + "," + Y(0) + " L" + X(0) + "," + Y(0) + " Z",
+      fill: "var(--s1)", opacity: "0.1" }, svg);
+    el("path", { d: "M" + pts.map(p => p.join(",")).join(" L"),
+      fill: "none", stroke: "var(--s1)", "stroke-width": 2,
+      "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+
+    const dots = DAYS.map((d, i) =>
+      el("circle", { cx: X(i), cy: Y(d.total), r: 4,
+        fill: "var(--s1)", stroke: "var(--surface)", "stroke-width": 2 }, svg));
+
+    const last = DAYS[DAYS.length - 1];
+    el("text", { x: X(DAYS.length - 1) + 10, y: Y(last.total) + 4, class: "endlabel" }, svg)
+      .textContent = last.total + " kWh";
+
+    const xhair = el("line", { y1: m.t, y2: Y(0), class: "xhair", visibility: "hidden" }, svg);
+
+    function focusIdx(i, cx, cy) {
+      dots.forEach((c, j) => c.setAttribute("r", j === i ? 5.5 : 4));
+      xhair.setAttribute("x1", X(i)); xhair.setAttribute("x2", X(i));
+      xhair.setAttribute("visibility", "visible");
+      tipShow(DAYS[i].date, [{ color: css("--s1"), value: DAYS[i].total + " kWh", name: "total usage" }], cx, cy);
+    }
+    function clear() {
+      dots.forEach(c => c.setAttribute("r", 4));
+      xhair.setAttribute("visibility", "hidden");
+      tipHide();
+    }
+
+    const overlay = el("rect", { x: m.l - 10, y: m.t, width: iw + 20, height: ih, fill: "transparent" }, svg);
+    overlay.addEventListener("pointermove", e => {
+      const r = svg.getBoundingClientRect();
+      const px = (e.clientX - r.left) * (W / r.width);
+      let i = Math.round((px - m.l) / (iw / (DAYS.length - 1)));
+      i = Math.max(0, Math.min(DAYS.length - 1, i));
+      focusIdx(i, e.clientX, e.clientY);
+    });
+    overlay.addEventListener("pointerleave", clear);
+
+    DAYS.forEach((d, i) => {
+      const hit = el("circle", { cx: X(i), cy: Y(d.total), r: 14, class: "hit", tabindex: 0,
+        role: "img", "aria-label": d.date + ": " + d.total + " kilowatt hours" }, svg);
+      hit.addEventListener("focus", () => {
+        const r = hit.getBoundingClientRect();
+        focusIdx(i, r.left + r.width / 2, r.top);
+      });
+      hit.addEventListener("blur", clear);
+    });
+  }
+
+  /* ---------------- solar vs grid (stacked bars) ---------------- */
+  function renderMix() {
+    const box = document.getElementById("mix");
+    const W = Math.max(280, box.clientWidth), H = 230;
+    const m = { t: 14, r: 6, b: 28, l: 34 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const band = iw / DAYS.length;
+    const barw = Math.min(24, band * 0.55);
+    const Y = v => m.t + ih * (1 - v / YMAX);
+
+    box.textContent = "";
+    const svg = el("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img",
+      "aria-label": "Stacked bar chart of daily solar generation versus grid draw for the last 7 days" }, box);
+
+    TICKS.forEach(t => {
+      if (t > 0) el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), class: "gridline" }, svg);
+      el("text", { x: m.l - 7, y: Y(t) + 4, "text-anchor": "end", class: "ticktext" }, svg).textContent = t;
+    });
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), class: "axisline" }, svg);
+
+    const skip = W < 360 ? 2 : 1;
+    DAYS.forEach((d, i) => {
+      const cx = m.l + band * i + band / 2;
+      const x = cx - barw / 2;
+      const g = el("g", {}, svg);
+
+      /* grid segment: baseline up, square ends */
+      el("rect", { x: x, y: Y(d.grid), width: barw, height: Y(0) - Y(d.grid),
+        fill: "var(--s1)", class: "seg" }, g);
+      /* solar segment on top: 2px surface gap below, rounded 4px data-end */
+      const yTop = Y(d.grid + d.solar);
+      const h = Y(d.grid) - yTop - 2; /* 2px surface gap */
+      el("path", { d: roundedTop(x, yTop, barw, h, 4), fill: "var(--s2)", class: "seg" }, g);
+
+      if (i % skip === 0 || i === DAYS.length - 1)
+        el("text", { x: cx, y: H - 9, "text-anchor": "middle", class: "xtext" }, svg).textContent = d.label;
+
+      /* whole-column hit target, one tooltip for every series */
+      const hit = el("rect", { x: m.l + band * i, y: m.t, width: band, height: ih,
+        class: "hit", tabindex: 0, role: "img",
+        "aria-label": d.date + ": solar " + d.solar + ", grid " + d.grid + ", total " + d.total + " kilowatt hours" }, svg);
+      function show(cx2, cy2) {
+        g.classList.add("lift");
+        tipShow(d.date, [
+          { color: css("--s2"), value: d.solar + " kWh", name: "solar" },
+          { color: css("--s1"), value: d.grid  + " kWh", name: "grid"  },
+          { color: css("--muted"), value: d.total + " kWh", name: "total" }
+        ], cx2, cy2);
+      }
+      function hide() { g.classList.remove("lift"); tipHide(); }
+      hit.addEventListener("pointermove", e => show(e.clientX, e.clientY));
+      hit.addEventListener("pointerleave", hide);
+      hit.addEventListener("focus", () => {
+        const r = hit.getBoundingClientRect();
+        show(r.left + r.width / 2, r.top + 30);
+      });
+      hit.addEventListener("blur", hide);
+    });
+  }
+
+  /* ---------------- appliances (HTML bars) ---------------- */
+  function renderAppliances() {
+    const box = document.getElementById("appl");
+    box.textContent = "";
+    const max = Math.max(...APPLIANCES.map(a => a.kwh));
+    APPLIANCES.forEach(a => {
+      const name = document.createElement("span");
+      name.className = "name"; name.textContent = a.name;
+      const row = document.createElement("span");
+      row.className = "row"; row.tabIndex = 0;
+      row.setAttribute("role", "img");
+      row.setAttribute("aria-label", a.name + ": " + a.kwh + " kilowatt hours this week");
+      const bar = document.createElement("span");
+      bar.className = "bar"; bar.style.width = (a.kwh / max * 72) + "%";
+      const val = document.createElement("span");
+      val.className = "val"; val.textContent = a.kwh;
+      const u = document.createElement("span");
+      u.className = "u"; u.textContent = " kWh";
+      val.appendChild(u);
+      row.appendChild(bar); row.appendChild(val);
+      box.appendChild(name); box.appendChild(row);
+    });
+  }
+
+  /* ---------------- sparkline (24h power) ---------------- */
+  function renderSpark() {
+    const svg = document.getElementById("spark");
+    svg.textContent = "";
+    const W = 150, H = 34, max = Math.max(...SPARK);
+    const X = i => 4 + i * ((W - 12) / (SPARK.length - 1));
+    const Y = v => 4 + (H - 8) * (1 - v / max);
+    const pts = SPARK.map((v, i) => X(i) + "," + Y(v));
+    el("path", { d: "M" + pts.join(" L"), fill: "none",
+      stroke: "var(--muted)", "stroke-width": 1.5,
+      "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    el("circle", { cx: X(SPARK.length - 1), cy: Y(SPARK[SPARK.length - 1]), r: 3.5,
+      fill: "var(--s1)", stroke: "var(--surface)", "stroke-width": 2 }, svg);
+  }
+
+  /* ---------------- table views ---------------- */
+  function fillTables() {
+    const tt = document.getElementById("trendTable");
+    DAYS.forEach(d => {
+      const tr = document.createElement("tr");
+      [d.date, d.total.toFixed(1)].forEach(v => {
+        const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
+      });
+      tt.appendChild(tr);
+    });
+    const mt = document.getElementById("mixTable");
+    DAYS.forEach(d => {
+      const tr = document.createElement("tr");
+      [d.date, d.solar.toFixed(1), d.grid.toFixed(1), d.total.toFixed(1)].forEach(v => {
+        const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
+      });
+      mt.appendChild(tr);
+    });
+  }
+
+  /* ---------------- theme toggle ---------------- */
+  const themeBtn = document.getElementById("themeBtn");
+  const MODES = ["auto", "light", "dark"];
+  let mode = "auto";
+  try { mode = localStorage.getItem("harper-theme") || "auto"; } catch (e) {}
+  function applyTheme() {
+    if (mode === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", mode);
+    themeBtn.textContent = "Theme: " + mode.charAt(0).toUpperCase() + mode.slice(1);
+    try { localStorage.setItem("harper-theme", mode); } catch (e) {}
+  }
+  themeBtn.addEventListener("click", () => {
+    mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+    applyTheme();
+  });
+  applyTheme();
+
+  /* ---------------- render + resize ---------------- */
+  function renderAll() { renderTrend(); renderMix(); }
+  renderAll();
+  renderAppliances();
+  renderSpark();
+  fillTables();
+
+  let raf = 0;
+  new ResizeObserver(() => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(renderAll);
+  }).observe(document.querySelector(".wrap"));
+})();
+</script>
+</body>
+</html>

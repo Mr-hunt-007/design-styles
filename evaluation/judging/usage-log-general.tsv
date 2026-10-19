@@ -1,0 +1,7 @@
+round	condition	task	subagent_tokens
+g	control	g1	125720
+g	treatment	g1	120515
+g	control	g2	96709
+g	treatment	g2	107288_fresh_rerun_after_two_timeouts
+g	control	g3	81371
+g	treatment	g3	not_recorded_harness_sleep

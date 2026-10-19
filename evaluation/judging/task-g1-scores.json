@@ -1,0 +1,48 @@
+{
+  "task": "g1",
+  "A": {
+    "criteria": {
+      "Brief and user-goal alignment": 5,
+      "Visual hierarchy and composition": 4,
+      "Typography, colour and legibility": 5,
+      "Usability and accessibility": 4.5,
+      "Technical correctness": 5,
+      "Cross-disciplinary reasoning": 5,
+      "Originality and coherence": 4.5,
+      "Maintainability and implementation quality": 5,
+      "Efficiency and absence of unnecessary complexity": 5
+    },
+    "total": 95,
+    "notable_defects": [
+      "Solar/grid split is rendered three times (now-split bar, today-split bar, weekly stacked chart) - some compositional redundancy",
+      "Data table backing the chart is sr-only, so sighted users get no tabular view",
+      "No hover/tooltip layer at all (mitigated by direct value labels on every bar)",
+      "Alert block is visually heavy in light mode"
+    ]
+  },
+  "B": {
+    "criteria": {
+      "Brief and user-goal alignment": 4,
+      "Visual hierarchy and composition": 4.5,
+      "Typography, colour and legibility": 3.5,
+      "Usability and accessibility": 4,
+      "Technical correctness": 4,
+      "Cross-disciplinary reasoning": 3.5,
+      "Originality and coherence": 3.5,
+      "Maintainability and implementation quality": 3.5,
+      "Efficiency and absence of unnecessary complexity": 4.5
+    },
+    "total": 79,
+    "notable_defects": [
+      "--muted (#898781) on surface (#fcfcfb) measures 3.5:1, below the 4.5:1 AA threshold, and is used for 11-12px axis ticks, card subtitles, meta text and footer in light mode",
+      "Cost tile compares a 19-day partial October ($148) against what reads as full September ($176) with a '-16%' claim - an unlabelled partial-vs-full comparison",
+      "Two sources of truth: KPI values (2.9 kW, 1.4 kW, 48%, $148) and the appliance summary line (67% / 172.8 kWh) are hardcoded in HTML while the chart data lives in JS",
+      "Alert's 'Shift schedule' button has no handler - it is inert",
+      "Line-chart values are only reachable via hover/focus tooltip or the collapsed table; only the endpoint is directly labelled"
+    ]
+  },
+  "winner": "A",
+  "margin": 16,
+  "confidence": "high",
+  "notes": "Both deliver every brief item, pass light and dark cleanly, and show no horizontal overflow at a true 400px viewport (verified with an iframe scrollWidth probe, since headless Chrome's 500px minimum window makes naive 400px screenshots misleading). The decisive gaps are rigor ones: A derives every displayed number from a single DATA object and all spot-checks reconcile (2840W -> 2.8 kW/68%, week 133.3 kWh/52% solar, cost delta -15%, appliances + 'everything else' sum exactly to today's 18.3 kWh), while B's figures are individually correct (48% coverage, 16% delta, 67% of 172.8 kWh) but split between hardcoded HTML and JS data, and its month-vs-month cost claim compares a partial month to a full one unlabelled - the exact trap A explicitly avoids. A's measured contrast claims verify (muted text 7.3:1) whereas B's muted 12px text measures 3.5:1 and fails AA across subtitles, ticks and footer. B counters with genuinely better interaction work (keyboard-focusable tooltips, visible table twins, crosshair) and a cleaner conventional KPI hierarchy, but A also carries stronger domain reasoning (generation vs export vs self-use distinction, like-for-like billing windows, alert cross-referenced by the 'ran at peak' appliance tag) and a more distinctive, coherent voice."
+}
